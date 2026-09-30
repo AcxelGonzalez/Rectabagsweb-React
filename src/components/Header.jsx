@@ -1,7 +1,7 @@
 function Header(){
     return (
         <>
-            <header className="header-principal fixed-top bg-black text-white py-3">
+            <header className="header-principal sticky-top bg-black text-white py-3">
                 <div className="container-fluid px-4 d-flex justify-content-between align-items-center">
 
 
@@ -19,7 +19,7 @@ function Header(){
 
 
                     <div className="header-center text-center">
-                        <a href="home.html">
+                        <a href="/">
                             <img src="img/HEADER/Logo R.jpg" alt="Recta" className="logo-img"/>
                         </a>
                         <p className="eslogan m-0 small mt-1">“De ciclista para ciclistas”</p>
@@ -45,12 +45,12 @@ function Header(){
                         
                         <div className="offcanvas-body d-flex flex-column">
                             <ul className="nav nav-pills flex-column mb-auto">
-                                <li className="nav-item"><a href="home.html" className="nav-link active bg-secondary text-white">Inicio</a></li>
-                                <li className="nav-item"><a href="catalogo.html" className="nav-link text-white">Catálogo</a></li>
+                                <li className="nav-item"><a href="/" className="nav-link active bg-secondary text-white">Inicio</a></li>
+                                <li className="nav-item"><a href="/Catalogo" className="nav-link text-white">Catálogo</a></li>
                                 <li className="nav-item"><a href="blog.html" className="nav-link text-white">Blog</a></li>
                                 <li className="nav-item"><a href="contacto.html" className="nav-link text-white">Contacto</a></li>
                                 <li className="nav-item"><a href="impacto_ambiental.html" className="nav-link text-white">Impacto Ambiental</a></li>
-                                <li className="nav-item"><a href="quienes_somos.html" className="nav-link text-white">Quiénes Somos</a></li>
+                                <li className="nav-item"><a href="/QuienesSomos" className="nav-link text-white">Quiénes Somos</a></li>
                             </ul>
 
                             <hr className="border-secondary"/>
