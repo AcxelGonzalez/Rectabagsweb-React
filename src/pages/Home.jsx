@@ -4,8 +4,7 @@ import '../css/style_home.css';
 
 function Home() {
     return (
-        <>
-            <Header/>    
+        <> 
             <main>
             <section className="hero-section d-flex align-items-end">
                 
@@ -55,7 +54,7 @@ function Home() {
                     </div>
 
                     <div className="col-md-2 text-center text-md-end">
-                    <a href="catalogo.html" className="btn btn-secondary px-4 py-2">
+                    <a href="/Catalogo" className="btn btn-secondary px-4 py-2">
                         Ver más ➔
                     </a>
                     </div>
@@ -107,7 +106,6 @@ function Home() {
                 </div>
             </section>
             </main>
-            <Footer/>
         </>
     
 
