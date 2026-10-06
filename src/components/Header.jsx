@@ -4,6 +4,13 @@ import { Link, NavLink } from 'react-router-dom';
 const claseMenu = ({ isActive }) =>
     'nav-link text-white' + (isActive ? ' active bg-secondary' : '');
 
+// Cierra el menú lateral de Bootstrap después de elegir una opción
+const cerrarMenu = () => {
+    const menu = document.getElementById('menuLateral');
+    const instancia = window.bootstrap?.Offcanvas.getInstance(menu);
+    if (instancia) instancia.hide();
+};
+
 function Header() {
     return (
         <>
@@ -53,12 +60,12 @@ function Header() {
 
                         <div className="offcanvas-body d-flex flex-column">
                             <ul className="nav nav-pills flex-column mb-auto">
-                                <li className="nav-item"><NavLink to="/" end className={claseMenu} data-bs-dismiss="offcanvas">Inicio</NavLink></li>
-                                <li className="nav-item"><NavLink to="/catalogo" className={claseMenu} data-bs-dismiss="offcanvas">Catálogo</NavLink></li>
-                                <li className="nav-item"><NavLink to="/blog" className={claseMenu} data-bs-dismiss="offcanvas">Blog</NavLink></li>
-                                <li className="nav-item"><NavLink to="/contacto" className={claseMenu} data-bs-dismiss="offcanvas">Contacto</NavLink></li>
-                                <li className="nav-item"><NavLink to="/impacto-ambiental" className={claseMenu} data-bs-dismiss="offcanvas">Impacto Ambiental</NavLink></li>
-                                <li className="nav-item"><NavLink to="/quienes-somos" className={claseMenu} data-bs-dismiss="offcanvas">Quiénes Somos</NavLink></li>
+                                <li className="nav-item"><NavLink to="/" end className={claseMenu} onClick={cerrarMenu}>Inicio</NavLink></li>
+                                <li className="nav-item"><NavLink to="/catalogo" className={claseMenu} onClick={cerrarMenu}>Catálogo</NavLink></li>
+                                <li className="nav-item"><NavLink to="/blog" className={claseMenu} onClick={cerrarMenu}>Blog</NavLink></li>
+                                <li className="nav-item"><NavLink to="/contacto" className={claseMenu} onClick={cerrarMenu}>Contacto</NavLink></li>
+                                <li className="nav-item"><NavLink to="/impacto-ambiental" className={claseMenu} onClick={cerrarMenu}>Impacto Ambiental</NavLink></li>
+                                <li className="nav-item"><NavLink to="/quienes-somos" className={claseMenu} onClick={cerrarMenu}>Quiénes Somos</NavLink></li>
                             </ul>
 
                             <hr className="border-secondary"/>
@@ -66,8 +73,8 @@ function Header() {
 
                             <div id="menu-visitante">
                                 <ul className="nav nav-pills flex-column">
-                                    <li className="nav-item"><NavLink to="/login" className={claseMenu} data-bs-dismiss="offcanvas">Log in</NavLink></li>
-                                    <li className="nav-item"><NavLink to="/registro" className={claseMenu} data-bs-dismiss="offcanvas">Registro</NavLink></li>
+                                    <li className="nav-item"><NavLink to="/login" className={claseMenu} onClick={cerrarMenu}>Log in</NavLink></li>
+                                    <li className="nav-item"><NavLink to="/registro" className={claseMenu} onClick={cerrarMenu}>Registro</NavLink></li>
                                 </ul>
                             </div>
 
@@ -75,7 +82,7 @@ function Header() {
                             {/* Estos dos bloques seguirán ocultos hasta que exista la sesión de usuario (AuthContext) */}
                             <div id="menu-usuario" className="d-none">
                                 <ul className="nav nav-pills flex-column">
-                                    <li className="nav-item"><Link to="/perfil" className="nav-link text-white fw-bold" data-bs-dismiss="offcanvas">Mi Perfil</Link></li>
+                                    <li className="nav-item"><Link to="/perfil" className="nav-link text-white fw-bold" onClick={cerrarMenu}>Mi Perfil</Link></li>
                                     <li className="nav-item"><a href="#" className="nav-link text-danger fw-bold btn-logout">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
@@ -93,7 +100,7 @@ function Header() {
                                         <Link
                                             to="/admin/productos"
                                             className="nav-link text-warning"
-                                            data-bs-dismiss="offcanvas">
+                                            onClick={cerrarMenu}>
                                             ≡ Gestión de Productos
                                         </Link>
                                     </li>
@@ -102,7 +109,7 @@ function Header() {
                                         <Link
                                             to="/admin/usuarios"
                                             className="nav-link text-warning"
-                                            data-bs-dismiss="offcanvas">
+                                            onClick={cerrarMenu}>
                                             ≡ Gestión de Usuarios
                                         </Link>
                                     </li>
