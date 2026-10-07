@@ -12,18 +12,54 @@ const claseNav = ({ isActive }) => {
 };
 
 function Header(){
+    const manejarBusqueda = (
+        evento
+    ) => {
+
+        evento.preventDefault();
+
+    };
+
     return (
         <>
             <header className="header-principal fixed-top bg-black text-white py-3">
-                <div className="container-fluid px-4 d-flex justify-content-between align-items-center">
+                <div
+                    className="
+                        container-fluid
+                        px-3
+                        px-md-4
+                        d-flex
+                        justify-content-between
+                        align-items-center
+                    "
+                >
 
 
-                    <div className="header-left d-flex align-items-center gap-3">
+                    <div
+                        className="
+                            header-left
+                            d-flex
+                            align-items-center
+                            gap-2
+                            gap-md-3
+                        "
+                    >
                         <button className="btn btn-link p-0" aria-label="Menú" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral">
                             <img src="/img/HEADER/icons8-menu-50.png" alt="Menú" className="icono-nav" />
                         </button>
-                        <form id="form-buscar" className="d-flex align-items-center m-0" role="search">
-                            <input id="input-buscar" className="form-control form-control-sm me-2 bg-dark border-secondary text-white d-none d-md-block" type="search" placeholder="Buscar..." aria-label="Search"/>
+                        <form
+                            id="form-buscar"
+                            className="
+                                d-flex
+                                align-items-center
+                                m-0
+                            "
+                            role="search"
+                            onSubmit={
+                                manejarBusqueda
+                            }
+                        >
+                            <input id="input-buscar" className="header-search-input form-control form-control-sm me-2 bg-dark border-secondary text-white d-none d-md-block" type="search" placeholder="Buscar..." aria-label="Search"/>
                             <button id="btn-buscar" className="btn btn-link p-0" aria-label="Buscar" type="submit">
                                 <img src="/img/HEADER/icons8-search-50.png" alt="Buscar" className="icono-nav"/>
                             </button>
@@ -39,11 +75,29 @@ function Header(){
                                 className="logo-img"
                             />
                         </Link>
-                        <p className="eslogan m-0 small mt-1">“De ciclista para ciclistas”</p>
+                        <p
+                            className="
+                                eslogan
+                                m-0
+                                small
+                                mt-1
+                                d-none
+                                d-sm-block
+                            "
+                        >
+                            “De ciclista para ciclistas”
+                        </p>
                     </div>
 
 
-                    <div className="header-right d-flex gap-3">
+                    <div
+                        className="
+                            header-right
+                            d-flex
+                            gap-2
+                            gap-md-3
+                        "
+                    >
                         <Link
                             id="enlace-usuario-header"
                             className="btn btn-link p-0"

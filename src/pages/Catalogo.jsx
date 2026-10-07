@@ -53,79 +53,79 @@ function Catalogo() {
     return (
 
         <section className="container py-5">
+            <div className="container">
+                <h1 className="fw-bold text-center mb-5">
 
-            <h1 className="fw-bold text-center mb-5">
+                    Catálogo
 
-                Catálogo
+                </h1>
 
-            </h1>
+                <div className="catalogo-search mb-4">
+                    <input
+                        type="search"
+                        className="form-control"
+                        placeholder="Buscar productos..."
+                        value={busqueda}
+                        onChange={
+                            (evento) =>
+                                setBusqueda(
+                                    evento.target.value
+                                )
+                        }
+                    />
+                </div>
 
-            <div className="mb-4">
-                <input
-                    type="search"
-                    className="form-control"
-                    placeholder="Buscar productos..."
-                    value={busqueda}
-                    onChange={
-                        (evento) =>
-                            setBusqueda(
-                                evento.target.value
-                            )
+                <ProductFilter
+                    categoria={categoria}
+                    onCategoriaChange={
+                        setCategoria
                     }
                 />
-            </div>
 
-            <ProductFilter
-                categoria={categoria}
-                onCategoriaChange={
-                    setCategoria
-                }
-            />
+                <div className="row g-4">
+                    {
+                        productosFiltrados.length === 0 && (
 
-            <div className="row g-4">
-                {
-                    productosFiltrados.length === 0 && (
+                            <div className="col-12">
 
-                        <div className="col-12">
+                                <p
+                                    className="
+                                        text-center
+                                        text-secondary
+                                        py-5
+                                    "
+                                >
 
-                            <p
-                                className="
-                                    text-center
-                                    text-secondary
-                                    py-5
-                                "
-                            >
+                                    No se encontraron productos.
 
-                                No se encontraron productos.
-
-                            </p>
-
-                        </div>
-
-                    )
-                }
-                
-                {
-                    productosFiltrados.map(
-                        (producto) => (
-
-                            <div
-                                className="col-12 col-md-6 col-lg-4"
-                                key={producto.id}
-                            >
-
-                                <ProductCard
-                                    producto={producto}
-                                />
+                                </p>
 
                             </div>
 
                         )
-                    )
-                }
+                    }
+                    
+                    {
+                        productosFiltrados.map(
+                            (producto) => (
 
+                                <div
+                                    className="col-12 col-md-6 col-lg-4"
+                                    key={producto.id}
+                                >
+
+                                    <ProductCard
+                                        producto={producto}
+                                    />
+
+                                </div>
+
+                            )
+                        )
+                    }
+
+                </div>
             </div>
-
         </section>
 
     );

@@ -95,3 +95,16 @@ FOOTER
     height: 300px;
     border: 0;
 }
+
+.header-search-input {
+    width: 160px;
+}
+
+
+@media (min-width: 992px) {
+
+    .header-search-input {
+        width: 220px;
+    }
+
+}

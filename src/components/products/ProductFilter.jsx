@@ -25,7 +25,15 @@ function ProductFilter({
 
     return (
 
-        <div className="d-flex flex-wrap gap-2 mb-4">
+        <div
+            className="
+                d-flex
+                flex-wrap
+                justify-content-center
+                gap-2
+                mb-4
+            "
+        >
 
             {
                 categorias.map(

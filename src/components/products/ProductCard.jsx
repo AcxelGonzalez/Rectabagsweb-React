@@ -16,16 +16,27 @@ function ProductCard({
 
     return (
 
-        <article className="card h-100">
+        <article
+            className="
+                card
+                product-card
+                h-100
+                border-0
+                shadow-sm
+            "
+        >
 
             <img
                 src={producto.imagen}
-                className="card-img-top"
+                className="
+                    card-img-top
+                    product-card__image
+                "
                 alt={producto.nombre}
             />
 
 
-            <div className="card-body">
+            <div className="card-body d-flex flex-column">
 
                 <h3 className="h5 fw-bold">
 
@@ -41,7 +52,7 @@ function ProductCard({
                 </p>
 
 
-                <p className="card-text">
+                <p className="card-text flex-grow-1">
 
                     {producto.descripcion}
 
@@ -49,7 +60,7 @@ function ProductCard({
 
                 <Link
                     to={`/producto/${producto.id}`}
-                    className="btn btn-dark"
+                    className="btn btn-dark mt-auto"
                 >
                     Ver producto
                 </Link>
