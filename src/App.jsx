@@ -1,31 +1,95 @@
-import { Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import Home from './pages/Home';
-import Blog from './pages/Blog';
-import QuienesSomos from './pages/QuienesSomos';
-import ImpactoAmbiental from './pages/ImpactoAmbiental';
-import TerminosCompra from './pages/TerminosCompra';
-import TerminosRegistro from './pages/TerminosRegistro';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Layout from "./components/Layout";
+
+import Home from "./pages/Home";
+import Catalogo from "./pages/Catalogo";
+import ProductoDetalle from "./pages/ProductoDetalle";
+import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 
 function App() {
-    return (
-        <Routes>
-            <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/quienes-somos" element={<QuienesSomos />} />
-                <Route path="/impacto-ambiental" element={<ImpactoAmbiental />} />
-                <Route path="/terminos-compra" element={<TerminosCompra />} />
-                <Route path="/terminos-registro" element={<TerminosRegistro />} />
-                {/* Pendientes de migrar:
-                <Route path="/catalogo" element={<Catalogo />} />
-                <Route path="/producto/:id" element={<ProductoDetalle />} />
-                <Route path="/contacto" element={<Contacto />} />
-                <Route path="/login" element={<Login />} />
-                */}
-            </Route>
-        </Routes>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* ==============================
+                    LAYOUT GENERAL
+                   ============================== */}
+
+        <Route element={<Layout />}>
+        
+          {/* HOME */}
+          <Route path="/" element={<Home />} />
+
+          {/* CATÁLOGO */}
+          <Route
+              path="/catalogo"
+              element={<Catalogo />}
+          />
+
+          {/* PRODUCTO DETALLE */}
+          <Route
+              path="/producto/:id"
+              element={
+                  <ProductoDetalle />
+              }
+          />
+
+          {/* BLOG */}
+          <Route
+            path="/blog"
+            element={<PaginaEnConstruccion titulo="Blog" />}
+          />
+
+          {/* CONTACTO */}
+          <Route
+            path="/contacto"
+            element={<PaginaEnConstruccion titulo="Contacto" />}
+          />
+
+          {/* IMPACTO */}
+          <Route
+            path="/impacto-ambiental"
+            element={<PaginaEnConstruccion titulo="Impacto Ambiental" />}
+          />
+
+          {/* NOSOTROS */}
+          <Route
+            path="/quienes-somos"
+            element={<PaginaEnConstruccion titulo="Quiénes Somos" />}
+          />
+
+          {/* AUTENTICACIÓN */}
+          <Route
+            path="/login"
+            element={<PaginaEnConstruccion titulo="Iniciar Sesión" />}
+          />
+
+          <Route
+            path="/registro"
+            element={<PaginaEnConstruccion titulo="Registro" />}
+          />
+
+          {/* CARRITO */}
+          <Route
+            path="/carrito"
+            element={<PaginaEnConstruccion titulo="Carrito" />}
+          />
+
+          {/* PERFIL */}
+          <Route
+            path="/perfil"
+            element={<PaginaEnConstruccion titulo="Mi Perfil" />}
+          />
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={<PaginaEnConstruccion titulo="Página no encontrada" />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
