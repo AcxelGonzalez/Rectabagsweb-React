@@ -6,6 +6,11 @@ import Home from "./pages/Home";
 import Catalogo from "./pages/Catalogo";
 import ProductoDetalle from "./pages/ProductoDetalle";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
+import Blog from "./pages/Blog";
+import ImpactoAmbiental from "./pages/ImpactoAmbiental";
+import QuienesSomos from "./pages/QuienesSomos";
+import TerminosCompra from "./pages/TerminosCompra";
+import TerminosRegistro from "./pages/TerminosRegistro";
 
 function App() {
   return (
@@ -36,8 +41,8 @@ function App() {
 
           {/* BLOG */}
           <Route
-            path="/blog"
-            element={<PaginaEnConstruccion titulo="Blog" />}
+              path="/blog"
+              element={<Blog />}
           />
 
           {/* CONTACTO */}
@@ -48,14 +53,25 @@ function App() {
 
           {/* IMPACTO */}
           <Route
-            path="/impacto-ambiental"
-            element={<PaginaEnConstruccion titulo="Impacto Ambiental" />}
+              path="/impacto-ambiental"
+              element={<ImpactoAmbiental />}
           />
 
           {/* NOSOTROS */}
           <Route
-            path="/quienes-somos"
-            element={<PaginaEnConstruccion titulo="Quiénes Somos" />}
+              path="/quienes-somos"
+              element={<QuienesSomos />}
+          />
+
+          {/* TÉRMINOS */}
+          <Route
+              path="/terminos-compra"
+              element={<TerminosCompra />}
+          />
+
+          <Route
+              path="/terminos-registro"
+              element={<TerminosRegistro />}
           />
 
           {/* AUTENTICACIÓN */}

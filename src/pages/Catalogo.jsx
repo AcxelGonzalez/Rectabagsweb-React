@@ -52,7 +52,7 @@ function Catalogo() {
 
     return (
 
-        <section className="container py-5">
+        <section className="container-page py-5">
             <div className="container">
                 <h1 className="fw-bold text-center mb-5">
 
