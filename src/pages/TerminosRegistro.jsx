@@ -1,5 +1,5 @@
 import PaginaTerminos from '../components/PaginaTerminos.jsx';
-import useTitulo from './hooks/useTitulo';
+import useTitulo from '../hooks/useTitulo';
 
 const secciones = [
     {

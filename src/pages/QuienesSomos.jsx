@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import SeccionRedes from '../components/SeccionRedes';
-import useTitulo from './hooks/useTitulo';
+import useTitulo from '../hooks/useTitulo';
 
 // Tarjetas de valores de la marca
 const valores = [

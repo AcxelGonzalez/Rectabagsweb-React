@@ -1,4 +1,4 @@
-import useTitulo from './hooks/useTitulo';
+import useTitulo from '../hooks/useTitulo';
 
 // Artículo destacado de la parte superior
 const destacado = {

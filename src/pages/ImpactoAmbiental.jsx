@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import useTitulo from './hooks/useTitulo';
+import useTitulo from '../hooks/useTitulo';
 
 // Los 3 pilares de la marca
 const pilares = [
