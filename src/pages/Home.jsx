@@ -19,7 +19,7 @@ function Home() {
         
             <section className="productos-section py-5">
                 <div className="container">
-                <h2 className="text-center fw-bold mb-5 text-uppercase titulo-pesado">
+                <h2 className="text-center fw-bold mb-5 text-uppercase ">
                     Explora nuestros productos
                 </h2>
 
@@ -27,7 +27,7 @@ function Home() {
                     <div className="row align-items-center text-center text-md-start">
                         <div className="col-md-3 mb-4 mb-md-0">
 
-                            <h3 className="fw-bold text-uppercase titulo-pesado lh-sm">
+                            <h3 className="fw-bold text-uppercase  lh-sm">
                                 Selecciona el que mejor se ajuste a tus necesidades
                             </h3>
                         </div>
@@ -70,7 +70,7 @@ function Home() {
                     <div className="row align-items-center">
                         
                         <div className="col-md-4 mb-4 mb-md-0">
-                            <h2 className="fw-bold text-uppercase titulo-pesado">Síguenos en redes</h2>
+                            <h2 className="fw-bold text-uppercase ">Síguenos en redes</h2>
 
                             <div className="d-flex align-items-center gap-3 mb-3 mt-4">
                                 <a href="https://www.instagram.com/rectabags" target="_blank" rel="noopener noreferrer">

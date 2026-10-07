@@ -9,3 +9,18 @@ html, body, #root {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* ==========================================================================
+   TIPOGRAFÍA GENERAL
+   ========================================================================== */
+
+.titulo-mono {
+    font-family:
+        "Courier New",
+        Courier,
+        "Lucida Sans Typewriter",
+        monospace;
+
+    font-weight: 500;
+    letter-spacing: -1px;
+}

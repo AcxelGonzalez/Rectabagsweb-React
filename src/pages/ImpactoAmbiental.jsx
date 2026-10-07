@@ -35,7 +35,7 @@ function ImpactoAmbiental() {
             {/* ENCABEZADO */}
             <section className="py-5 bg-white border-bottom">
                 <div className="container text-center">
-                    <h1 className="display-5 fw-bold text-uppercase titulo-pesado mb-3">Compromiso y Huella Verde</h1>
+                    <h1 className="display-5 fw-bold text-uppercase  mb-3">Compromiso y Huella Verde</h1>
                     <p className="lead text-secondary mx-auto" style={{ maxWidth: '750px' }}>
                         En Rectabags entendemos la bicicleta como una herramienta de transformación urbana y ambiental. Diseñamos equipamiento creado para durar y reducir el desperdicio.
                     </p>
@@ -62,8 +62,8 @@ function ImpactoAmbiental() {
                         <div className="row text-center g-4">
                             {metricas.map((metrica) => (
                                 <div className="col-6 col-md-3" key={metrica.valor}>
-                                    <h2 className="display-6 fw-bold text-uppercase titulo-pesado mb-1">{metrica.valor}</h2>
-                                    <p className="text-secondary-light small mb-0">{metrica.texto}</p>
+                                    <h2 className="display-6 fw-bold text-uppercase  mb-1">{metrica.valor}</h2>
+                                    <p className="text-secondary small mb-0">{metrica.texto}</p>
                                 </div>
                             ))}
                         </div>
@@ -71,7 +71,7 @@ function ImpactoAmbiental() {
 
                     {/* Banner inferior */}
                     <div className="bg-white rounded-4 p-4 p-md-5 border shadow-sm text-center">
-                        <h3 className="fw-bold text-uppercase titulo-pesado mb-2">armarte es el primer paso</h3>
+                        <h3 className="fw-bold text-uppercase  mb-2">armarte es el primer paso</h3>
                         <p className="text-secondary mb-4 mx-auto" style={{ maxWidth: '600px' }}>
                             Equípate con accesorios diseñados para tus necesidades.
                         </p>

@@ -8,7 +8,7 @@ function SeccionRedes() {
                 <div className="row align-items-center">
 
                     <div className="col-md-4 mb-4 mb-md-0">
-                        <h2 className="fw-bold text-uppercase titulo-pesado">Síguenos en redes</h2>
+                        <h2 className="fw-bold text-uppercase ">Síguenos en redes</h2>
 
                         <div className="d-flex align-items-center gap-3 mb-3 mt-4">
                             <a href="https://www.instagram.com/rectabags" target="_blank" rel="noopener noreferrer">
