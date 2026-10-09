@@ -29,7 +29,7 @@ function SeccionRedes() {
                         <div className="row g-2">
                             {fotos.map((foto, i) => (
                                 <div className="col-6 col-md-3" key={foto}>
-                                    <img src={`/img/RRSS/${foto}`} alt={`Instagram ${i + 1}`} className="img-fluid" />
+                                    <img src={`/img/RRSS/${foto}`} alt={`Instagram ${i + 1}`} className="img-fluid w-100 redes-img" />
                                 </div>
                             ))}
                         </div>
