@@ -1,13 +1,110 @@
-import {useState} from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Layout from "./components/Layout";
 
+import Home from "./pages/Home";
+import Catalogo from "./pages/Catalogo";
+import ProductoDetalle from "./pages/ProductoDetalle";
+import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
+import Blog from "./pages/Blog";
+import ImpactoAmbiental from "./pages/ImpactoAmbiental";
+import QuienesSomos from "./pages/QuienesSomos";
+import TerminosCompra from "./pages/TerminosCompra";
+import TerminosRegistro from "./pages/TerminosRegistro";
 
-import Home from './pages/Home';
 function App() {
   return (
-    <Home />
+    <BrowserRouter>
+      <Routes>
+        {/* ==============================
+                    LAYOUT GENERAL
+                   ============================== */}
+
+        <Route element={<Layout />}>
+        
+          {/* HOME */}
+          <Route path="/" element={<Home />} />
+
+          {/* CATÁLOGO */}
+          <Route
+              path="/catalogo"
+              element={<Catalogo />}
+          />
+
+          {/* PRODUCTO DETALLE */}
+          <Route
+              path="/producto/:id"
+              element={
+                  <ProductoDetalle />
+              }
+          />
+
+          {/* BLOG */}
+          <Route
+              path="/blog"
+              element={<Blog />}
+          />
+
+          {/* CONTACTO */}
+          <Route
+            path="/contacto"
+            element={<PaginaEnConstruccion titulo="Contacto" />}
+          />
+
+          {/* IMPACTO */}
+          <Route
+              path="/impacto-ambiental"
+              element={<ImpactoAmbiental />}
+          />
+
+          {/* NOSOTROS */}
+          <Route
+              path="/quienes-somos"
+              element={<QuienesSomos />}
+          />
+
+          {/* TÉRMINOS */}
+          <Route
+              path="/terminos-compra"
+              element={<TerminosCompra />}
+          />
+
+          <Route
+              path="/terminos-registro"
+              element={<TerminosRegistro />}
+          />
+
+          {/* AUTENTICACIÓN */}
+          <Route
+            path="/login"
+            element={<PaginaEnConstruccion titulo="Iniciar Sesión" />}
+          />
+
+          <Route
+            path="/registro"
+            element={<PaginaEnConstruccion titulo="Registro" />}
+          />
+
+          {/* CARRITO */}
+          <Route
+            path="/carrito"
+            element={<PaginaEnConstruccion titulo="Carrito" />}
+          />
+
+          {/* PERFIL */}
+          <Route
+            path="/perfil"
+            element={<PaginaEnConstruccion titulo="Mi Perfil" />}
+          />
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={<PaginaEnConstruccion titulo="Página no encontrada" />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
