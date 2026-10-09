@@ -1,5 +1,4 @@
 import {
-    useEffect,
     useState
 } from "react";
 
@@ -15,19 +14,6 @@ function ProductGallery({
     ] = useState(
         imagenes[0]
     );
-
-
-    useEffect(
-        () => {
-
-            setImagenPrincipal(
-                imagenes[0]
-            );
-
-        },
-        [imagenes]
-    );
-
 
     return (
 

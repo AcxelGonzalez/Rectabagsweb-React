@@ -145,12 +145,9 @@ function ProductoDetalle() {
                         <div className="col-12 col-lg-7">
 
                             <ProductGallery
-                                imagenes={
-                                    imagenes
-                                }
-                                nombre={
-                                    producto.nombre
-                                }
+                                key={producto.id}
+                                imagenes={imagenes}
+                                nombre={producto.nombre}
                             />
 
                         </div>
