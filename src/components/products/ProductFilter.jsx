@@ -20,6 +20,10 @@ function ProductFilter({
             valor: "musette",
             texto: "Musette"
         }
+        {
+            valor: "otros",
+            texto: "Otros"
+        }
     ];
 
 

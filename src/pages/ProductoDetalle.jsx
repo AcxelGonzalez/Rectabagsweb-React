@@ -124,15 +124,21 @@ function ProductoDetalle() {
                     </p>
 
 
-                    <p>
+                    {
+                        producto.stock !== undefined && (
 
-                        <strong>
-                            Stock disponible:
-                        </strong>{" "}
+                            <p>
 
-                        {producto.stock}
+                                <strong>
+                                    Stock disponible:
+                                </strong>{" "}
 
-                    </p>
+                                {producto.stock}
+
+                            </p>
+
+                        )
+                    }
 
 
                     <button
