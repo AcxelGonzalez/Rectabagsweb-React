@@ -1,0 +1,59 @@
+/* ==========================================================================
+   VISTA CATÁLOGO
+   Los estilos están encapsulados dentro de .catalogo-page para evitar
+   modificar otras vistas que utilicen componentes Bootstrap como .card.
+   ========================================================================== */
+
+.catalogo-page {
+  min-height: 60vh;
+  background-color: #fbeee6;
+}
+
+/* ==========================================================================
+   BUSCADOR
+   ========================================================================== */
+
+.catalogo-page .catalogo-search {
+  width: 100%;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==========================================================================
+   TARJETAS DE PRODUCTO
+   ========================================================================== */
+
+.catalogo-page .product-card {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.catalogo-page .product-card:hover {
+  transform: translateY(-3px);
+}
+
+.catalogo-page .product-card__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 575.98px) {
+  .catalogo-page {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .catalogo-page .product-card__image {
+    aspect-ratio: 4 / 3;
+  }
+}

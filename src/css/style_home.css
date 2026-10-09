@@ -1,0 +1,20 @@
+/* ==========================================================================
+HOJA DE ESTILOS: VISTA HOME (HERO SECTION)
+========================================================================== */
+.hero-section {
+    background-image: url('/img/HOME/main.jpeg');
+    
+    /* cover: Obliga a la imagen a escalar hasta cubrir todo el ancho y alto del contenedor */
+    background-size: cover; /* Cubre todo. Cambio: Si pones 'contain', verás la foto chiquita y bordes blancos a los lados. */    
+
+    /* center: Asegura que el punto focal (centro) no se pierda al recortar la imagen */
+    background-position: center; /* Cambio: Si pones 'top', en pantallas apaisadas se recortarán las piernas del ciclista. */    
+
+    background-repeat: no-repeat; /* Cambio: Si pones 'repeat', si la pantalla es muy grande, la foto se verá multiplicada como baldosas. */    
+
+    /* Defensa: Utilizamos Viewport Height (vh). 70vh asegura que el banner 
+       ocupe el 70% del alto de la pantalla, sin importar el dispositivo. */
+    min-height: 70vh; /* Altura relativa al dispositivo (70%). Cambio: Si pones '500px', en un monitor grande se verá como una franja muy angosta. */   
+
+    width: 100%;
+}
