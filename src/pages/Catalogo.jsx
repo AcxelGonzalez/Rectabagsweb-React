@@ -9,8 +9,10 @@ import ProductFilter
     from "../components/products/ProductFilter";
 
 import "../css/style_catalogo.css";
+import useTitulo from "../hooks/useTitulo";
 
 function Catalogo() {
+    useTitulo("Explora nuestro catálogo | Rectabags");
 
     const [
         categoria,

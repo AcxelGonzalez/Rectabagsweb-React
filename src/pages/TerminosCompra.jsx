@@ -37,7 +37,7 @@ function TerminosCompra() {
             rutaVolver="/carrito"
             textoVolver="Volver al Carrito"
             preguntaAyuda="¿Dudas sobre tu compra?"
-            textoEnlaceAyuda="Atención al cliente aquí."
+            textoEnlaceAyuda="Contáctanos."
         />
     );
 }
