@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-
+import useTitulo from "../hooks/useTitulo";
 import SeccionRedes
     from "../components/SeccionRedes";
 
 import "../css/style_home.css";
 
 function Home() {
+    useTitulo("Bienvenido a RectaBags");
     return (
         <>
             <section className="hero-section d-flex align-items-end">

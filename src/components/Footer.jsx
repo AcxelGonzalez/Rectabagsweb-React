@@ -13,9 +13,9 @@ function Footer() {
                         <div className="col-md-4 mb-4 mb-md-0">
                         <h4 className="fw-bold mb-3">INFORMACIÓN</h4>
                         <ul className="list-unstyled lh-lg">
-                            <li><Link to="/quienes-somos" className="text-white text-decoration-none">Sobre Nosotros</Link></li>
+                            <li><Link to="/QuienesSomos" className="text-white text-decoration-none">Sobre Nosotros</Link></li>
                             <li><Link to="/blog" className="text-white text-decoration-none">Blog</Link></li>
-                            <li><Link to="/contacto" className="text-white text-decoration-none">Contáctanos</Link></li>
+                            <li><Link to="/Contacto" className="text-white text-decoration-none">Contáctanos</Link></li>
                         </ul>
                         </div>
 

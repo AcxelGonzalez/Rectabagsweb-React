@@ -1,7 +1,4 @@
-function ProductFilter({
-    categoria,
-    onCategoriaChange
-}) {
+function ProductFilter({categoria,onCategoriaChange}) {
 
     const categorias = [
         {
@@ -29,48 +26,21 @@ function ProductFilter({
 
     return (
 
-        <div
-            className="
-                d-flex
-                flex-wrap
-                justify-content-center
-                gap-2
-                mb-4
-            "
-        >
+        <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
 
             {
-                categorias.map(
-                    (item) => (
+                categorias.map((item) => (
 
-                        <button
-                            key={item.valor}
-                            type="button"
-                            className={
-                                categoria === item.valor
-                                    ? "btn btn-dark"
-                                    : "btn btn-outline-dark"
-                            }
-                            onClick={() =>
-                                onCategoriaChange(
-                                    item.valor
-                                )
-                            }
-                        >
-
+                        <button key={item.valor} type="button" className={categoria === item.valor? "btn btn-dark": "btn btn-outline-dark"}
+                            onClick={() =>onCategoriaChange(item.valor)}>
                             {item.texto}
-
                         </button>
-
                     )
                 )
             }
-
         </div>
-
     );
 
 }
-
 
 export default ProductFilter;

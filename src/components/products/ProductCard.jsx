@@ -1,67 +1,29 @@
 import { Link } from "react-router-dom";
 
-function ProductCard({
-    producto
-}) {
+function ProductCard({producto}) {
 
-    const precioFormateado =
-        producto.precio.toLocaleString(
-            "es-CL",
+    const precioFormateado = producto.precio.toLocaleString("es-CL",
             {
                 style: "currency",
                 currency: "CLP"
             }
         );
 
-
     return (
 
-        <article
-            className="
-                card
-                product-card
-                h-100
-                border-0
-                shadow-sm
-            "
-        >
+        <article className="card product-card h-100 border-0 shadow-sm">
 
-            <img
-                src={producto.imagen}
-                className="
-                    card-img-top
-                    product-card__image
-                "
-                alt={producto.nombre}
-            />
-
+            <img src={producto.imagen}className="card-img-top product-card__image"alt={producto.nombre}/>
 
             <div className="card-body d-flex flex-column">
 
-                <h3 className="h5 fw-bold">
+                <h3 className="h5 fw-bold">{producto.nombre}</h3>
 
-                    {producto.nombre}
+                <p className="fw-bold">{precioFormateado}</p>
 
-                </h3>
+                <p className="card-text flex-grow-1">{producto.descripcion}</p>
 
-
-                <p className="fw-bold">
-
-                    {precioFormateado}
-
-                </p>
-
-
-                <p className="card-text flex-grow-1">
-
-                    {producto.descripcion}
-
-                </p>
-
-                <Link
-                    to={`/producto/${producto.id}`}
-                    className="btn btn-dark mt-auto"
-                >
+                <Link to={`/producto/${producto.id}`} className="btn btn-dark mt-auto">
                     Ver producto
                 </Link>
 
@@ -72,6 +34,5 @@ function ProductCard({
     );
 
 }
-
 
 export default ProductCard;
