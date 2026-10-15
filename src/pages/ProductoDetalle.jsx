@@ -6,6 +6,28 @@ import CantidadSelector from "../components/products/CantidadSelector";
 import ProductReviews from "../components/products/ProductReviews";
 import "../css/style_producto_detalle.css";
 
+function obtenerCarritoGuardado() {
+
+    try {
+
+        const guardado =
+            JSON.parse(
+                localStorage.getItem(
+                    "recta_carrito_invitado"
+                )
+            );
+
+        return Array.isArray(guardado)
+            ? guardado
+            : [];
+
+    } catch {
+
+        return [];
+
+    }
+
+}
 
 function ProductoDetalle() {
 
@@ -50,27 +72,8 @@ function ProductoDetalle() {
     // Añade el producto seleccionado al carrito
 function agregarCarrito() {
 
-    let carrito = [];
-
-    try {
-
-        const guardado =
-            JSON.parse(
-                localStorage.getItem(
-                    "recta_carrito_invitado"
-                )
-            );
-
-        carrito =
-            Array.isArray(guardado)
-                ? guardado
-                : [];
-
-    } catch {
-
-        carrito = [];
-
-    }
+    const carrito =
+        obtenerCarritoGuardado();
 
 
     const existente =
@@ -83,7 +86,10 @@ function agregarCarrito() {
     if (existente) {
 
         const cantidadActual =
-            Number(existente.cantidad) || 0;
+            Number(
+                existente.cantidad
+            ) || 0;
+
 
         existente.cantidad =
             Math.min(
@@ -121,6 +127,7 @@ function agregarCarrito() {
     alert(
         "Producto añadido al carrito"
     );
+
 }
 
     const tieneInformacionAdicional =
