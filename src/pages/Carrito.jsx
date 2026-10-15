@@ -1,49 +1,42 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 import { Link } from 'react-router-dom';
 import useTitulo from '../hooks/useTitulo';
+import useCart from "../hooks/useCart";
 
 function Carrito() {
     // Lógica
     useTitulo('Carro de Compras | Rectabags');
 
-    const [carrito, setCarrito] = useState(() => {
-        try {
-            const guardado = JSON.parse(localStorage.getItem('recta_carrito_invitado'));
-            return Array.isArray(guardado) ? guardado : [];
-        } catch {
-            return [];
-        }
-    });
+    const {
+        carrito,
+        cambiarCantidad,
+        eliminarProducto:
+            eliminarDelCarrito,
+        cantidadProductos,
+        subtotal
+    } = useCart();
 
     const [terminos, setTerminos] = useState(false);
     const [productoEliminar, setProductoEliminar] = useState(null);
     const [confirmarPago, setConfirmarPago] = useState(false);
 
-    // Guarda los cambios del carrito
-    useEffect(() => {
-    localStorage.setItem('recta_carrito_invitado', JSON.stringify(carrito));
-    window.dispatchEvent(new Event('carritoActualizado'));
-    }, [carrito]);
-
-    // Aumenta o disminuye las cantidades
-    function cambiarCantidad(id, cambio) {
-        setCarrito(actual => actual.map(item => {
-            if (item.id !== id) return item;
-
-            const cantidad = Number(item.cantidad) || 1;
-            const stock = item.stock == null ? 99 : Number(item.stock);
-
-            return {...item, cantidad: Math.max(1, Math.min(stock, cantidad + cambio))};
-        }));
-    }
-
     // Elimina el producto seleccionado
-    function eliminarProducto() {
-        if (!productoEliminar) return;
+    function confirmarEliminacion() {
 
-        setCarrito(actual => actual.filter(item => item.id !== productoEliminar.id));
+        if (!productoEliminar) {
+
+            return;
+
+        }
+
+
+        eliminarDelCarrito(
+            productoEliminar.id
+        );
+
+
         setProductoEliminar(null);
+
     }
 
     // Valida el carrito antes de pagar
@@ -66,8 +59,6 @@ function Carrito() {
         alert('PRUEBAAAAAAAA.');
     }
 
-    const cantidadProductos = carrito.reduce((total, item) => total + Number(item.cantidad), 0);
-    const subtotal = carrito.reduce((total, item) => total + Number(item.precio) * Number(item.cantidad), 0);
     const precio = valor => '$' + Number(valor).toLocaleString('es-CL');
 
     // Render
@@ -256,7 +247,7 @@ function Carrito() {
                                 <button type="button" className="btn btn-light flex-fill rounded-3"
                                     onClick={() => setProductoEliminar(null)}>Cancelar</button>
                                 <button type="button" className="btn btn-danger flex-fill rounded-3"
-                                    onClick={eliminarProducto}>Eliminar</button>
+                                    onClick={confirmarEliminacion}>Eliminar</button>
                             </div>
                         </div>
                     </div>
