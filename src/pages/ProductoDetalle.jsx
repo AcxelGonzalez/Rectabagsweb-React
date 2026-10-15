@@ -18,7 +18,7 @@ function ProductoDetalle() {
     if (!producto) {
 
         return (
-            <section className="container text-centerpy-5">
+            <section className="container text-center py-5">
                 <h1 className="fw-bold">
                     Producto no encontrado
                 </h1>
@@ -49,25 +49,78 @@ function ProductoDetalle() {
 
     // Añade el producto seleccionado al carrito
 function agregarCarrito() {
-    const carrito = JSON.parse(localStorage.getItem('recta_carrito_invitado')) || [];
-    const existente = carrito.find(item => item.id === producto.id);
+
+    let carrito = [];
+
+    try {
+
+        const guardado =
+            JSON.parse(
+                localStorage.getItem(
+                    "recta_carrito_invitado"
+                )
+            );
+
+        carrito =
+            Array.isArray(guardado)
+                ? guardado
+                : [];
+
+    } catch {
+
+        carrito = [];
+
+    }
+
+
+    const existente =
+        carrito.find(
+            (item) =>
+                item.id === producto.id
+        );
+
 
     if (existente) {
-        existente.cantidad = Math.min(existente.cantidad + cantidad, maximoCantidad);
+
+        const cantidadActual =
+            Number(existente.cantidad) || 0;
+
+        existente.cantidad =
+            Math.min(
+                cantidadActual + cantidad,
+                maximoCantidad
+            );
+
     } else {
+
         carrito.push({
             id: producto.id,
             nombre: producto.nombre,
             precio: producto.precio,
             imagen: producto.imagen,
-            cantidad: cantidad,
+            cantidad,
             stock: maximoCantidad
         });
+
     }
 
-    localStorage.setItem('recta_carrito_invitado', JSON.stringify(carrito));
-    window.dispatchEvent(new Event('carritoActualizado'));
-    alert('Producto añadido al carrito');
+
+    localStorage.setItem(
+        "recta_carrito_invitado",
+        JSON.stringify(carrito)
+    );
+
+
+    window.dispatchEvent(
+        new Event(
+            "carritoActualizado"
+        )
+    );
+
+
+    alert(
+        "Producto añadido al carrito"
+    );
 }
 
     const tieneInformacionAdicional =

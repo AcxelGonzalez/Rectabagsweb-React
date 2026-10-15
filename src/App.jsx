@@ -14,7 +14,7 @@ import TerminosRegistro from "./pages/TerminosRegistro";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import Carrito from "./pages/Carrito";
-import RecuperarConstrasena from "./pages/RecuperarContrasena";
+import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 
 function App() {
@@ -30,15 +30,15 @@ function App() {
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/contacto" element={<Contacto />} />
                     <Route path="/impacto-ambiental" element={<ImpactoAmbiental />} />
-                    <Route path="/QuienesSomos" element={<QuienesSomos />} />
+                    <Route path="/quienes-somos" element={<QuienesSomos />} />
                     <Route path="/terminos-compra" element={<TerminosCompra />} />
                     <Route path="/terminos-registro" element={<TerminosRegistro />} />
                     <Route path="/login" element={<Login/>} />
                     <Route path="/registro" element={<Registro/>} />
-                    <Route path="/recuperar-contrasena" element={<RecuperarConstrasena/>} />
+                    <Route path="/recuperar-contrasena" element={<RecuperarContrasena/>} />
                     <Route path="/carrito" element={<Carrito/>} />
-                    <Route path="/perfil" element={<PaginaEnConstruccion />} />
-                    <Route path="*" element={<PaginaEnConstruccion />} />
+                    <Route path="/perfil" element={<PaginaEnConstruccion titulo="Mi Perfil"/>} />
+                    <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
             </Routes>
         </BrowserRouter>

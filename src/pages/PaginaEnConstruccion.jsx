@@ -1,5 +1,5 @@
 function PaginaEnConstruccion({
-    titulo
+    titulo = "Página en construcción"
 }) {
 
     return (
