@@ -15,7 +15,7 @@ function Footer() {
                         <ul className="list-unstyled lh-lg">
                             <li><Link to="/QuienesSomos" className="text-white text-decoration-none">Sobre Nosotros</Link></li>
                             <li><Link to="/blog" className="text-white text-decoration-none">Blog</Link></li>
-                            <li><Link to="/Contacto" className="text-white text-decoration-none">Contáctanos</Link></li>
+                            <li><Link to="/contacto" className="text-white text-decoration-none">Contáctanos</Link></li>
                         </ul>
                         </div>
 

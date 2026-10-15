@@ -18,7 +18,7 @@ function ProductoDetalle() {
     if (!producto) {
 
         return (
-            <section className="containertext-centerpy-5">
+            <section className="container text-centerpy-5">
                 <h1 className="fw-bold">
                     Producto no encontrado
                 </h1>
