@@ -4,8 +4,8 @@ import { productos } from "../data/productos";
 import ProductGallery from "../components/products/ProductGallery";
 import CantidadSelector from "../components/products/CantidadSelector";
 import ProductReviews from "../components/products/ProductReviews";
+import useCart from "../hooks/useCart";
 import "../css/style_producto_detalle.css";
-
 
 function ProductoDetalle() {
 
@@ -13,12 +13,16 @@ function ProductoDetalle() {
 
     const [ cantidad, setCantidad ] = useState(1);
 
+    const {
+        agregarProducto
+    } = useCart();
+
     const producto = productos.find( (item) => item.id === Number(id));
 
     if (!producto) {
 
         return (
-            <section className="containertext-centerpy-5">
+            <section className="container text-center py-5">
                 <h1 className="fw-bold">
                     Producto no encontrado
                 </h1>
@@ -47,27 +51,18 @@ function ProductoDetalle() {
 
     const maximoCantidad = producto.stock ?? 10;
 
-    // Añade el producto seleccionado al carrito
-function agregarCarrito() {
-    const carrito = JSON.parse(localStorage.getItem('recta_carrito_invitado')) || [];
-    const existente = carrito.find(item => item.id === producto.id);
+function manejarAgregarCarrito() {
 
-    if (existente) {
-        existente.cantidad = Math.min(existente.cantidad + cantidad, maximoCantidad);
-    } else {
-        carrito.push({
-            id: producto.id,
-            nombre: producto.nombre,
-            precio: producto.precio,
-            imagen: producto.imagen,
-            cantidad: cantidad,
-            stock: maximoCantidad
-        });
-    }
+    agregarProducto(
+        producto,
+        cantidad
+    );
 
-    localStorage.setItem('recta_carrito_invitado', JSON.stringify(carrito));
-    window.dispatchEvent(new Event('carritoActualizado'));
-    alert('Producto añadido al carrito');
+
+    alert(
+        "Producto añadido al carrito"
+    );
+
 }
 
     const tieneInformacionAdicional =
@@ -130,8 +125,19 @@ function agregarCarrito() {
 
                                 <CantidadSelector cantidad={cantidad}onCambiar={setCantidad}maximo={maximoCantidad}/>
 
-                                <button type="button" className="btn btn-dark flex-grow-1 rounded-4 fw-bold"
-                                    onClick={agregarCarrito}>
+                                <button
+                                    type="button"
+                                    className="
+                                        btn
+                                        btn-dark
+                                        flex-grow-1
+                                        rounded-4
+                                        fw-bold
+                                    "
+                                    onClick={
+                                        manejarAgregarCarrito
+                                    }
+                                >
                                     Añadir al carrito
                                 </button>
                             </div>

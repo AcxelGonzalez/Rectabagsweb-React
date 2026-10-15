@@ -237,6 +237,15 @@ function Contacto() {
                                     </div>
                                 </form>
 
+                                {enviado && (
+                                    <div
+                                        className="alert alert-success mt-4"
+                                        role="status"
+                                    >
+                                        Tu mensaje fue enviado correctamente.
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     </div>

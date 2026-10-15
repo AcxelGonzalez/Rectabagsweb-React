@@ -100,7 +100,7 @@ function Header() {
                                 </li>
 
                                 <li className="nav-item">
-                                    <NavLink to="/QuienesSomos" className={claseNav} onClick={cerrarMenu}>
+                                    <NavLink to="/quienes-somos" className={claseNav} onClick={cerrarMenu}>
                                         Quiénes Somos
                                     </NavLink>
                                 </li>
