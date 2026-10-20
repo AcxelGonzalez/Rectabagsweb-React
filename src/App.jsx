@@ -16,6 +16,7 @@ import Registro from "./pages/Registro";
 import Carrito from "./pages/Carrito";
 import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
+import Perfil from "./pages/Perfil";
 
 function App() {
     return (
@@ -37,7 +38,7 @@ function App() {
                     <Route path="/registro" element={<Registro/>} />
                     <Route path="/recuperar-contrasena" element={<RecuperarContrasena/>} />
                     <Route path="/carrito" element={<Carrito/>} />
-                    <Route path="/perfil" element={<PaginaEnConstruccion titulo="Mi Perfil"/>} />
+                    <Route path="/perfil" element={<Perfil />} />
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
             </Routes>

@@ -368,17 +368,40 @@ function AuthProvider({
 
 
         const sesion = {
-            id: usuario.id,
+
+            id:
+                usuario.id,
+
             nombre:
                 usuario.nombre,
+
             apellido:
                 usuario.apellido,
+
+            fechaNacimiento:
+                usuario.fechaNacimiento || "",
+
             rut:
                 usuario.rut,
+
+            telefono:
+                usuario.telefono || "",
+
             correo:
                 usuario.correo,
+
+            region:
+                usuario.region || "",
+
+            comuna:
+                usuario.comuna || "",
+
+            direccion:
+                usuario.direccion || "",
+
             rol:
                 usuario.rol
+
         };
 
 
@@ -493,6 +516,125 @@ function AuthProvider({
 
     }
 
+    function actualizarPerfil(
+        datos
+    ) {
+
+        if (!usuarioActual) {
+
+            return {
+                ok: false,
+                mensaje:
+                    "Debes iniciar sesión para actualizar tu perfil."
+            };
+
+        }
+
+
+        const nombre =
+            String(
+                datos.nombre || ""
+            ).trim();
+
+        const apellido =
+            String(
+                datos.apellido || ""
+            ).trim();
+
+
+        if (
+            !nombre ||
+            !apellido
+        ) {
+
+            return {
+                ok: false,
+                mensaje:
+                    "Nombre y apellido son obligatorios."
+            };
+
+        }
+
+
+        const cambios = {
+
+            nombre,
+
+            apellido,
+
+            fechaNacimiento:
+                String(
+                    datos.fechaNacimiento || ""
+                ),
+
+            telefono:
+                String(
+                    datos.telefono || ""
+                ).trim(),
+
+            region:
+                String(
+                    datos.region || ""
+                ),
+
+            comuna:
+                String(
+                    datos.comuna || ""
+                ),
+
+            direccion:
+                String(
+                    datos.direccion || ""
+                ).trim()
+
+        };
+
+
+        setUsuarios(
+            (usuariosActuales) =>
+                usuariosActuales.map(
+                    (usuario) => {
+
+                        if (
+                            usuario.id !==
+                            usuarioActual.id
+                        ) {
+
+                            return usuario;
+
+                        }
+
+
+                        return {
+                            ...usuario,
+                            ...cambios
+                        };
+
+                    }
+                )
+        );
+
+
+        const sesionActualizada = {
+            ...usuarioActual,
+            ...cambios
+        };
+
+
+        setUsuarioActual(
+            sesionActualizada
+        );
+
+
+        return {
+            ok: true,
+            mensaje:
+                "Perfil actualizado correctamente.",
+            usuario:
+                sesionActualizada
+        };
+
+    }
 
     return (
 
@@ -510,7 +652,8 @@ function AuthProvider({
                 registrarUsuario,
                 iniciarSesion,
                 cerrarSesion,
-                recuperarContrasena
+                recuperarContrasena,
+                actualizarPerfil
             }}
         >
 
