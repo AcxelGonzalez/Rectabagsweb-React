@@ -1,36 +1,114 @@
+import {
+    useState
+} from "react";
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import useTitulo from "../hooks/useTitulo";
+import {
+    Link,
+    useNavigate
+} from "react-router-dom";
+
+import useTitulo
+    from "../hooks/useTitulo";
+
+import useAuth
+    from "../hooks/useAuth";
+
 import "../css/style_login.css";
 
+const FORMULARIO_INICIAL = {
+    correo: "",
+    contrasena: ""
+};
+
 function Login() {
-    // Lógica
-    useTitulo("Ingresa a tu cuenta | Rectabags");
 
-    const [datos, setDatos] = useState({
-        usuario: "",
-        contrasena: "",
-        recordarme: false
-    });
+    useTitulo(
+        "Iniciar sesión | Rectabags"
+    );
 
-    const [enviado, setEnviado] = useState(false);
 
-    // Actualiza los datos del formulario
-    function cambio(evento) {
-        const { name, value, type, checked } = evento.target;
+    const navigate =
+        useNavigate();
 
-        setDatos((anteriores) => ({
-            ...anteriores,
-            [name]: type === "checkbox" ? checked : value
-        }));
 
-        setEnviado(false);
+    const {
+        iniciarSesion
+    } = useAuth();
+
+
+    const [
+        formulario,
+        setFormulario
+    ] = useState(
+        FORMULARIO_INICIAL
+    );
+
+
+    const [
+        mensaje,
+        setMensaje
+    ] = useState(null);
+
+    function cambioFormulario(
+        evento
+    ) {
+
+        const {
+            name,
+            value
+        } = evento.target;
+
+
+        setFormulario(
+            (valores) => ({
+                ...valores,
+                [name]: value
+            })
+        );
+
+
+        if (mensaje) {
+
+            setMensaje(null);
+
+        }
+
     }
 
-    function envio(evento) {
+    function envio(
+        evento
+    ) {
+
         evento.preventDefault();
-        setEnviado(true);
+
+
+        const resultado =
+            iniciarSesion(
+                formulario.correo,
+                formulario.contrasena
+            );
+
+
+        if (!resultado.ok) {
+
+            setMensaje({
+                tipo: "danger",
+                texto:
+                    resultado.mensaje
+            });
+
+            return;
+
+        }
+
+
+        setFormulario(
+            FORMULARIO_INICIAL
+        );
+
+
+        navigate("/");
+
     }
 
     return (
@@ -59,11 +137,18 @@ function Login() {
                                     {/* usuario */}
                                     <div className="mb-3">
                                         <label htmlFor="email-login" className="form-label small text-secondary">
-                                            Correo electrónico o Usuario
+                                            Correo electrónico
                                         </label>
-                                        <input type="text" className="form-control rounded-0 border-dark"
-                                            id="email-login" name="usuario" autoComplete="username"
-                                            value={datos.usuario} onChange={cambio} required />
+                                        <input
+                                            type="email"
+                                            className="form-control rounded-0 border-dark"
+                                            id="email-login"
+                                            name="correo"
+                                            autoComplete="email"
+                                            value={formulario.correo}
+                                            onChange={cambioFormulario}
+                                            required
+                                        />
                                     </div>
 
                                     {/* contraseña */}
@@ -71,20 +156,20 @@ function Login() {
                                         <label htmlFor="pass-login" className="form-label small text-secondary">
                                             Contraseña
                                         </label>
-                                        <input type="password" className="form-control rounded-0 border-dark"
-                                            id="pass-login" name="contrasena" autoComplete="current-password"
-                                            value={datos.contrasena} onChange={cambio} required />
+                                        <input
+                                            type="password"
+                                            className="form-control rounded-0 border-dark"
+                                            id="pass-login"
+                                            name="contrasena"
+                                            autoComplete="current-password"
+                                            value={formulario.contrasena}
+                                            onChange={cambioFormulario}
+                                            required
+                                        />
                                     </div>
 
-                                    <div className="d-flex justify-content-between align-items-center mb-4 mt-2">
-                                        <div className="form-check">
-                                            <input type="checkbox" className="form-check-input border-dark rounded-0"
-                                                id="recordarme" name="recordarme"
-                                                checked={datos.recordarme} onChange={cambio} />
-                                            <label className="form-check-label small" htmlFor="recordarme">
-                                                Recuérdame
-                                            </label>
-                                        </div>
+                                    <div className="d-flex justify-content-end align-items-center mb-4 mt-2">
+                                        
 
                                         <Link to="/recuperar-contrasena" className="small text-secondary text-decoration-underline">
                                             ¿Olvidaste tu contraseña?
@@ -96,12 +181,17 @@ function Login() {
                                     </button>
                                 </form>
 
-                                {enviado && (
-                                    <div className="alert alert-info mt-4" role="status">
-                                        Formulario completado correctamente. El inicio de sesión
-                                        estará disponible cuando incorporemos la autenticación.
+                                {mensaje && (
+
+                                    <div
+                                        className={`alert alert-${mensaje.tipo} mt-4 mb-0`}
+                                        role="alert"
+                                    >
+                                        {mensaje.texto}
                                     </div>
+
                                 )}
+
                             </div>
                         </div>
                     </div>
