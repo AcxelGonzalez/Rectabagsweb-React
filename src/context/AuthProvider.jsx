@@ -164,6 +164,40 @@ function AuthProvider({
                 datos.rut
             );
 
+        const nombre =
+            String(
+                datos.nombre || ""
+            ).trim();
+
+        const apellido =
+            String(
+                datos.apellido || ""
+            ).trim();
+
+        const telefono =
+            String(
+                datos.telefono || ""
+            ).trim();
+
+
+        if (
+            !correo ||
+            !rut ||
+            !nombre ||
+            !apellido ||
+            !datos.fechaNacimiento ||
+            !telefono ||
+            !datos.contrasena
+        ) {
+
+            return {
+                ok: false,
+                mensaje:
+                    "Debes completar todos los campos obligatorios."
+            };
+
+        }
+
 
         const correoExiste =
             usuarios.some(
@@ -206,18 +240,41 @@ function AuthProvider({
 
 
         const nuevoUsuario = {
-            id: crypto.randomUUID(),
-            nombre:
-                datos.nombre.trim(),
-            apellido:
-                datos.apellido?.trim() || "",
+
+            id:
+                crypto.randomUUID(),
+
+            nombre,
+
+            apellido,
+
+            fechaNacimiento:
+                datos.fechaNacimiento,
+
             rut:
                 datos.rut.trim(),
+
+            telefono,
+
             correo,
+
             contrasena:
                 datos.contrasena,
+
+            region:
+                datos.region || "",
+
+            comuna:
+                datos.comuna || "",
+
+            direccion:
+                String(
+                    datos.direccion || ""
+                ).trim(),
+
             rol:
-                datos.rol || "cliente"
+                "cliente"
+
         };
 
 

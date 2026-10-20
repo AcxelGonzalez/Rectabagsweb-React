@@ -1,49 +1,155 @@
+import {
+    useState
+} from "react";
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import useTitulo from '../hooks/useTitulo';
-import '../css/style_login.css';
+import {
+    Link
+} from "react-router-dom";
+
+import useTitulo
+    from "../hooks/useTitulo";
+
+import useAuth
+    from "../hooks/useAuth";
+
+import "../css/style_login.css";
+
+const FORMULARIO_INICIAL = {
+
+    correo: "",
+    nombre: "",
+    apellido: "",
+    fechaNacimiento: "",
+    rut: "",
+    telefono: "",
+    contrasena: "",
+    confirmarContrasena: "",
+    region: "",
+    comuna: "",
+    direccion: "",
+    terminos: false
+
+};
 
 function Registro() {
     // Lógica
     useTitulo('Registra tu cuenta | Rectabags');
 
-    const [formulario, setFormulario] = useState({
-        correo: '',
-        nombre: '',
-        apellido: '',
-        fechaNacimiento: '',
-        rut: '',
-        telefono: '',
-        contrasena: '',
-        confirmarContrasena: '',
-        region: '',
-        comuna: '',
-        direccion: '',
-        terminos: false
-    });
+    const {
+        registrarUsuario
+    } = useAuth();
 
-    function cambioFormulario(e) {
-        const name = e.target.name;
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const [
+        formulario,
+        setFormulario
+    ] = useState(
+        FORMULARIO_INICIAL
+    );
 
-        setFormulario(values => ({...values, [name]: value}));
+    const [
+        mensaje,
+        setMensaje
+    ] = useState(null);
+
+    function cambioFormulario(
+        evento
+    ) {
+
+        const {
+            name,
+            type,
+            checked,
+            value
+        } = evento.target;
+
+
+        setFormulario(
+            (valores) => ({
+                ...valores,
+
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : value
+            })
+        );
+
+
+        if (mensaje) {
+
+            setMensaje(null);
+
+        }
+
     }
 
-    function envio(e) {
-        e.preventDefault();
+    function envio(
+        evento
+    ) {
 
-        if (formulario.contrasena !== formulario.confirmarContrasena) {
-            alert('Las contraseñas no coinciden');
+        evento.preventDefault();
+
+
+        if (
+            formulario.contrasena !==
+            formulario.confirmarContrasena
+        ) {
+
+            setMensaje({
+                tipo: "danger",
+                texto:
+                    "Las contraseñas no coinciden."
+            });
+
             return;
+
         }
+
 
         if (!formulario.terminos) {
-            alert('Debes aceptar los términos y condiciones');
+
+            setMensaje({
+                tipo: "danger",
+                texto:
+                    "Debes aceptar los términos y condiciones."
+            });
+
             return;
+
         }
 
-        alert('TODAVIA ES UNA DEMOSTRACIOOOOOOOON.');
+
+        const resultado =
+            registrarUsuario(
+                formulario
+            );
+
+
+        if (!resultado.ok) {
+
+            setMensaje({
+                tipo: "danger",
+                texto:
+                    resultado.mensaje
+            });
+
+            return;
+
+        }
+
+
+        setMensaje({
+            tipo: "success",
+            texto:
+                resultado.mensaje +
+                " Ya puedes iniciar sesión."
+        });
+
+
+        setFormulario(
+            FORMULARIO_INICIAL
+        );
+
     }
 
     // Render
@@ -63,6 +169,7 @@ function Registro() {
                     <div className="col-lg-7 col-md-9">
                         <div className="card border-0 shadow-sm p-4 p-md-5 rounded-4 bg-white">
                             <div className="card-body p-0">
+                                
                                 <h2 className="titulo-mono h3 mb-4 text-start">REGÍSTRATE</h2>
 
                                 <form id="form-registro" onSubmit={envio}>
@@ -195,6 +302,18 @@ function Registro() {
                                     </div>
 
                                 </form>
+
+                                {mensaje && (
+
+                                    <div
+                                        className={`alert alert-${mensaje.tipo} mt-4 mb-0`}
+                                        role="alert"
+                                    >
+                                        {mensaje.texto}
+                                    </div>
+
+                                )}
+                                
                             </div>
                         </div>
                     </div>
