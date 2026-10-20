@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { Link } from 'react-router-dom';
+import {
+    Link,
+    useNavigate
+} from "react-router-dom";
 import useTitulo from '../hooks/useTitulo';
 import useCart from "../hooks/useCart";
 
 function Carrito() {
     // Lógica
     useTitulo('Carro de Compras | Rectabags');
+
+    const navigate =
+        useNavigate(); 
 
     const {
         carrito,
@@ -18,7 +24,6 @@ function Carrito() {
 
     const [terminos, setTerminos] = useState(false);
     const [productoEliminar, setProductoEliminar] = useState(null);
-    const [confirmarPago, setConfirmarPago] = useState(false);
 
     // Elimina el producto seleccionado
     function confirmarEliminacion() {
@@ -41,22 +46,18 @@ function Carrito() {
 
     // Valida el carrito antes de pagar
     function procederPago() {
-        if (carrito.length === 0) {
-            alert('Tu carrito está vacío');
-            return;
-        }
 
         if (!terminos) {
-            alert('Debes aceptar los términos y condiciones');
+
             return;
+
         }
 
-        setConfirmarPago(true);
-    }
 
-    function finalizarCompra() {
-        setConfirmarPago(false);
-        alert('PRUEBAAAAAAAA.');
+        navigate(
+            "/checkout"
+        );
+
     }
 
     const precio = valor => '$' + Number(valor).toLocaleString('es-CL');
@@ -172,15 +173,25 @@ function Carrito() {
                                     </div>
 
                                     <div className="d-flex justify-content-between mb-4">
-                                        <span className="text-secondary">Envío</span>
-                                        <span className="text-secondary small">Por calcular</span>
+                                        <span className="text-secondary">
+                                            Despacho
+                                        </span>
+
+                                        <span className="text-secondary small">
+                                            A coordinar
+                                        </span>
                                     </div>
 
                                     <hr className="mb-4" />
 
                                     <div className="d-flex justify-content-between align-items-center mb-4">
-                                        <span className="fw-bold fs-5">Subtotal</span>
-                                        <span className="fw-bold fs-4">{precio(subtotal)}</span>
+                                        <span className="fw-bold fs-5">
+                                            Total productos
+                                        </span>
+
+                                        <span className="fw-bold fs-4">
+                                            {precio(subtotal)}
+                                        </span>
                                     </div>
 
                                     {/* Términos y condiciones */}
@@ -196,29 +207,38 @@ function Carrito() {
                                         </label>
                                     </div>
 
-                                    <button type="button" className="btn btn-dark w-100 py-3 rounded-4 fw-bold"
-                                        onClick={procederPago} disabled={carrito.length === 0}>
-                                        Proceder al pago →
+                                    <button
+                                        type="button"
+                                        className="btn btn-dark w-100 fw-bold"
+                                        onClick={procederPago}
+                                        disabled={
+                                            !terminos ||
+                                            carrito.length === 0
+                                        }
+                                    >
+                                        Proceder al pago
                                     </button>
 
                                     <p className="small text-secondary text-center mt-3 mb-4">
-                                        Los gastos de envío se calcularán antes de finalizar la compra.
+                                        El costo de despacho no está incluido y se coordinará posteriormente según la dirección ingresada.
                                     </p>
 
                                     {/* Medios de pago */}
                                     <div className="border-top pt-3 text-center">
                                         <p className="small text-secondary mb-2">Medios de pago</p>
                                         <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span className="badge bg-light text-dark border">Mastercard</span>
-                                            <span className="badge bg-light text-dark border">VISA</span>
-                                            <span className="badge bg-light text-dark border">Webpay</span>
-                                            <span className="badge bg-light text-dark border">Mercado Pago</span>
+
+                                            <span className="badge bg-light text-dark border">
+                                                Transferencia bancaria
+                                            </span>
+
+                                            <span className="badge bg-light text-dark border">
+                                                Tarjeta simulada
+                                            </span>
+
                                         </div>
                                     </div>
 
-                                    <p className="text-center text-secondary mt-3 mb-0" style={{ fontSize: '0.72rem' }}>
-                                        ESTO SIGUE SIENDO UNA PRUEBA
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -248,36 +268,6 @@ function Carrito() {
                                     onClick={() => setProductoEliminar(null)}>Cancelar</button>
                                 <button type="button" className="btn btn-danger flex-fill rounded-3"
                                     onClick={confirmarEliminacion}>Eliminar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Confirmación de compra */}
-            {confirmarPago && (
-                <div className="modal d-block" tabIndex={-1} role="dialog" aria-modal="true"
-                    aria-labelledby="tituloPago" style={{ backgroundColor: 'rgba(0,0,0,0.55)' }}>
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content rounded-4 border-0 p-3 shadow">
-                            <div className="modal-header border-0 pb-0">
-                                <h2 className="modal-title h5 fw-bold" id="tituloPago">Finalizar compra</h2>
-                                <button type="button" className="btn-close" aria-label="Cerrar"
-                                    onClick={() => setConfirmarPago(false)} />
-                            </div>
-                            <div className="modal-body py-3">
-                                <p className="text-secondary mb-2">
-                                    ¿Deseas continuar con la compra por <strong>{precio(subtotal)}</strong>?
-                                </p>
-                                <p className="small text-secondary mb-0">
-                                    PRUEBA
-                                </p>
-                            </div>
-                            <div className="modal-footer border-0 pt-0 d-flex gap-2">
-                                <button type="button" className="btn btn-outline-secondary flex-fill rounded-3"
-                                    onClick={() => setConfirmarPago(false)}>Cancelar</button>
-                                <button type="button" className="btn btn-dark flex-fill rounded-3"
-                                    onClick={finalizarCompra}>Continuar</button>
                             </div>
                         </div>
                     </div>

@@ -6,6 +6,9 @@ import {
 import CartContext
     from "./CartContext";
 
+import {
+    obtenerStockValido
+} from "../utils/stock";
 
 const CLAVE_CARRITO =
     "recta_carrito_invitado";
@@ -117,12 +120,13 @@ function CartProvider({
 
 
         const stockProducto =
-            Math.max(
-                1,
-                Number(
-                    producto.stock ?? 10
-                ) || 10
+            obtenerStockValido(
+                producto.stock
             );
+        
+        if (stockProducto === 0) {
+            return false;
+        }
 
 
         setCarrito(
@@ -158,12 +162,8 @@ function CartProvider({
 
 
                             const stock =
-                                Math.max(
-                                    1,
-                                    Number(
-                                        item.stock ??
-                                        stockProducto
-                                    ) ||
+                                obtenerStockValido(
+                                    item.stock,
                                     stockProducto
                                 );
 
@@ -215,7 +215,8 @@ function CartProvider({
 
             }
         );
-
+        
+        return true;
     }
 
 
@@ -245,13 +246,13 @@ function CartProvider({
 
 
                         const stock =
-                            Math.max(
-                                1,
-                                Number(
-                                    item.stock ?? 10
-                                ) || 10
+                            obtenerStockValido(
+                                item.stock
                             );
 
+                        if (stock === 0) {
+                            return item;
+                        }
 
                         const nuevaCantidad =
                             Math.max(

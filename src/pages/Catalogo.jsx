@@ -1,6 +1,14 @@
-import { useState } from "react";
+import {
+    useState
+} from "react";
 
-import { productos } from "../data/productos";
+import {
+    useSearchParams
+} from "react-router-dom";
+
+import {
+    productos
+} from "../data/productos";
 
 import ProductCard
     from "../components/products/ProductCard";
@@ -8,74 +16,121 @@ import ProductCard
 import ProductFilter
     from "../components/products/ProductFilter";
 
+import useTitulo
+    from "../hooks/useTitulo";
+
 import "../css/style_catalogo.css";
-import useTitulo from "../hooks/useTitulo";
+
 
 function Catalogo() {
-    useTitulo("Explora nuestro catálogo | Rectabags");
+
+    useTitulo(
+        "Explora nuestro catálogo | Rectabags"
+    );
+
 
     const [
         categoria,
         setCategoria
     ] = useState("todos");
 
+
     const [
-        busqueda,
-        setBusqueda
-    ] = useState("");
-
-    const productosFiltrados =
-    productos.filter(
-        (producto) => {
-
-            const coincideCategoria =
-                categoria === "todos" ||
-                producto.categoria ===
-                    categoria;
+        searchParams,
+        setSearchParams
+    ] = useSearchParams();
 
 
-            const coincideBusqueda =
-                producto.nombre
-                    .toLowerCase()
-                    .includes(
-                        busqueda
-                            .toLowerCase()
-                            .trim()
-                    );
+    const busqueda =
+        searchParams.get(
+            "buscar"
+        ) || "";
 
 
-            return (
-                coincideCategoria &&
-                coincideBusqueda
-            );
+    const textoBusqueda =
+        busqueda
+            .toLowerCase()
+            .trim();
+
+
+    function cambiarBusqueda(
+        evento
+    ) {
+
+        const valor =
+            evento.target.value;
+
+
+        if (!valor.trim()) {
+
+            setSearchParams({});
+
+            return;
 
         }
-    );
+
+
+        setSearchParams({
+            buscar:
+                valor
+        });
+
+    }
+
+
+    const productosFiltrados =
+        productos.filter(
+            (producto) => {
+
+                const coincideCategoria =
+                    categoria === "todos" ||
+                    producto.categoria ===
+                        categoria;
+
+
+                const coincideBusqueda =
+                    producto.nombre
+                        .toLowerCase()
+                        .includes(
+                            textoBusqueda
+                        );
+
+
+                return (
+                    coincideCategoria &&
+                    coincideBusqueda
+                );
+
+            }
+        );
+
 
     return (
 
         <section className="catalogo-page py-5">
+
             <div className="container">
+
                 <h1 className="fw-bold text-center mb-5">
-
                     Catálogo
-
                 </h1>
 
+
                 <div className="catalogo-search mb-4">
+
                     <input
                         type="search"
                         className="form-control"
                         placeholder="Buscar productos..."
+                        aria-label="Buscar productos"
                         value={busqueda}
                         onChange={
-                            (evento) =>
-                                setBusqueda(
-                                    evento.target.value
-                                )
+                            cambiarBusqueda
                         }
                     />
+
                 </div>
+
 
                 <ProductFilter
                     categoria={categoria}
@@ -84,19 +139,15 @@ function Catalogo() {
                     }
                 />
 
+
                 <div className="row g-4">
+
                     {
                         productosFiltrados.length === 0 && (
 
                             <div className="col-12">
 
-                                <p
-                                    className="
-                                        text-center
-                                        text-secondary
-                                        py-5
-                                    "
-                                >
+                                <p className="text-center text-secondary py-5">
 
                                     No se encontraron productos.
 
@@ -106,18 +157,23 @@ function Catalogo() {
 
                         )
                     }
-                    
+
+
                     {
                         productosFiltrados.map(
                             (producto) => (
 
                                 <div
                                     className="col-12 col-md-6 col-lg-4"
-                                    key={producto.id}
+                                    key={
+                                        producto.id
+                                    }
                                 >
 
                                     <ProductCard
-                                        producto={producto}
+                                        producto={
+                                            producto
+                                        }
                                     />
 
                                 </div>
@@ -127,7 +183,9 @@ function Catalogo() {
                     }
 
                 </div>
+
             </div>
+
         </section>
 
     );

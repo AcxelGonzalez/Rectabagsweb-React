@@ -71,7 +71,13 @@ function Blog() {
                             <span className="badge bg-dark text-white rounded-pill px-3 py-2 mb-3 fw-bold">{destacado.categoria}</span>
                             <h2 className="h1 fw-bold text-dark mb-3 titulo-mono">{destacado.titulo}</h2>
                             <p className="text-secondary mb-4 lh-lg">{destacado.resumen}</p>
-                            <a href="#" className="btn btn-dark px-4 py-2 rounded-0 fw-bold">Leer artículo completo ➔</a>
+                            <button
+                                type="button"
+                                className="btn btn-dark px-4 py-2 rounded-0 fw-bold"
+                                disabled
+                            >
+                                Artículo próximamente
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -93,18 +99,17 @@ function Blog() {
                                     </span>
                                     <h3 className="h5 fw-bold text-dark mb-2">{articulo.titulo}</h3>
                                     <p className="small text-secondary flex-grow-1 mb-4">{articulo.resumen}</p>
-                                    <a href="#" className="text-dark fw-bold text-decoration-underline mt-auto">Leer más</a>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link text-dark fw-bold text-decoration-underline p-0 text-start mt-auto"
+                                        disabled
+                                    >
+                                        Artículo próximamente
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     ))}
-                </div>
-
-                {/* Paginación simple */}
-                <div className="row mt-5">
-                    <div className="col-12 d-flex justify-content-center">
-                        <button className="btn btn-outline-dark rounded-pill px-4 fw-bold">Cargar más artículos</button>
-                    </div>
                 </div>
 
             </div>

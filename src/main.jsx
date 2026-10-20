@@ -17,6 +17,8 @@ import App
 import CartProvider
     from "./context/CartProvider.jsx";
 
+import AuthProvider
+    from "./context/AuthProvider.jsx";
 
 createRoot(
     document.getElementById("root")
@@ -24,11 +26,15 @@ createRoot(
 
     <StrictMode>
 
-        <CartProvider>
+        <AuthProvider>
 
-            <App />
+            <CartProvider>
 
-        </CartProvider>
+                <App />
+
+            </CartProvider>
+
+        </AuthProvider>
 
     </StrictMode>,
 

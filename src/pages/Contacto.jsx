@@ -23,16 +23,35 @@ function Contacto() {
             [name]: value
         }));
 
-        setEnviado(false);
+        if (enviado) {
+
+            setEnviado(
+                false
+            );
+
+        }
     }
 
     // Captura los datos del formulario
-    function envio(evento) {
+    function envio(
+        evento
+    ) {
+
         evento.preventDefault();
 
-        console.log("Datos del formulario:", datos);
 
-        setEnviado(true);
+        setEnviado(
+            true
+        );
+
+
+        setDatos({
+            nombre: "",
+            correo: "",
+            asunto: "",
+            mensaje: ""
+        });
+
     }
 
     return (
@@ -238,12 +257,14 @@ function Contacto() {
                                 </form>
 
                                 {enviado && (
+
                                     <div
                                         className="alert alert-success mt-4"
                                         role="status"
                                     >
-                                        Tu mensaje fue enviado correctamente.
+                                        Tu mensaje fue registrado correctamente en esta demostración.
                                     </div>
+
                                 )}
 
                             </div>
