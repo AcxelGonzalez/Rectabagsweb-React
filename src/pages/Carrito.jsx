@@ -224,9 +224,6 @@ function Carrito() {
                                         </div>
                                     </div>
 
-                                    <p className="text-center text-secondary mt-3 mb-0" style={{ fontSize: '0.72rem' }}>
-                                        ESTO SIGUE SIENDO UNA PRUEBA
-                                    </p>
                                 </div>
                             </div>
                         </div>
