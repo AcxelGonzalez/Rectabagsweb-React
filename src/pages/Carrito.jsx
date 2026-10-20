@@ -173,15 +173,25 @@ function Carrito() {
                                     </div>
 
                                     <div className="d-flex justify-content-between mb-4">
-                                        <span className="text-secondary">Envío</span>
-                                        <span className="text-secondary small">Por calcular</span>
+                                        <span className="text-secondary">
+                                            Despacho
+                                        </span>
+
+                                        <span className="text-secondary small">
+                                            A coordinar
+                                        </span>
                                     </div>
 
                                     <hr className="mb-4" />
 
                                     <div className="d-flex justify-content-between align-items-center mb-4">
-                                        <span className="fw-bold fs-5">Subtotal</span>
-                                        <span className="fw-bold fs-4">{precio(subtotal)}</span>
+                                        <span className="fw-bold fs-5">
+                                            Total productos
+                                        </span>
+
+                                        <span className="fw-bold fs-4">
+                                            {precio(subtotal)}
+                                        </span>
                                     </div>
 
                                     {/* Términos y condiciones */}
@@ -210,17 +220,22 @@ function Carrito() {
                                     </button>
 
                                     <p className="small text-secondary text-center mt-3 mb-4">
-                                        Los gastos de envío se calcularán antes de finalizar la compra.
+                                        El costo de despacho no está incluido y se coordinará posteriormente según la dirección ingresada.
                                     </p>
 
                                     {/* Medios de pago */}
                                     <div className="border-top pt-3 text-center">
                                         <p className="small text-secondary mb-2">Medios de pago</p>
                                         <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            <span className="badge bg-light text-dark border">Mastercard</span>
-                                            <span className="badge bg-light text-dark border">VISA</span>
-                                            <span className="badge bg-light text-dark border">Webpay</span>
-                                            <span className="badge bg-light text-dark border">Mercado Pago</span>
+
+                                            <span className="badge bg-light text-dark border">
+                                                Transferencia bancaria
+                                            </span>
+
+                                            <span className="badge bg-light text-dark border">
+                                                Tarjeta simulada
+                                            </span>
+
                                         </div>
                                     </div>
 

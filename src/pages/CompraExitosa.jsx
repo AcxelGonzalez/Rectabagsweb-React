@@ -103,7 +103,7 @@ function CompraExitosa() {
                                             <p className="mb-0">
 
                                                 <strong>
-                                                    Total:
+                                                    Total productos:
                                                 </strong>{" "}
 
                                                 {
@@ -112,6 +112,10 @@ function CompraExitosa() {
                                                     )
                                                 }
 
+                                            </p>
+
+                                            <p className="small text-secondary mt-3 mb-0">
+                                                El despacho se coordinará posteriormente según los datos ingresados en la compra.
                                             </p>
 
                                         </div>

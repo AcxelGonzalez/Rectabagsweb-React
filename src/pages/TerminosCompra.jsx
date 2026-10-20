@@ -8,15 +8,15 @@ const secciones = [
     },
     {
         titulo: '2. Métodos de Pago',
-        texto: 'Aceptamos pagos electrónicos a través de tarjetas de débito, crédito (Mastercard, VISA) y pasarelas de pago habilitadas (Webpay, Mercado Pago). Los datos financieros no son almacenados en nuestros servidores locales.',
+        texto: 'En esta versión del proyecto, el checkout permite seleccionar transferencia bancaria o tarjeta bancaria simulada. No se realizan cargos reales ni se almacenan datos financieros o bancarios del usuario.',
     },
     {
         titulo: '3. Tiempos y Costos de Envío',
-        texto: 'Los envíos se gestionan según la dirección y región ingresadas por el usuario. Los plazos estimados de entrega se calcularán al momento de procesar la orden y la información detallada del envío podrá ser consultada en el historial de pedidos de tu perfil.',
+        texto: 'El costo de despacho no está incluido en el total de productos mostrado durante el checkout. El despacho será coordinado posteriormente según la dirección, comuna y región ingresadas por el comprador.',
     },
     {
         titulo: '4. Garantía y Cambios',
-        texto: 'Todo producto cuenta con garantía legal en caso de fallas de fabricación. Para solicitar un cambio o devolución, el cliente debe presentar su número de orden (ORD-XXXXXX) e iniciar la solicitud mediante nuestro canal formal de atención al cliente.',
+        texto: 'Todo producto cuenta con garantía legal en caso de fallas de fabricación. Para solicitar un cambio o devolución, el cliente debe presentar el número de compra generado por Rectabags, identificado con el prefijo RB-, e iniciar la solicitud mediante nuestro canal formal de atención al cliente.',
     },
 ];
 

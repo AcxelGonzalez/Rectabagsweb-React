@@ -579,7 +579,7 @@ function Checkout() {
                                                 </option>
 
                                                 <option value="tarjeta-simulada">
-                                                    Tarjeta — pago simulado
+                                                    Tarjeta bancaria — simulación
                                                 </option>
 
                                             </select>
@@ -692,7 +692,7 @@ function Checkout() {
                                 <div className="d-flex justify-content-between fs-5 mt-3">
 
                                     <strong>
-                                        Total
+                                        Total productos
                                     </strong>
 
                                     <strong>
@@ -704,6 +704,13 @@ function Checkout() {
                                     </strong>
 
                                 </div>
+
+
+                                <p className="small text-secondary mt-3 mb-0">
+
+                                    El costo de despacho no está incluido y se coordinará posteriormente.
+
+                                </p>
 
                             </div>
 
