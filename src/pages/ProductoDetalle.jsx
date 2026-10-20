@@ -6,6 +6,7 @@ import CantidadSelector from "../components/products/CantidadSelector";
 import ProductReviews from "../components/products/ProductReviews";
 import useCart from "../hooks/useCart";
 import "../css/style_producto_detalle.css";
+import { obtenerStockValido } from "../utils/stock";
 
 function ProductoDetalle() {
 
@@ -49,14 +50,33 @@ function ProductoDetalle() {
 
     const imagenes =producto.imagenes?.length? producto.imagenes: [producto.imagen];
 
-    const maximoCantidad = producto.stock ?? 10;
+    const maximoCantidad =
+        obtenerStockValido(
+            producto.stock
+        );
+
+
+    const sinStock =
+        maximoCantidad === 0;
 
 function manejarAgregarCarrito() {
 
-    agregarProducto(
-        producto,
-        cantidad
-    );
+    const agregado =
+        agregarProducto(
+            producto,
+            cantidad
+        );
+
+
+    if (!agregado) {
+
+        alert(
+            "Este producto no tiene stock disponible."
+        );
+
+        return;
+
+    }
 
 
     alert(
@@ -121,34 +141,65 @@ function manejarAgregarCarrito() {
 
                             {/* CANTIDAD */}
 
-                            <div className="d-flex flex-column flex-sm-row gap-2 mb-3">
+                            {
+                                sinStock ? (
 
-                                <CantidadSelector cantidad={cantidad}onCambiar={setCantidad}maximo={maximoCantidad}/>
+                                    <div
+                                        className="alert alert-warning mb-3"
+                                        role="alert"
+                                    >
+                                        Producto actualmente sin stock.
+                                    </div>
 
-                                <button
-                                    type="button"
-                                    className="
-                                        btn
-                                        btn-dark
-                                        flex-grow-1
-                                        rounded-4
-                                        fw-bold
-                                    "
-                                    onClick={
-                                        manejarAgregarCarrito
-                                    }
-                                >
-                                    Añadir al carrito
-                                </button>
-                            </div>
+                                ) : (
 
-                            {producto.stock !== undefined && (
+                                    <div className="d-flex flex-column flex-sm-row gap-2 mb-3">
 
-                                    <p className="small">
+                                        <CantidadSelector
+                                            cantidad={cantidad}
+                                            onCambiar={setCantidad}
+                                            maximo={maximoCantidad}
+                                        />
+
+
+                                        <button
+                                            type="button"
+                                            className="
+                                                btn
+                                                btn-dark
+                                                flex-grow-1
+                                                rounded-4
+                                                fw-bold
+                                            "
+                                            onClick={
+                                                manejarAgregarCarrito
+                                            }
+                                        >
+                                            Añadir al carrito
+                                        </button>
+
+                                    </div>
+
+                                )
+                            }
+
+                            {
+                                producto.stock !== undefined && (
+
+                                    <p
+                                        className={
+                                            sinStock
+                                                ? "small text-danger fw-bold"
+                                                : "small"
+                                        }
+                                    >
+
                                         <strong>
                                             Stock disponible:
                                         </strong>{" "}
-                                        {producto.stock}
+
+                                        {maximoCantidad}
+
                                     </p>
 
                                 )
