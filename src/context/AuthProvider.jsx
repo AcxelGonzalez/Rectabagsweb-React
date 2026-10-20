@@ -6,6 +6,9 @@ import {
 import AuthContext
     from "./AuthContext";
 
+import {
+    usuariosIniciales
+} from "../data/usuariosIniciales";
 
 const CLAVE_USUARIOS =
     "recta_usuarios";
@@ -42,6 +45,39 @@ function normalizarRut(
 
 }
 
+function agregarUsuariosIniciales(
+    usuariosGuardados
+) {
+
+    const usuarios =
+        Array.isArray(
+            usuariosGuardados
+        )
+            ? usuariosGuardados
+            : [];
+
+
+    const usuariosFaltantes =
+        usuariosIniciales.filter(
+            (usuarioInicial) =>
+                !usuarios.some(
+                    (usuarioGuardado) =>
+                        normalizarCorreo(
+                            usuarioGuardado.correo
+                        ) ===
+                        normalizarCorreo(
+                            usuarioInicial.correo
+                        )
+                )
+        );
+
+
+    return [
+        ...usuarios,
+        ...usuariosFaltantes
+    ];
+
+}
 
 function leerUsuariosGuardados() {
 
@@ -55,15 +91,15 @@ function leerUsuariosGuardados() {
             );
 
 
-        return Array.isArray(
+        return agregarUsuariosIniciales(
             usuarios
-        )
-            ? usuarios
-            : [];
+        );
 
     } catch {
 
-        return [];
+        return agregarUsuariosIniciales(
+            []
+        );
 
     }
 
@@ -468,6 +504,9 @@ function AuthProvider({
                     Boolean(
                         usuarioActual
                     ),
+                esAdmin:
+                    usuarioActual?.rol === 
+                    "admin",
                 registrarUsuario,
                 iniciarSesion,
                 cerrarSesion,
