@@ -5,6 +5,7 @@ import ProductGallery from "../components/products/ProductGallery";
 import CantidadSelector from "../components/products/CantidadSelector";
 import ProductReviews from "../components/products/ProductReviews";
 import useCart from "../hooks/useCart";
+import useTitulo from "../hooks/useTitulo";
 import "../css/style_producto_detalle.css";
 import { obtenerStockValido } from "../utils/stock";
 
@@ -19,6 +20,12 @@ function ProductoDetalle() {
     } = useCart();
 
     const producto = productos.find( (item) => item.id === Number(id));
+
+    useTitulo(
+        producto
+            ? `${producto.nombre} | Rectabags`
+            : "Producto no encontrado | Rectabags"
+    );
 
     if (!producto) {
 
