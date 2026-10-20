@@ -17,6 +17,9 @@ import Carrito from "./pages/Carrito";
 import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 import Perfil from "./pages/Perfil";
+import Checkout from "./pages/Checkout";
+import CompraExitosa from "./pages/CompraExitosa";
+import CompraError from "./pages/CompraError";
 
 function App() {
     return (
@@ -39,6 +42,9 @@ function App() {
                     <Route path="/recuperar-contrasena" element={<RecuperarContrasena/>} />
                     <Route path="/carrito" element={<Carrito/>} />
                     <Route path="/perfil" element={<Perfil />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/compra-exitosa" element={<CompraExitosa />} />
+                    <Route path="/compra-error" element={<CompraError />} />
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
             </Routes>
