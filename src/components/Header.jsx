@@ -45,6 +45,38 @@ function Header() {
 
         evento.preventDefault();
 
+
+        const formulario =
+            new FormData(
+                evento.currentTarget
+            );
+
+
+        const busqueda =
+            String(
+                formulario.get(
+                    "buscar"
+                ) || ""
+            ).trim();
+
+
+        if (!busqueda) {
+
+            navigate(
+                "/catalogo"
+            );
+
+            return;
+
+        }
+
+
+        navigate(
+            `/catalogo?buscar=${encodeURIComponent(
+                busqueda
+            )}`
+        );
+
     };
 
 
@@ -128,6 +160,7 @@ function Header() {
 
                             <input
                                 id="input-buscar"
+                                name="buscar"
                                 className="header-search-input form-control form-control-sm me-2 bg-dark border-secondary text-white d-none d-md-block"
                                 type="search"
                                 placeholder="Buscar..."
