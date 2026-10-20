@@ -1,9 +1,6 @@
 const CLAVE_COMPRAS =
     "recta_compras";
 
-const CLAVE_ULTIMA_COMPRA =
-    "recta_ultima_compra";
-
 
 function leerCompras() {
 
@@ -60,38 +57,32 @@ export function guardarCompra(
     );
 
 
-    localStorage.setItem(
-        CLAVE_ULTIMA_COMPRA,
-        JSON.stringify(compra)
-    );
-
-
     return compra;
 
 }
 
 
-export function leerUltimaCompra() {
+export function leerCompraPorId(
+    compraId
+) {
 
-    try {
-
-        const compra =
-            JSON.parse(
-                localStorage.getItem(
-                    CLAVE_ULTIMA_COMPRA
-                )
-            );
-
-
-        return compra &&
-            typeof compra === "object"
-            ? compra
-            : null;
-
-    } catch {
+    if (!compraId) {
 
         return null;
 
     }
+
+
+    const compras =
+        leerCompras();
+
+
+    return (
+        compras.find(
+            (compra) =>
+                compra.id ===
+                compraId
+        ) || null
+    );
 
 }

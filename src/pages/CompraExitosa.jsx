@@ -1,12 +1,14 @@
 import {
-    Link
+    Link,
+    Navigate,
+    useLocation
 } from "react-router-dom";
 
 import useTitulo
     from "../hooks/useTitulo";
 
 import {
-    leerUltimaCompra
+    leerCompraPorId
 } from "../services/compraService";
 
 
@@ -17,8 +19,30 @@ function CompraExitosa() {
     );
 
 
+    const location =
+        useLocation();
+
+
+    const compraId =
+        location.state?.compraId;
+
+
     const compra =
-        leerUltimaCompra();
+        leerCompraPorId(
+            compraId
+        );
+
+
+    if (!compraId || !compra) {
+
+        return (
+            <Navigate
+                to="/catalogo"
+                replace
+            />
+        );
+
+    }
 
 
     function formatearPrecio(
@@ -71,57 +95,54 @@ function CompraExitosa() {
                                 </p>
 
 
-                                {
-                                    compra && (
+                                <div className="bg-light rounded-4 p-4 my-4 text-start">
 
-                                        <div className="bg-light rounded-4 p-4 my-4 text-start">
+                                    <p className="mb-2">
 
-                                            <p className="mb-2">
+                                        <strong>
+                                            Número de compra:
+                                        </strong>{" "}
 
-                                                <strong>
-                                                    Número de compra:
-                                                </strong>{" "}
+                                        {compra.id}
 
-                                                {compra.id}
-
-                                            </p>
+                                    </p>
 
 
-                                            <p className="mb-2">
+                                    <p className="mb-2">
 
-                                                <strong>
-                                                    Productos:
-                                                </strong>{" "}
+                                        <strong>
+                                            Productos:
+                                        </strong>{" "}
 
-                                                {
-                                                    compra.cantidadProductos
-                                                }
+                                        {
+                                            compra.cantidadProductos
+                                        }
 
-                                            </p>
+                                    </p>
 
 
-                                            <p className="mb-0">
+                                    <p className="mb-0">
 
-                                                <strong>
-                                                    Total productos:
-                                                </strong>{" "}
+                                        <strong>
+                                            Total productos:
+                                        </strong>{" "}
 
-                                                {
-                                                    formatearPrecio(
-                                                        compra.subtotal
-                                                    )
-                                                }
+                                        {
+                                            formatearPrecio(
+                                                compra.subtotal
+                                            )
+                                        }
 
-                                            </p>
+                                    </p>
 
-                                            <p className="small text-secondary mt-3 mb-0">
-                                                El despacho se coordinará posteriormente según los datos ingresados en la compra.
-                                            </p>
 
-                                        </div>
+                                    <p className="small text-secondary mt-3 mb-0">
 
-                                    )
-                                }
+                                        El despacho se coordinará posteriormente según los datos ingresados en la compra.
+
+                                    </p>
+
+                                </div>
 
 
                                 <div className="d-flex flex-column flex-sm-row justify-content-center gap-2">
