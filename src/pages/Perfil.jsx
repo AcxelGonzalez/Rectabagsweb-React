@@ -12,6 +12,10 @@ import useAuth
 import useTitulo
     from "../hooks/useTitulo";
 
+import {
+    REGIONES,
+    obtenerComunas
+} from "../data/regionesComunas";    
 
 function Perfil() {
 
@@ -97,10 +101,15 @@ function Perfil() {
         setFormulario(
             (valores) => ({
                 ...valores,
-                [name]: value
+                [name]: value,
+
+                // Si cambia la región, la comuna anterior
+                // ya no corresponde y se borra.
+                ...(name === "region"
+                    ? { comuna: "" }
+                    : {})
             })
         );
-
 
         if (mensaje) {
 
@@ -384,24 +393,22 @@ function Perfil() {
                                                 Región
                                             </label>
 
-                                            <select
-                                                id="perfil-region"
-                                                name="region"
-                                                className="form-select"
-                                                value={
-                                                    formulario.region
-                                                }
-                                                onChange={
-                                                    cambioFormulario
-                                                }
-                                                disabled
-                                            >
-
-                                                <option value="">
-                                                    Selecciona una región
+                                        <select
+                                            id="perfil-region"
+                                            name="region"
+                                            className="form-select"
+                                            value={formulario.region}
+                                            onChange={cambioFormulario}
+                                        >
+                                            <option value="">
+                                                Selecciona una región
+                                            </option>
+                                            {REGIONES.map((region) => (
+                                                <option key={region.nombre} value={region.nombre}>
+                                                    {region.nombre}
                                                 </option>
-
-                                            </select>
+                                            ))}
+                                        </select>
 
                                         </div>
 
@@ -415,24 +422,23 @@ function Perfil() {
                                                 Comuna
                                             </label>
 
-                                            <select
-                                                id="perfil-comuna"
-                                                name="comuna"
-                                                className="form-select"
-                                                value={
-                                                    formulario.comuna
-                                                }
-                                                onChange={
-                                                    cambioFormulario
-                                                }
-                                                disabled
-                                            >
-
-                                                <option value="">
-                                                    Selecciona una comuna
+                                        <select
+                                            id="perfil-comuna"
+                                            name="comuna"
+                                            className="form-select"
+                                            value={formulario.comuna}
+                                            onChange={cambioFormulario}
+                                            disabled={!formulario.region}
+                                        >
+                                            <option value="">
+                                                Selecciona una comuna
+                                            </option>
+                                            {obtenerComunas(formulario.region).map((comuna) => (
+                                                <option key={comuna} value={comuna}>
+                                                    {comuna}
                                                 </option>
-
-                                            </select>
+                                            ))}
+                                        </select>
 
                                         </div>
 
