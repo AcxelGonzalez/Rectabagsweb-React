@@ -6,7 +6,7 @@ export const usuariosIniciales = [
         fechaNacimiento: "",
         rut: "11111111-1",
         telefono: "",
-        correo: "admin@rectabags.cl",
+        correo: "admin@duoc.cl",
         contrasena: "Admin123!",
         region: "",
         comuna: "",

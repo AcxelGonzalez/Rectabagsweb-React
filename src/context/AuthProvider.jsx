@@ -10,6 +10,15 @@ import {
     usuariosIniciales
 } from "../data/usuariosIniciales";
 
+import {
+    validarCorreo,
+    validarRut,
+    validarContrasena,
+    validarFechaNacimiento,
+    validarTelefono
+} from "../utils/validaciones";
+
+
 const CLAVE_USUARIOS =
     "recta_usuarios";
 
@@ -233,7 +242,28 @@ function AuthProvider({
             };
 
         }
+          
+        const errores = [
+            validarCorreo(correo),
+            validarRut(datos.rut),
+            validarFechaNacimiento(datos.fechaNacimiento),
+            validarTelefono(telefono),
+            validarContrasena(datos.contrasena)
+        ];
 
+        const primerError =
+            errores.find(
+                (error) => error !== null
+            );
+
+        if (primerError) {
+
+            return {
+                ok: false,
+                mensaje: primerError
+            };
+
+        }
 
         const correoExiste =
             usuarios.some(
@@ -343,6 +373,18 @@ function AuthProvider({
                 correo
             );
 
+        const errorLogin =
+            validarCorreo(correoNormalizado) ||
+            validarContrasena(contrasena);
+
+        if (errorLogin) {
+
+            return {
+                ok: false,
+                mensaje: errorLogin
+            };
+
+        }
 
         const usuario =
             usuarios.find(
