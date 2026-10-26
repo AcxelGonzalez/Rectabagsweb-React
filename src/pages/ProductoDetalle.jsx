@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { productos } from "../data/productos";
+import useProducts from "../hooks/useProducts";
 import ProductGallery from "../components/products/ProductGallery";
 import CantidadSelector from "../components/products/CantidadSelector";
 import ProductReviews from "../components/products/ProductReviews";
@@ -19,7 +19,9 @@ function ProductoDetalle() {
         agregarProducto
     } = useCart();
 
-    const producto = productos.find( (item) => item.id === Number(id));
+    const { obtenerProducto } = useProducts();
+
+    const producto = obtenerProducto(id);
 
     useTitulo(
         producto

@@ -6,9 +6,8 @@ import {
     useSearchParams
 } from "react-router-dom";
 
-import {
-    productos
-} from "../data/productos";
+import useProducts
+    from "../hooks/useProducts";
 
 import ProductCard
     from "../components/products/ProductCard";
@@ -29,13 +28,17 @@ function Catalogo() {
     );
 
 
+    const {
+        productos
+    } = useProducts();
+
+
     const [
         categoria,
         setCategoria
     ] = useState("todos");
 
-
-    const [
+        const [
         searchParams,
         setSearchParams
     ] = useSearchParams();
