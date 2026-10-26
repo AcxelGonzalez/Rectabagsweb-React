@@ -20,6 +20,9 @@ import CartProvider
 import AuthProvider
     from "./context/AuthProvider.jsx";
 
+import ProductProvider
+    from "./context/ProductProvider.jsx";
+
 createRoot(
     document.getElementById("root")
 ).render(
@@ -28,11 +31,15 @@ createRoot(
 
         <AuthProvider>
 
-            <CartProvider>
+            <ProductProvider>
 
-                <App />
+                <CartProvider>
 
-            </CartProvider>
+                    <App />
+
+                </CartProvider>
+
+            </ProductProvider>
 
         </AuthProvider>
 

@@ -14,6 +14,11 @@ import useAuth
 
 import "../css/style_login.css";
 
+import {
+    REGIONES,
+    obtenerComunas
+} from "../data/regionesComunas";
+
 const FORMULARIO_INICIAL = {
 
     correo: "",
@@ -70,7 +75,13 @@ function Registro() {
                 [name]:
                     type === "checkbox"
                         ? checked
-                        : value
+                        : value,
+
+                // Si cambia la región, la comuna elegida
+                // ya no es válida y se borrara.
+                ...(name === "region"
+                    ? { comuna: "" }
+                    : {})
             })
         );
 
@@ -258,16 +269,27 @@ function Registro() {
                                             <label htmlFor="region" className="form-label small fw-semibold">Región</label>
                                             <select className="form-select rounded-3 border-secondary-subtle py-2"
                                                 id="region" name="region" value={formulario.region}
-                                                onChange={cambioFormulario} disabled>
+                                                onChange={cambioFormulario}>
                                                 <option value="">Selecciona una región</option>
+                                                {REGIONES.map((region) => (
+                                                    <option key={region.nombre} value={region.nombre}>
+                                                        {region.nombre}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className="col-md-6">
                                             <label htmlFor="comuna" className="form-label small fw-semibold">Comuna</label>
                                             <select className="form-select rounded-3 border-secondary-subtle py-2"
                                                 id="comuna" name="comuna" value={formulario.comuna}
-                                                onChange={cambioFormulario} disabled>
+                                                onChange={cambioFormulario}
+                                                disabled={!formulario.region}>
                                                 <option value="">Selecciona una comuna</option>
+                                                {obtenerComunas(formulario.region).map((comuna) => (
+                                                    <option key={comuna} value={comuna}>
+                                                        {comuna}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>

@@ -20,6 +20,10 @@ import {
     guardarCompra
 } from "../services/compraService";
 
+import {
+    REGIONES,
+    obtenerComunas
+} from "../data/regionesComunas";
 
 function crearFormularioInicial(
     usuario
@@ -131,10 +135,12 @@ function Checkout() {
         setFormulario(
             (valores) => ({
                 ...valores,
-                [name]: value
+                [name]: value,
+                ...(name === "region"
+                    ? { comuna: "" }
+                    : {})
             })
         );
-
 
         if (mensaje) {
 
@@ -505,19 +511,23 @@ function Checkout() {
                                                 Región
                                             </label>
 
-                                            <input
-                                                type="text"
+                                            <select
                                                 id="checkout-region"
                                                 name="region"
-                                                className="form-control"
-                                                value={
-                                                    formulario.region
-                                                }
-                                                onChange={
-                                                    cambioFormulario
-                                                }
+                                                className="form-select"
+                                                value={formulario.region}
+                                                onChange={cambioFormulario}
                                                 required
-                                            />
+                                            >
+                                                <option value="">
+                                                    Selecciona una región
+                                                </option>
+                                                {REGIONES.map((region) => (
+                                                    <option key={region.nombre} value={region.nombre}>
+                                                        {region.nombre}
+                                                    </option>
+                                                ))}
+                                            </select>
 
                                         </div>
 
@@ -530,20 +540,24 @@ function Checkout() {
                                             >
                                                 Comuna
                                             </label>
-
-                                            <input
-                                                type="text"
+                                            <select
                                                 id="checkout-comuna"
                                                 name="comuna"
-                                                className="form-control"
-                                                value={
-                                                    formulario.comuna
-                                                }
-                                                onChange={
-                                                    cambioFormulario
-                                                }
+                                                className="form-select"
+                                                value={formulario.comuna}
+                                                onChange={cambioFormulario}
+                                                disabled={!formulario.region}
                                                 required
-                                            />
+                                            >
+                                                <option value="">
+                                                    Selecciona una comuna
+                                                </option>
+                                                {obtenerComunas(formulario.region).map((comuna) => (
+                                                    <option key={comuna} value={comuna}>
+                                                        {comuna}
+                                                    </option>
+                                                ))}
+                                            </select>
 
                                         </div>
 
