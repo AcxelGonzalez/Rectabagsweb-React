@@ -136,3 +136,138 @@ export function validarTelefono(telefono) {
     return null;
 
 }
+
+
+/*
+ * Validaciones del formulario de productos (panel administrador).
+ * Siguen la misma convención: null = válido, texto = mensaje de error.
+ */
+
+export const CATEGORIAS_PRODUCTO = [
+    "mochilas",
+    "cilindros",
+    "musette",
+    "otros"
+];
+
+
+export function validarNombreProducto(nombre) {
+
+    const valor = String(nombre || "").trim();
+
+    if (!valor) {
+        return "Ingresa el nombre del producto.";
+    }
+
+    if (valor.length < 3) {
+        return "El nombre debe tener al menos 3 caracteres.";
+    }
+
+    if (valor.length > 60) {
+        return "El nombre no puede superar los 60 caracteres.";
+    }
+
+    return null;
+
+}
+
+
+export function validarPrecioProducto(precio) {
+
+    if (precio === undefined || precio === null || precio === "") {
+        return "Ingresa el precio del producto.";
+    }
+
+    const valor = Number(precio);
+
+    if (!Number.isFinite(valor)) {
+        return "El precio debe ser un número.";
+    }
+
+    if (valor <= 0) {
+        return "El precio debe ser mayor que 0.";
+    }
+
+    return null;
+
+}
+
+
+export function validarStockProducto(stock) {
+
+    if (stock === undefined || stock === null || stock === "") {
+        return "Ingresa el stock del producto.";
+    }
+
+    const valor = Number(stock);
+
+    if (!Number.isFinite(valor)) {
+        return "El stock debe ser un número.";
+    }
+
+    if (valor < 0) {
+        return "El stock no puede ser negativo.";
+    }
+
+    if (!Number.isInteger(valor)) {
+        return "El stock debe ser un número entero.";
+    }
+
+    return null;
+
+}
+
+
+export function validarCategoriaProducto(categoria) {
+
+    const valor = String(categoria || "").trim().toLowerCase();
+
+    if (!valor) {
+        return "Selecciona una categoría.";
+    }
+
+    if (!CATEGORIAS_PRODUCTO.includes(valor)) {
+        return "La categoría seleccionada no es válida.";
+    }
+
+    return null;
+
+}
+
+
+export function validarDescripcionProducto(descripcion) {
+
+    const valor = String(descripcion || "").trim();
+
+    if (!valor) {
+        return "Ingresa una descripción del producto.";
+    }
+
+    if (valor.length < 10) {
+        return "La descripción debe tener al menos 10 caracteres.";
+    }
+
+    return null;
+
+}
+
+
+/*
+ * Valida un producto completo y devuelve el primer error encontrado.
+ * Se usa tanto en el formulario del panel como en la capa de datos.
+ */
+export function validarProducto(datos) {
+
+    const producto = datos || {};
+
+    const errores = [
+        validarNombreProducto(producto.nombre),
+        validarCategoriaProducto(producto.categoria),
+        validarPrecioProducto(producto.precio),
+        validarStockProducto(producto.stock),
+        validarDescripcionProducto(producto.descripcion)
+    ];
+
+    return errores.find((error) => error !== null) || null;
+
+}

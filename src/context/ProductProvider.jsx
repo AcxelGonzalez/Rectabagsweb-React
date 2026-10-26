@@ -7,7 +7,12 @@ import ProductContext
     from "./ProductContext";
 
 import {
-    productos as productosIniciales
+    productos as productosIniciales,
+    obtenerProductoPorId,
+    obtenerProductosPorCategoria,
+    crearProducto as crearProductoEnLista,
+    actualizarProducto as actualizarProductoEnLista,
+    eliminarProducto as eliminarProductoDeLista
 } from "../data/productos";
 
 
@@ -76,12 +81,123 @@ function ProductProvider({
      */
     function obtenerProducto(id) {
 
-        return (
-            productos.find(
-                (producto) =>
-                    producto.id === Number(id)
-            ) || null
+        return obtenerProductoPorId(
+            productos,
+            id
         );
+
+    }
+
+
+    /*
+     * Devuelve los productos de una categoría.
+     * "todos" entrega la lista completa.
+     */
+    function obtenerPorCategoria(categoria) {
+
+        return obtenerProductosPorCategoria(
+            productos,
+            categoria
+        );
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------------
+     * Operaciones del panel de administración
+     * ---------------------------------------------------------------
+     *
+     * Cada función delega la lógica y las validaciones en las
+     * funciones puras de data/productos.js. Aquí solo se guarda la
+     * lista nueva en el estado cuando la operación resultó correcta;
+     * el useEffect de arriba se encarga de la persistencia.
+     *
+     * Devuelven { ok, mensaje, producto } para que la vista muestre
+     * el aviso de éxito o el error sin conocer los detalles.
+     */
+
+    function guardarResultado(resultado) {
+
+        if (resultado.ok) {
+
+            setProductos(
+                resultado.productos
+            );
+
+        }
+
+
+        return {
+            ok:
+                resultado.ok,
+            mensaje:
+                resultado.mensaje,
+            producto:
+                resultado.producto || null
+        };
+
+    }
+
+
+    function crearProducto(datos) {
+
+        return guardarResultado(
+            crearProductoEnLista(
+                productos,
+                datos
+            )
+        );
+
+    }
+
+
+    function actualizarProducto(
+        id,
+        cambios
+    ) {
+
+        return guardarResultado(
+            actualizarProductoEnLista(
+                productos,
+                id,
+                cambios
+            )
+        );
+
+    }
+
+
+    function eliminarProducto(id) {
+
+        return guardarResultado(
+            eliminarProductoDeLista(
+                productos,
+                id
+            )
+        );
+
+    }
+
+
+    /*
+     * Vuelve al catálogo original de productos.js.
+     * Sirve para dejar la tienda como estaba después de hacer
+     * pruebas en el panel de administración.
+     */
+    function restaurarProductos() {
+
+        setProductos(
+            productosIniciales
+        );
+
+
+        return {
+            ok: true,
+            mensaje:
+                "Catálogo restaurado correctamente.",
+            producto: null
+        };
 
     }
 
@@ -91,7 +207,14 @@ function ProductProvider({
         <ProductContext.Provider
             value={{
                 productos,
-                obtenerProducto
+                totalProductos:
+                    productos.length,
+                obtenerProducto,
+                obtenerPorCategoria,
+                crearProducto,
+                actualizarProducto,
+                eliminarProducto,
+                restaurarProductos
             }}
         >
 

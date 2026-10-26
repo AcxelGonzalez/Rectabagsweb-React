@@ -24,7 +24,6 @@ describe(
                 globalThis
                     .IS_REACT_ACT_ENVIRONMENT =
                     true;
-
             }
         );
 
@@ -37,12 +36,9 @@ describe(
                         "div"
                     );
 
-
                 document.body.appendChild(
                     contenedor
                 );
-
-
                 raiz =
                     createRoot(
                         contenedor
@@ -57,12 +53,9 @@ describe(
 
                 act(
                     () => {
-
                         raiz.unmount();
-
                     }
                 );
-
 
                 contenedor.remove();
 
@@ -75,7 +68,6 @@ describe(
 
                 delete globalThis
                     .IS_REACT_ACT_ENVIRONMENT;
-
             }
         );
 
@@ -111,13 +103,11 @@ describe(
 
                 renderizarFiltro();
 
-
                 const botones =
                     contenedor
                         .querySelectorAll(
                             "button"
                         );
-
 
                 expect(
                     botones.length
@@ -135,7 +125,6 @@ describe(
                     "mochilas"
                 );
 
-
                 const botones =
                     Array.from(
                         contenedor
@@ -143,7 +132,6 @@ describe(
                                 "button"
                             )
                     );
-
 
                 const botonMochilas =
                     botones.find(
@@ -175,7 +163,6 @@ describe(
                     jasmine.createSpy(
                         "onCategoriaChange"
                     );
-
 
                 renderizarFiltro(
                     "todos",
