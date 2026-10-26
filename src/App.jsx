@@ -17,6 +17,7 @@ import Carrito from "./pages/Carrito";
 import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 import Perfil from "./pages/Perfil";
+import Ofertas from "./pages/Ofertas";
 import Checkout from "./pages/Checkout";
 import CompraExitosa from "./pages/CompraExitosa";
 import CompraError from "./pages/CompraError";
@@ -30,6 +31,7 @@ function App() {
                 <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/catalogo" element={<Catalogo />} />
+                    <Route path="/ofertas" element={<Ofertas />} />
                     <Route path="/producto/:id" element={<ProductoDetalle />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/contacto" element={<Contacto />} />

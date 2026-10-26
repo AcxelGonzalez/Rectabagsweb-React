@@ -48,13 +48,18 @@ function ProductoDetalle() {
         );
     }
 
+    const formatoCLP = { style: "currency", currency: "CLP" };
+
+    const tieneOferta =
+        producto.precioOferta &&
+        producto.precioOferta < producto.precio;
+
     const precioFormateado =
-        producto.precio.toLocaleString("es-CL",
-            {
-                style: "currency",
-                currency: "CLP"
-            }
-        );
+        producto.precio.toLocaleString("es-CL", formatoCLP);
+
+    const precioOfertaFormateado = tieneOferta
+        ? producto.precioOferta.toLocaleString("es-CL", formatoCLP)
+        : null;
 
 
     const imagenes =producto.imagenes?.length? producto.imagenes: [producto.imagen];
@@ -130,9 +135,20 @@ function manejarAgregarCarrito() {
                                 {producto.nombre}
                             </h1>
 
-                            <p className="display-6 fw-bold text-dark mb-4">
-                                {precioFormateado}
-                            </p>
+                            {tieneOferta ? (
+                                <p className="mb-4">
+                                    <span className="fs-4 text-decoration-line-through text-secondary me-3">
+                                        {precioFormateado}
+                                    </span>
+                                    <span className="display-6 fw-bold text-danger">
+                                        {precioOfertaFormateado}
+                                    </span>
+                                </p>
+                            ) : (
+                                <p className="display-6 fw-bold text-dark mb-4">
+                                    {precioFormateado}
+                                </p>
+                            )}
 
                             {/* DESCRIPCIÓN */}
 

@@ -197,8 +197,8 @@ function CartProvider({
                             producto.nombre,
 
                         precio:
-                            producto.precio,
-
+                            producto.precioOferta || producto.precio,
+                            
                         imagen:
                             producto.imagen,
 

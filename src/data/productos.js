@@ -120,6 +120,7 @@ export const productos = [
         nombre: "Musette",
         categoria: "musette",
         precio: 18000,
+        precioOferta: 14990,
 
         descripcion:
             "Bolso ligero inspirado en las clásicas musette de ciclismo.",
@@ -203,6 +204,8 @@ export const productos = [
         nombre: "Hippouch porta U-Lock",
         categoria: "otros",
         precio: 40000,
+        precioOferta: 34990,
+        
         descripcion:
             "Hippouch porta U-Lock customizable de Rectabags.",
         descripcionCompleta:
