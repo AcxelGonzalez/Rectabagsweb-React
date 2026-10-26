@@ -47,7 +47,7 @@ describe(
                 "912345678",
 
             correo:
-                "cliente@test.cl",
+                "cliente@gmail.com",
 
             contrasena:
                 "Clave123!",
@@ -213,7 +213,7 @@ describe(
                     authApi.usuarios.find(
                         (usuario) =>
                             usuario.correo ===
-                            "admin@rectabags.cl"
+                            "admin@duoc.cl"
                     );
 
 
@@ -256,7 +256,7 @@ describe(
                 expect(
                     resultado.usuario.correo
                 ).toBe(
-                    "cliente@test.cl"
+                    "cliente@gmail.com"
                 );
 
 
@@ -294,7 +294,7 @@ describe(
                                     ...datosCliente,
 
                                     correo:
-                                        "  CLIENTE@TEST.CL  "
+                                        "  CLIENTE@gmail.com  "
                                 });
 
                     }
@@ -309,7 +309,7 @@ describe(
                 expect(
                     resultado.usuario.correo
                 ).toBe(
-                    "cliente@test.cl"
+                    "cliente@gmail.com"
                 );
 
             }
@@ -341,7 +341,7 @@ describe(
                                         "99.999.999-9",
 
                                     correo:
-                                        "  CLIENTE@TEST.CL "
+                                        "  CLIENTE@gmail.com "
                                 });
 
                     }
@@ -385,7 +385,7 @@ describe(
                                     ...datosCliente,
 
                                     correo:
-                                        "otro@test.cl",
+                                        "otro@gmail.com",
 
                                     rut:
                                         "12345678-5"
@@ -419,7 +419,7 @@ describe(
 
                 const resultado =
                     authApi.iniciarSesion(
-                        "usuario@inexistente.cl",
+                        "noexiste@gmail.com",
                         "incorrecta"
                     );
 
@@ -461,7 +461,7 @@ describe(
                         resultadoLogin =
                             authApi
                                 .iniciarSesion(
-                                    "CLIENTE@TEST.CL",
+                                    "CLIENTE@gmail.com",
                                     "Clave123!"
                                 );
 
@@ -482,7 +482,7 @@ describe(
                 expect(
                     authApi.usuarioActual.correo
                 ).toBe(
-                    "cliente@test.cl"
+                    "cliente@gmail.com"
                 );
 
 
@@ -518,7 +518,7 @@ describe(
                         resultado =
                             authApi
                                 .iniciarSesion(
-                                    "admin@rectabags.cl",
+                                    "admin@duoc.cl",
                                     "Admin123!"
                                 );
 
@@ -563,7 +563,7 @@ describe(
 
                         authApi
                             .iniciarSesion(
-                                "admin@rectabags.cl",
+                                "admin@duoc.cl",
                                 "Admin123!"
                             );
 
@@ -627,7 +627,7 @@ describe(
                         resultado =
                             authApi
                                 .recuperarContrasena(
-                                    "cliente@test.cl",
+                                    "cliente@gmail.com",
                                     "99.999.999-9",
                                     "Nueva123!"
                                 );
@@ -663,9 +663,9 @@ describe(
                         recuperacion =
                             authApi
                                 .recuperarContrasena(
-                                    "CLIENTE@TEST.CL",
+                                    "CLIENTE@gmail.com",
                                     "123456785",
-                                    "NuevaClave123!"
+                                    "Nueva1234"
                                 );
 
                     }
@@ -679,7 +679,7 @@ describe(
 
                 const loginAnterior =
                     authApi.iniciarSesion(
-                        "cliente@test.cl",
+                        "cliente@gmail.com",
                         "Clave123!"
                     );
 
@@ -698,8 +698,8 @@ describe(
                         loginNuevo =
                             authApi
                                 .iniciarSesion(
-                                    "cliente@test.cl",
-                                    "NuevaClave123!"
+                                    "cliente@gmail.com",
+                                    "Nueva1234"
                                 );
 
                     }
@@ -766,7 +766,7 @@ describe(
 
                         authApi
                             .iniciarSesion(
-                                "cliente@test.cl",
+                                "cliente@gmail.com",
                                 "Clave123!"
                             );
 
@@ -868,7 +868,7 @@ describe(
 
                         authApi
                             .iniciarSesion(
-                                "cliente@test.cl",
+                                "cliente@gmail.com",
                                 "Clave123!"
                             );
 
@@ -896,7 +896,7 @@ describe(
                     usuariosGuardados.some(
                         (usuario) =>
                             usuario.correo ===
-                            "cliente@test.cl"
+                            "cliente@gmail.com"
                     )
                 ).toBe(true);
 
@@ -904,7 +904,7 @@ describe(
                 expect(
                     sesionGuardada.correo
                 ).toBe(
-                    "cliente@test.cl"
+                    "cliente@gmail.com"
                 );
 
 

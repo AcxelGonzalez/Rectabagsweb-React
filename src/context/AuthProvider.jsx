@@ -477,6 +477,17 @@ function AuthProvider({
         rut,
         nuevaContrasena
     ) {
+        const errorContrasena =
+            validarContrasena(nuevaContrasena);
+
+        if (errorContrasena) {
+
+            return {
+                ok: false,
+                mensaje: errorContrasena
+            };
+
+        }
 
         const correoNormalizado =
             normalizarCorreo(
@@ -568,6 +579,24 @@ function AuthProvider({
                 ok: false,
                 mensaje:
                     "Debes iniciar sesión para actualizar tu perfil."
+            };
+
+        }        
+        const telefonoPerfil =
+            String(datos.telefono || "").trim();
+
+        const fechaPerfil =
+            String(datos.fechaNacimiento || "");
+
+        const errorPerfil =
+            (telefonoPerfil && validarTelefono(telefonoPerfil)) ||
+            (fechaPerfil && validarFechaNacimiento(fechaPerfil));
+
+        if (errorPerfil) {
+
+            return {
+                ok: false,
+                mensaje: errorPerfil
             };
 
         }
