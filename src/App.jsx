@@ -11,6 +11,7 @@ import Contacto from "./pages/Contacto";
 import QuienesSomos from "./pages/QuienesSomos";
 import TerminosCompra from "./pages/TerminosCompra";
 import TerminosRegistro from "./pages/TerminosRegistro";
+import AdminPanel from "./pages/admin/AdminPanel";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import Carrito from "./pages/Carrito";
@@ -47,6 +48,7 @@ function App() {
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/compra-exitosa" element={<CompraExitosa />} />
                     <Route path="/compra-error" element={<CompraError />} />
+                    <Route path="/admin" element={<AdminPanel />} />
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
             </Routes>

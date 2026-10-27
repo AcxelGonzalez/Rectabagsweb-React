@@ -496,12 +496,14 @@ function Header() {
                                         {
                                             usuarioActual.rol ===
                                                 "admin" && (
-
-                                                <div className="text-warning fw-bold small px-3 mb-2">
-
-                                                    Administrador
-
-                                                </div>
+                                                    
+                                                <NavLink
+                                                    to="/admin"
+                                                    className="nav-link text-warning fw-bold"
+                                                    onClick={cerrarMenu}
+                                                >
+                                                    Panel de administración
+                                                </NavLink>
 
                                             )
                                         }
