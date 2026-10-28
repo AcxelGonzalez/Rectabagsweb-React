@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ActualizarTop from "./components/ActualizarTop";
 
+import RutaAdmin from "./components/RutaAdmin";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Catalogo from "./pages/Catalogo";
@@ -59,15 +60,18 @@ function App() {
                     <Route path="/compra-exitosa" element={<CompraExitosa />} />
                     <Route path="/compra-error" element={<CompraError />} />
 
-                    <Route path="/admin" element={<AdminPanel />} />
-                    <Route path="/admin/productos" element={<AdminProductos />} />
-                    <Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
-                    <Route path="/admin/productos/:id/editar" element={<AdminProductoForm />} />
-                    <Route path="/admin/usuarios" element={<AdminUsuarios />} />
-                    <Route path="/admin/usuarios/:id/editar" element={<AdminUsuarioForm />} />
-                    <Route path="/admin/ordenes" element={<AdminOrdenes />} />
-                    <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
-                    <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
+                    {/* AQUI SOLO ENTRA DIOS */}
+                    <Route element={<RutaAdmin />}>
+                        <Route path="/admin" element={<AdminPanel />} />
+                        <Route path="/admin/productos" element={<AdminProductos />} />
+                        <Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
+                        <Route path="/admin/productos/:id/editar" element={<AdminProductoForm />} />
+                        <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+                        <Route path="/admin/usuarios/:id/editar" element={<AdminUsuarioForm />} />
+                        <Route path="/admin/ordenes" element={<AdminOrdenes />} />
+                        <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
+                        <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
+                    </Route>
 
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
