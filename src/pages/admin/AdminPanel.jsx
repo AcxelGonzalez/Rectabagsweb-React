@@ -1,6 +1,7 @@
 import useAuth from "../../hooks/useAuth";
 import useProducts from "../../hooks/useProducts";
 import { Link } from "react-router-dom";
+import { leerCompras } from "../../services/compraService";
 import useTitulo from "../../hooks/useTitulo";
 
 function AdminPanel() {
@@ -26,7 +27,7 @@ function AdminPanel() {
 
                 <div className="row g-4">
 
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-4">
                         <div className="card border-0 shadow-sm rounded-4 h-100">
                             <div className="card-body p-4">
                                 <h2 className="h5 fw-bold">Productos</h2>
@@ -43,7 +44,7 @@ function AdminPanel() {
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-4">
                         <div className="card border-0 shadow-sm rounded-4 h-100">
                             <div className="card-body p-4">
                                 <h2 className="h5 fw-bold">Usuarios</h2>
@@ -53,8 +54,25 @@ function AdminPanel() {
                                 <p className="text-secondary">
                                     usuarios registrados
                                 </p>
-                                <Link to="/admin/usuarios" className="btn btn-dark">
+                               <Link to="/admin/usuarios" className="btn btn-dark">
                                     Administrar usuarios
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-12 col-md-4">
+                        <div className="card border-0 shadow-sm rounded-4 h-100">
+                            <div className="card-body p-4">
+                                <h2 className="h5 fw-bold">Órdenes</h2>
+                                <p className="display-6 fw-bold mb-0">
+                                    {leerCompras().length}
+                                </p>
+                                <p className="text-secondary">
+                                    compras realizadas
+                                </p>
+                                <Link to="/admin/ordenes" className="btn btn-dark">
+                                    Ver órdenes
                                 </Link>
                             </div>
                         </div>

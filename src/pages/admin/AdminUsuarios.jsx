@@ -94,7 +94,13 @@ function AdminUsuarios() {
                                             </span>
                                         </td>
 
-                                        <td className="text-end">
+                                          <td className="text-end">
+                                            <Link
+                                                to={`/admin/usuarios/${usuario.id}/compras`}
+                                                className="btn btn-sm btn-outline-secondary me-2"
+                                            >
+                                                Compras
+                                            </Link>
                                             <Link
                                                 to={`/admin/usuarios/${usuario.id}/editar`}
                                                 className="btn btn-sm btn-outline-dark me-2"

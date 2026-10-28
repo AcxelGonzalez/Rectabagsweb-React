@@ -2,7 +2,7 @@ const CLAVE_COMPRAS =
     "recta_compras";
 
 
-function leerCompras() {
+export function leerCompras() {
 
     try {
 
