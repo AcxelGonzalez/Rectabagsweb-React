@@ -72,6 +72,8 @@ export function leerCompraPorId(
 
     }
 
+    
+    
 
     const compras =
         leerCompras();
@@ -84,5 +86,73 @@ export function leerCompraPorId(
                 compraId
         ) || null
     );
+
+}
+
+
+
+/*
+ * Estados posibles de una compra, en orden.
+ */
+export const ESTADOS_COMPRA = [
+    "confirmada",
+    "en preparación",
+    "enviada",
+    "entregada",
+    "cancelada"
+];
+
+
+/*
+ * Color de Bootstrap para mostrar cada estado.
+ */
+export function colorEstado(estado) {
+
+    const colores = {
+        "confirmada": "bg-secondary",
+        "en preparación": "bg-warning text-dark",
+        "enviada": "bg-info text-dark",
+        "entregada": "bg-success",
+        "cancelada": "bg-danger"
+    };
+
+    return colores[estado] || "bg-secondary";
+
+}
+
+/*
+ * Cambia el estado de una compra y la guarda.
+ * Devuelve la compra actualizada, o null si no existe.
+ */
+export function actualizarEstadoCompra(compraId, nuevoEstado) {
+
+    if (!ESTADOS_COMPRA.includes(nuevoEstado)) {
+        return null;
+    }
+
+    let compraActualizada = null;
+
+    const compras = leerCompras().map((compra) => {
+
+        if (compra.id !== compraId) {
+            return compra;
+        }
+
+        compraActualizada = { ...compra, estado: nuevoEstado };
+
+        return compraActualizada;
+
+    });
+
+    if (!compraActualizada) {
+        return null;
+    }
+
+    localStorage.setItem(
+        CLAVE_COMPRAS,
+        JSON.stringify(compras)
+    );
+
+    return compraActualizada;
 
 }

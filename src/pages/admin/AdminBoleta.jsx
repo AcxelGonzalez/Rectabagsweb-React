@@ -1,6 +1,12 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
-import { leerCompraPorId } from "../../services/compraService";
+import {
+    leerCompraPorId,
+    actualizarEstadoCompra,
+    ESTADOS_COMPRA,
+    colorEstado
+} from "../../services/compraService";
 
 function formatearPrecio(valor) {
     return Number(valor).toLocaleString("es-CL", {
@@ -18,7 +24,7 @@ function AdminBoleta() {
 
     const { id } = useParams();
 
-    const compra = leerCompraPorId(id);
+    const [compra, setCompra] = useState(() => leerCompraPorId(id));
 
     useTitulo(`Boleta ${id} | Panel de administración`);
 
@@ -36,6 +42,19 @@ function AdminBoleta() {
     }
 
     const { cliente } = compra;
+
+    function cambiarEstado(evento) {
+
+        const actualizada = actualizarEstadoCompra(
+            compra.id,
+            evento.target.value
+        );
+
+        if (actualizada) {
+            setCompra(actualizada);
+        }
+
+    }
 
     return (
 
@@ -57,9 +76,23 @@ function AdminBoleta() {
                                     {new Date(compra.fecha).toLocaleString("es-CL")}
                                 </div>
                             </div>
-                            <span className="badge bg-success align-self-start text-capitalize">
-                                {compra.estado}
-                            </span>
+                            <div className="align-self-start">
+                                <label htmlFor="estado-compra" className="form-label small text-secondary mb-1">
+                                    Estado de la orden
+                                </label>
+                                <select
+                                    id="estado-compra"
+                                    className="form-select form-select-sm text-capitalize"
+                                    value={compra.estado}
+                                    onChange={cambiarEstado}
+                                >
+                                    {ESTADOS_COMPRA.map((estado) => (
+                                        <option key={estado} value={estado}>
+                                            {estado}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         <div className="row g-4 mb-4">
