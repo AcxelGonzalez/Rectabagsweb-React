@@ -6,6 +6,8 @@ import {
 import ProductContext
     from "./ProductContext";
 
+import { obtenerStockValido } from "../utils/stock";   
+
 import {
     productos as productosIniciales,
     obtenerProductoPorId,
@@ -179,6 +181,33 @@ function ProductProvider({
 
     }
 
+        /*
+     * Resta del stock las cantidades compradas.
+     * Recibe los productos del carrito: [{ id, cantidad }, ...]
+     */
+    function descontarStock(items) {
+
+        setProductos((actuales) =>
+            actuales.map((producto) => {
+
+                const item = items.find((i) => i.id === producto.id);
+
+                if (!item) {
+                    return producto;
+                }
+
+                const stockActual = obtenerStockValido(producto.stock);
+
+                return {
+                    ...producto,
+                    stock: Math.max(0, stockActual - Number(item.cantidad))
+                };
+
+            })
+        );
+
+    }
+
 
     /*
      * Vuelve al catálogo original de productos.js.
@@ -214,7 +243,9 @@ function ProductProvider({
                 crearProducto,
                 actualizarProducto,
                 eliminarProducto,
-                restaurarProductos
+                restaurarProductos,
+                restaurarProductos,
+                descontarStock
             }}
         >
 
