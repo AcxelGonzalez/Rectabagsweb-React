@@ -1,5 +1,6 @@
 import useAuth from "../../hooks/useAuth";
 import useProducts from "../../hooks/useProducts";
+import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
 
 function AdminPanel() {
@@ -32,9 +33,12 @@ function AdminPanel() {
                                 <p className="display-6 fw-bold mb-0">
                                     {productos.length}
                                 </p>
-                                <p className="text-secondary mb-0">
+                                <p className="text-secondary">
                                     productos en el catálogo
                                 </p>
+                                <Link to="/admin/productos" className="btn btn-dark">
+                                    Administrar productos
+                                </Link>
                             </div>
                         </div>
                     </div>
