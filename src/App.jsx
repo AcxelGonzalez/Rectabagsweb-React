@@ -14,8 +14,6 @@ import TerminosRegistro from "./pages/TerminosRegistro";
 import AdminPanel from "./pages/admin/AdminPanel";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
-import AdminProductoForm from "./pages/admin/AdminProductoForm";
-import AdminProductos from "./pages/admin/AdminProductos";
 import Carrito from "./pages/Carrito";
 import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
@@ -24,6 +22,16 @@ import Ofertas from "./pages/Ofertas";
 import Checkout from "./pages/Checkout";
 import CompraExitosa from "./pages/CompraExitosa";
 import CompraError from "./pages/CompraError";
+
+import AdminProductoForm from "./pages/admin/AdminProductoForm";
+import AdminUsuarios from "./pages/admin/AdminUsuarios";
+import AdminProductos from "./pages/admin/AdminProductos";
+import AdminUsuarioForm from "./pages/admin/AdminUsuarioForm";
+import AdminOrdenes from "./pages/admin/AdminOrdenes";
+import AdminBoleta from "./pages/admin/AdminBoleta";
+import AdminHistorialUsuario from "./pages/admin/AdminHistorialUsuario";
+
+
 
 function App() {
     return (
@@ -50,10 +58,17 @@ function App() {
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/compra-exitosa" element={<CompraExitosa />} />
                     <Route path="/compra-error" element={<CompraError />} />
+
                     <Route path="/admin" element={<AdminPanel />} />
                     <Route path="/admin/productos" element={<AdminProductos />} />
-                    ss<Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
+                    <Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
                     <Route path="/admin/productos/:id/editar" element={<AdminProductoForm />} />
+                    <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+                    <Route path="/admin/usuarios/:id/editar" element={<AdminUsuarioForm />} />
+                    <Route path="/admin/ordenes" element={<AdminOrdenes />} />
+                    <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
+                    <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
+
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
                 </Route>
             </Routes>
