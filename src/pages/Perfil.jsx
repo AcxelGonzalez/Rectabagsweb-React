@@ -3,6 +3,7 @@ import {
 } from "react";
 
 import {
+    Link,
     Navigate
 } from "react-router-dom";
 
@@ -16,6 +17,11 @@ import {
     REGIONES,
     obtenerComunas
 } from "../data/regionesComunas";    
+
+import {
+    leerCompras,
+    colorEstado
+} from "../services/compraService";
 
 function Perfil() {
 
@@ -74,6 +80,12 @@ function Perfil() {
         mensaje,
         setMensaje
     ] = useState(null);
+
+
+    // Compras de este usuario, las más recientes primero
+    const misCompras = leerCompras()
+        .filter((compra) => compra.usuarioId === usuarioActual?.id)
+        .reverse();
 
 
     if (!usuarioActual) {
@@ -497,6 +509,64 @@ function Perfil() {
 
                             </div>
 
+                        </div>
+
+                    
+                        {/* Mis compras */}
+                        <div className="card border-0 shadow-sm rounded-4 mt-4">
+                            <div className="card-body p-4 p-md-5">
+
+                                <h2 className="h4 fw-bold mb-4">
+                                    Mis compras
+                                </h2>
+
+                                {misCompras.length === 0 ? (
+
+                                    <p className="text-secondary mb-0">
+                                        Todavía no has realizado compras.
+                                    </p>
+
+                                ) : (
+
+                                    misCompras.map((compra) => (
+
+                                        <details key={compra.id} className="border rounded-3 p-3 mb-3">
+
+                                            <summary className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                                <span className="fw-semibold">{compra.id}</span>
+                                                <span className="text-secondary small">
+                                                    {new Date(compra.fecha).toLocaleDateString("es-CL")}
+                                                </span>
+                                                <span className={`badge ${colorEstado(compra.estado)} text-capitalize`}>
+                                                    {compra.estado}
+                                                </span>
+                                                <span className="fw-bold">
+                                                    {Number(compra.subtotal).toLocaleString("es-CL", { style: "currency", currency: "CLP" })}
+                                                </span>
+                                            </summary>
+
+                                            <ul className="mt-3 mb-0">
+                                                {compra.productos.map((producto) => (
+                                                    <li key={producto.id}>
+                                                        {producto.nombre} × {producto.cantidad}
+                                                    </li>
+                                                ))}
+                                            </ul>
+
+                                            <Link
+                                                to={`/mis-compras/${compra.id}`}
+                                                className="btn btn-sm btn-dark mt-3"
+                                            >
+                                                Ver boleta
+                                            </Link>
+                                            
+                                        </details>
+
+                                    ))
+
+                                )}
+
+                            </div>
                         </div>
 
                     </div>

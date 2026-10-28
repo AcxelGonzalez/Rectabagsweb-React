@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
-import { leerCompras } from "../../services/compraService";
+import { leerCompras, colorEstado } from "../../services/compraService";
 
 function formatearPrecio(valor) {
     return Number(valor).toLocaleString("es-CL", {
@@ -14,7 +14,9 @@ function AdminOrdenes() {
     useTitulo("Órdenes | Panel de administración");
 
     // Las más recientes primero
-    const compras = [...leerCompras()].reverse();
+        const compras = leerCompras()
+        .filter((compra) => !compra.archivada)
+        .reverse();
 
     return (
 
@@ -74,7 +76,7 @@ function AdminOrdenes() {
                                             <td>{formatearPrecio(compra.subtotal)}</td>
 
                                             <td>
-                                                <span className="badge bg-success text-capitalize">
+                                                <span className={`badge ${colorEstado(compra.estado)} text-capitalize`}>
                                                     {compra.estado}
                                                 </span>
                                             </td>

@@ -25,6 +25,10 @@ function AdminPanel() {
                     Bienvenido/a, {usuarioActual?.nombre}.
                 </p>
 
+                <Link to="/admin/reportes" className="btn btn-outline-dark mb-4">
+                    Ver reportes y estadísticas
+                </Link>
+
                 <div className="row g-4">
 
                     <div className="col-12 col-md-4">
@@ -66,7 +70,7 @@ function AdminPanel() {
                             <div className="card-body p-4">
                                 <h2 className="h5 fw-bold">Órdenes</h2>
                                 <p className="display-6 fw-bold mb-0">
-                                    {leerCompras().length}
+                                    {leerCompras().filter((compra) => !compra.archivada).length}
                                 </p>
                                 <p className="text-secondary">
                                     compras realizadas

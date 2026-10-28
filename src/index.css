@@ -33,3 +33,18 @@ html, body, #root {
     aspect-ratio: 1 / 1;
     object-fit: cover;
 }
+
+
+/* Al imprimir (PDF de reportes) se ocultan el menú y el pie de página */
+@media print {
+
+    .header-principal,
+    footer {
+        display: none !important;
+    }
+
+    body {
+        padding-top: 0 !important;
+    }
+
+}
