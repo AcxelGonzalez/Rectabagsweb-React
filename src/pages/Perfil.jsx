@@ -3,6 +3,7 @@ import {
 } from "react";
 
 import {
+    Link,
     Navigate
 } from "react-router-dom";
 
@@ -552,6 +553,13 @@ function Perfil() {
                                                 ))}
                                             </ul>
 
+                                            <Link
+                                                to={`/mis-compras/${compra.id}`}
+                                                className="btn btn-sm btn-dark mt-3"
+                                            >
+                                                Ver boleta
+                                            </Link>
+                                            
                                         </details>
 
                                     ))

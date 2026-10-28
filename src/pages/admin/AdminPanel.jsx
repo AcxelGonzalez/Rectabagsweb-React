@@ -25,6 +25,10 @@ function AdminPanel() {
                     Bienvenido/a, {usuarioActual?.nombre}.
                 </p>
 
+                <Link to="/admin/reportes" className="btn btn-outline-dark mb-4">
+                    Ver reportes y estadísticas
+                </Link>
+
                 <div className="row g-4">
 
                     <div className="col-12 col-md-4">

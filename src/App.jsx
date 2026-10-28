@@ -20,6 +20,7 @@ import RecuperarContrasena from "./pages/RecuperarContrasena";
 import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 import Perfil from "./pages/Perfil";
 import Ofertas from "./pages/Ofertas";
+import MiBoleta from "./pages/MiBoleta";
 import Checkout from "./pages/Checkout";
 import CompraExitosa from "./pages/CompraExitosa";
 import CompraError from "./pages/CompraError";
@@ -31,6 +32,7 @@ import AdminUsuarioForm from "./pages/admin/AdminUsuarioForm";
 import AdminOrdenes from "./pages/admin/AdminOrdenes";
 import AdminBoleta from "./pages/admin/AdminBoleta";
 import AdminHistorialUsuario from "./pages/admin/AdminHistorialUsuario";
+import AdminReportes from "./pages/admin/AdminReportes";
 
 
 
@@ -56,6 +58,7 @@ function App() {
                     <Route path="/recuperar-contrasena" element={<RecuperarContrasena/>} />
                     <Route path="/carrito" element={<Carrito/>} />
                     <Route path="/perfil" element={<Perfil />} />
+                    <Route path="/mis-compras/:id" element={<MiBoleta />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/compra-exitosa" element={<CompraExitosa />} />
                     <Route path="/compra-error" element={<CompraError />} />
@@ -71,6 +74,7 @@ function App() {
                         <Route path="/admin/ordenes" element={<AdminOrdenes />} />
                         <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
                         <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
+                        <Route path="/admin/reportes" element={<AdminReportes />} />
                     </Route>
 
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
