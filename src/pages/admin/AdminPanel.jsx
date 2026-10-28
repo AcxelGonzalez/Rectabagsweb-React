@@ -50,9 +50,12 @@ function AdminPanel() {
                                 <p className="display-6 fw-bold mb-0">
                                     {usuarios.length}
                                 </p>
-                                <p className="text-secondary mb-0">
+                                <p className="text-secondary">
                                     usuarios registrados
                                 </p>
+                                <Link to="/admin/usuarios" className="btn btn-dark">
+                                    Administrar usuarios
+                                </Link>
                             </div>
                         </div>
                     </div>
