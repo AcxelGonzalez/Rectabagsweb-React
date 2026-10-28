@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Link,
     useNavigate
 } from "react-router-dom";
 import useTitulo from '../hooks/useTitulo';
 import useCart from "../hooks/useCart";
+import useProducts from "../hooks/useProducts";
 
 function Carrito() {
     // Lógica
     useTitulo('Carro de Compras | Rectabags');
 
     const navigate =
-        useNavigate(); 
+        useNavigate();
 
     const {
         carrito,
@@ -19,11 +20,29 @@ function Carrito() {
         eliminarProducto:
             eliminarDelCarrito,
         cantidadProductos,
-        subtotal
+        subtotal,
+        sincronizarConCatalogo,
+        avisosCarrito,
+        descartarAvisos
     } = useCart();
+
+    const { productos } = useProducts();
 
     const [terminos, setTerminos] = useState(false);
     const [productoEliminar, setProductoEliminar] = useState(null);
+
+    /*
+     * Pone el carrito al día con el catálogo al entrar a la página y
+     * cada vez que cambian los productos. Si el administrador editó un
+     * precio, cambió el stock o eliminó un producto, el carrito se
+     * corrige y se le avisa al cliente qué pasó.
+     */
+    useEffect(() => {
+
+        sincronizarConCatalogo(productos);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [productos]);
 
     // Elimina el producto seleccionado
     function confirmarEliminacion() {
@@ -79,6 +98,24 @@ function Carrito() {
                         Seguir comprando
                     </Link>
                 </div>
+
+                {/* Avisos de cambios en el catálogo */}
+                {avisosCarrito.length > 0 && (
+                    <div className="alert alert-warning alert-dismissible rounded-4 mb-4" role="alert">
+                        <strong className="d-block mb-2">
+                            Tu carrito se actualizó
+                        </strong>
+                        <ul className="mb-0 ps-3">
+                            {avisosCarrito.map((aviso, indice) => (
+                                <li key={`${aviso.tipo}-${aviso.nombre}-${indice}`}>
+                                    {aviso.texto}
+                                </li>
+                            ))}
+                        </ul>
+                        <button type="button" className="btn-close" aria-label="Cerrar"
+                            onClick={descartarAvisos} />
+                    </div>
+                )}
 
                 {/* Contenedor principal */}
                 <div className="rounded-5 p-3 p-md-4 p-lg-5" style={{ backgroundColor: '#E8DED8' }}>

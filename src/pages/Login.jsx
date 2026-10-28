@@ -1,39 +1,36 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 
-import {
-    Link,
-    useNavigate
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import useTitulo
-    from "../hooks/useTitulo";
+import useTitulo from "../hooks/useTitulo";
 
-import useAuth
-    from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 import "../css/style_login.css";
 
 const FORMULARIO_INICIAL = {
     correo: "",
-    contrasena: ""
-};
+    contrasena: "" };
 
 function Login() {
 
     useTitulo(
-        "Iniciar sesión | Rectabags"
-    );
+        "Iniciar sesión | Rectabags");
 
 
-    const navigate =
-        useNavigate();
+    const navigate = useNavigate();
+    
+    const location = useLocation();
 
+    /*
+     * Si el usuario llegó aquí porque intentó entrar a una página
+     * protegida, se le devuelve a esa página después de iniciar sesión.
+     * Si entró al login por su cuenta, se le lleva al inicio.
+     */
+    const destino =
+        location.state?.from?.pathname || "/";
 
-    const {
-        iniciarSesion
-    } = useAuth();
+    const { iniciarSesion } = useAuth();
 
 
     const [
@@ -46,12 +43,10 @@ function Login() {
 
     const [
         mensaje,
-        setMensaje
-    ] = useState(null);
+        setMensaje ] = useState(null);
 
-    function cambioFormulario(
-        evento
-    ) {
+    function cambioFormulario(evento)
+     {
 
         const {
             name,
@@ -75,9 +70,8 @@ function Login() {
 
     }
 
-    function envio(
-        evento
-    ) {
+    function envio(evento) 
+    {
 
         evento.preventDefault();
 
@@ -107,7 +101,7 @@ function Login() {
         );
 
 
-        navigate("/");
+        navigate(destino, { replace: true });
 
     }
 
