@@ -70,7 +70,7 @@ function AdminPanel() {
                             <div className="card-body p-4">
                                 <h2 className="h5 fw-bold">Órdenes</h2>
                                 <p className="display-6 fw-bold mb-0">
-                                    {leerCompras().length}
+                                    {leerCompras().filter((compra) => !compra.archivada).length}
                                 </p>
                                 <p className="text-secondary">
                                     compras realizadas

@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
-import { leerCompras, colorEstado } from "../../services/compraService";
+import {
+    leerCompras,
+    colorEstado,
+    archivarCompras
+} from "../../services/compraService";
 import { calcularEstadisticas } from "../../utils/estadisticas";
 
 function formatearPrecio(valor) {
@@ -29,7 +34,13 @@ function AdminReportes() {
 
     useTitulo("Reportes | Panel de administración");
 
-    const estadisticas = calcularEstadisticas(leerCompras());
+    // Las compras se guardan en el estado para poder
+    // actualizar la página después de cerrar el periodo
+    const [compras, setCompras] = useState(leerCompras);
+
+    const [confirmandoCierre, setConfirmandoCierre] = useState(false);
+
+    const [mensaje, setMensaje] = useState(null);
 
     const {
         cantidadOrdenes,
@@ -39,7 +50,25 @@ function AdminReportes() {
         productoMasVendido,
         rankingProductos,
         comprasPorEstado
-    } = estadisticas;
+    } = calcularEstadisticas(compras);
+
+
+    function descargarPdf() {
+        window.print();
+    }
+
+
+    function cerrarPeriodo() {
+
+        const cantidad = archivarCompras();
+
+        setCompras(leerCompras());
+        setConfirmandoCierre(false);
+
+        setMensaje(`Periodo cerrado: se archivaron ${cantidad} órdenes.`);
+
+    }
+
 
     return (
 
@@ -47,13 +76,47 @@ function AdminReportes() {
 
             <div className="container">
 
-                <Link to="/admin" className="small text-secondary">
+                <Link to="/admin" className="small text-secondary d-print-none">
                     ← Volver al panel
                 </Link>
 
-                <h1 className="display-6 fw-bold mb-4">
-                    Reportes
-                </h1>
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+
+                    <div>
+                        <h1 className="display-6 fw-bold mb-0">
+                            Reportes
+                        </h1>
+                        {/* Solo aparece en el PDF */}
+                        <div className="d-none d-print-block text-secondary">
+                            Rectabags · Reporte generado el {new Date().toLocaleString("es-CL")}
+                        </div>
+                    </div>
+
+                    <div className="d-flex gap-2 d-print-none">
+                        <button
+                            type="button"
+                            className="btn btn-outline-dark"
+                            onClick={descargarPdf}
+                        >
+                            Descargar PDF
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={() => setConfirmandoCierre(true)}
+                            disabled={cantidadOrdenes === 0 && Object.keys(comprasPorEstado).length === 0}
+                        >
+                            Cerrar periodo
+                        </button>
+                    </div>
+
+                </div>
+
+                {mensaje && (
+                    <div className="alert alert-success d-print-none" role="alert">
+                        {mensaje}
+                    </div>
+                )}
 
                 {/* Tarjetas principales */}
                 <div className="row g-4 mb-4">
@@ -171,6 +234,60 @@ function AdminReportes() {
                 </div>
 
             </div>
+
+
+            {/* Confirmación del cierre */}
+            {confirmandoCierre && (
+                <>
+                    <div className="modal d-block" tabIndex="-1" role="dialog">
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+
+                                <div className="modal-header">
+                                    <h2 className="modal-title h5">Cerrar periodo</h2>
+                                    <button
+                                        type="button"
+                                        className="btn-close"
+                                        aria-label="Cerrar"
+                                        onClick={() => setConfirmandoCierre(false)}
+                                    />
+                                </div>
+
+                                <div className="modal-body">
+                                    <p>
+                                        Las órdenes actuales se <strong>archivarán</strong>: ya no
+                                        aparecerán en Órdenes ni en Reportes. Los clientes las
+                                        seguirán viendo en su perfil.
+                                    </p>
+                                    <p className="mb-0">
+                                        Te recomendamos <strong>descargar el PDF</strong> antes de cerrar.
+                                    </p>
+                                </div>
+
+                                <div className="modal-footer">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        onClick={() => setConfirmandoCierre(false)}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger"
+                                        onClick={cerrarPeriodo}
+                                    >
+                                        Cerrar periodo
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="modal-backdrop show" />
+                </>
+            )}
 
         </section>
 

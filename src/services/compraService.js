@@ -156,3 +156,35 @@ export function actualizarEstadoCompra(compraId, nuevoEstado) {
     return compraActualizada;
 
 }
+
+/*
+ * Cierre de periodo: marca como archivadas todas las compras
+ * que aún no lo están. No se borran: el cliente las sigue viendo.
+ * Devuelve cuántas compras se archivaron.
+ */
+export function archivarCompras() {
+
+    const fechaCierre = new Date().toISOString();
+
+    let cantidad = 0;
+
+    const compras = leerCompras().map((compra) => {
+
+        if (compra.archivada) {
+            return compra;
+        }
+
+        cantidad++;
+
+        return { ...compra, archivada: true, fechaCierre };
+
+    });
+
+    localStorage.setItem(
+        CLAVE_COMPRAS,
+        JSON.stringify(compras)
+    );
+
+    return cantidad;
+
+}

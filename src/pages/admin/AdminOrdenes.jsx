@@ -14,7 +14,9 @@ function AdminOrdenes() {
     useTitulo("Órdenes | Panel de administración");
 
     // Las más recientes primero
-    const compras = [...leerCompras()].reverse();
+        const compras = leerCompras()
+        .filter((compra) => !compra.archivada)
+        .reverse();
 
     return (
 
