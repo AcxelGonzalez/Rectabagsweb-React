@@ -177,3 +177,66 @@ export function fusionarCarritos(carritoInvitado, carritoUsuario) {
     return resultado;
 
 }
+/*
+ Revisa si el catálogo alcanza para lo que hay en el carrito
+ */
+export function verificarStock(carrito, productos) {
+
+    const items = Array.isArray(carrito) ? carrito : [];
+    const catalogo = Array.isArray(productos) ? productos : [];
+    const faltantes = [];
+
+
+    for (const item of items) {
+
+        const producto = catalogo.find(
+            (p) => Number(p.id) === Number(item.id)
+        );
+
+        const pedido = Number(item.cantidad) || 0;
+
+
+        // El producto ya no está en el catálogo.
+        if (!producto) {
+
+            faltantes.push({
+                nombre: item.nombre,
+                pedido,
+                disponible: 0,
+                texto: `${item.nombre} ya no está disponible.`
+            });
+
+            continue;
+
+        }
+
+
+        const disponible = obtenerStockValido(producto.stock);
+
+        if (pedido > disponible) {
+
+            faltantes.push({
+                nombre: producto.nombre,
+                pedido,
+                disponible,
+                texto: disponible === 0
+                    ? `${producto.nombre} quedó sin stock.`
+                    : `De ${producto.nombre} quedan ${disponible} unidades y pediste ${pedido}.`
+            });
+
+        }
+
+    }
+
+
+    return {
+        ok: faltantes.length === 0,
+        faltantes,
+        mensaje: faltantes.length === 0
+            ? ""
+            : `No pudimos completar tu compra. ${faltantes
+                .map((f) => f.texto)
+                .join(" ")} Revisa tu carrito e inténtalo de nuevo.`
+    };
+
+}

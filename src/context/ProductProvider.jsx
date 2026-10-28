@@ -6,7 +6,9 @@ import {
 import ProductContext
     from "./ProductContext";
 
-import { obtenerStockValido } from "../utils/stock";   
+import { obtenerStockValido } from "../utils/stock";
+
+import { verificarStock } from "../utils/carrito";
 
 import {
     productos as productosIniciales,
@@ -181,11 +183,21 @@ function ProductProvider({
 
     }
 
-        /*
-     * Resta del stock las cantidades compradas.
-     * Recibe los productos del carrito: [{ id, cantidad }, ...]
+    /*
+     Resta del stock las cantidades compradas, pero solo si alcanza.
+     Recibe los productos del carrito: [{ id, cantidad }, ...]
+
+     Antes de tocar nada verifica el carrito contra el catálogo: si algún
+     producto no alcanza no se descuenta nada y se devuelve el detalle,
+     para que el checkout no registre una venta imposible.
      */
     function descontarStock(items) {
+
+        const verificacion = verificarStock(items, productos);
+
+        if (!verificacion.ok) {
+            return verificacion;
+        }
 
         setProductos((actuales) =>
             actuales.map((producto) => {
@@ -205,6 +217,8 @@ function ProductProvider({
 
             })
         );
+
+        return verificacion;
 
     }
 
@@ -243,7 +257,6 @@ function ProductProvider({
                 crearProducto,
                 actualizarProducto,
                 eliminarProducto,
-                restaurarProductos,
                 restaurarProductos,
                 descontarStock
             }}

@@ -150,6 +150,22 @@ function Checkout() {
 
         setMostrarConfirmacion(false);
 
+        /*
+         Antes de registrar nada se revisa que el stock alcance. El
+         carrito pudo quedar guardado varios días y el catálogo cambiar
+         en ese tiempo. Si no alcanza, no se descuenta ni se guarda.
+         */
+        const stock = descontarStock(carrito);
+
+        if (!stock.ok) {
+            navigate("/compra-error", {
+                state: { mensaje: stock.mensaje }
+            });
+
+            return;
+
+        }
+
         try {
 
             const compra = guardarCompra({
@@ -183,8 +199,6 @@ function Checkout() {
 
             setCompraRealizada(true);
 
-            descontarStock(carrito);
-
             vaciarCarrito();
 
             navigate("/compra-exitosa", {
@@ -201,7 +215,6 @@ function Checkout() {
         }
 
     }
-
 
     return (
 
