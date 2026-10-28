@@ -707,6 +707,79 @@ function AuthProvider({
 
     }
 
+    /*
+     * ADMIN: modifica los datos y el rol de un usuario.
+     */
+    function actualizarUsuario(id, datos) {
+
+        const usuario = usuarios.find((item) => item.id === id);
+
+        if (!usuario) {
+            return { ok: false, mensaje: "No se encontró el usuario." };
+        }
+
+        const nombre = String(datos.nombre || "").trim();
+        const apellido = String(datos.apellido || "").trim();
+        const telefono = String(datos.telefono || "").trim();
+        const rol = datos.rol;
+
+        if (!nombre || !apellido) {
+            return { ok: false, mensaje: "Nombre y apellido son obligatorios." };
+        }
+
+        const errorTelefono = telefono && validarTelefono(telefono);
+
+        if (errorTelefono) {
+            return { ok: false, mensaje: errorTelefono };
+        }
+
+        if (rol !== "cliente" && rol !== "admin") {
+            return { ok: false, mensaje: "El rol debe ser Cliente o Administrador." };
+        }
+
+        if (id === usuarioActual?.id && rol !== usuario.rol) {
+            return { ok: false, mensaje: "No puedes cambiar tu propio rol." };
+        }
+
+        const cambios = { nombre, apellido, telefono, rol };
+
+        setUsuarios((actuales) =>
+            actuales.map((item) =>
+                item.id === id ? { ...item, ...cambios } : item
+            )
+        );
+
+        // Si el admin se edita a sí mismo, también se actualiza su sesión
+        if (id === usuarioActual?.id) {
+            setUsuarioActual({ ...usuarioActual, ...cambios });
+        }
+
+        return { ok: true, mensaje: "Usuario actualizado correctamente." };
+
+    }
+
+
+    /*
+     * ADMIN: elimina un usuario.
+     */
+    function eliminarUsuario(id) {
+
+        if (id === usuarioActual?.id) {
+            return { ok: false, mensaje: "No puedes eliminar tu propia cuenta." };
+        }
+
+        if (!usuarios.some((item) => item.id === id)) {
+            return { ok: false, mensaje: "No se encontró el usuario." };
+        }
+
+        setUsuarios((actuales) =>
+            actuales.filter((item) => item.id !== id)
+        );
+
+        return { ok: true, mensaje: "Usuario eliminado correctamente." };
+
+    }
+
     return (
 
         <AuthContext.Provider
@@ -724,7 +797,9 @@ function AuthProvider({
                 iniciarSesion,
                 cerrarSesion,
                 recuperarContrasena,
-                actualizarPerfil
+                actualizarPerfil,
+                actualizarUsuario,
+                eliminarUsuario
             }}
         >
 

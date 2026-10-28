@@ -251,6 +251,54 @@ export function validarDescripcionProducto(descripcion) {
 
 }
 
+/*
+ * El precio de oferta es opcional.
+ * Si se ingresa, debe ser mayor que 0 y menor que el precio normal.
+ */
+export function validarPrecioOferta(precioOferta, precio) {
+
+    if (precioOferta === undefined || precioOferta === null || precioOferta === "") {
+        return null;
+    }
+
+    const valor = Number(precioOferta);
+
+    if (!Number.isFinite(valor)) {
+        return "El precio de oferta debe ser un número.";
+    }
+
+    if (valor <= 0) {
+        return "El precio de oferta debe ser mayor que 0.";
+    }
+
+    if (valor >= Number(precio)) {
+        return "El precio de oferta debe ser menor que el precio normal.";
+    }
+
+    return null;
+
+}
+
+
+/*
+ * El stock crítico es opcional.
+ * Si se ingresa, debe ser un número entero no negativo.
+ */
+export function validarStockCritico(stockCritico) {
+
+    if (stockCritico === undefined || stockCritico === null || stockCritico === "") {
+        return null;
+    }
+
+    const valor = Number(stockCritico);
+
+    if (!Number.isInteger(valor) || valor < 0) {
+        return "El stock crítico debe ser un número entero no negativo.";
+    }
+
+    return null;
+
+}
 
 /*
  * Valida un producto completo y devuelve el primer error encontrado.
@@ -265,7 +313,9 @@ export function validarProducto(datos) {
         validarCategoriaProducto(producto.categoria),
         validarPrecioProducto(producto.precio),
         validarStockProducto(producto.stock),
-        validarDescripcionProducto(producto.descripcion)
+        validarDescripcionProducto(producto.descripcion),
+        validarPrecioOferta(producto.precioOferta, producto.precio),
+        validarStockCritico(producto.stockCritico)
     ];
 
     return errores.find((error) => error !== null) || null;

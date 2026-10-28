@@ -427,6 +427,39 @@ function nombreRepetido(
 
 }
 
+export const STOCK_CRITICO_POR_DEFECTO = 3;
+
+/*
+ * Convierte el precio de oferta del formulario.
+ * Vacío, 0 o inválido significa "sin oferta" (null).
+ */
+function normalizarPrecioOferta(valor) {
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero) && numero > 0
+        ? numero
+        : null;
+
+}
+
+/*
+ * Convierte el stock crítico del formulario.
+ * Si viene vacío se usa el valor por defecto.
+ */
+function normalizarStockCritico(valor) {
+
+    if (valor === undefined || valor === null || valor === "") {
+        return STOCK_CRITICO_POR_DEFECTO;
+    }
+
+    const numero = Math.trunc(Number(valor));
+
+    return Number.isFinite(numero) && numero >= 0
+        ? numero
+        : STOCK_CRITICO_POR_DEFECTO;
+
+}
 
 /*
  * Deja los datos del formulario en el formato que usa la tienda.
@@ -479,7 +512,18 @@ function armarProducto(
         stock:
             obtenerStockValido(
                 datos.stock
+            ),
+            
+        precioOferta:
+            normalizarPrecioOferta(
+                datos.precioOferta
+            ),
+
+        stockCritico:
+            normalizarStockCritico(
+                datos.stockCritico
             )
+
 
     };
 

@@ -20,6 +20,9 @@ import {
     guardarCompra
 } from "../services/compraService";
 
+import useProducts
+    from "../hooks/useProducts";
+
 import {
     REGIONES,
     obtenerComunas
@@ -83,6 +86,9 @@ function Checkout() {
         vaciarCarrito
     } = useCart();
 
+    const {
+        descontarStock
+    } = useProducts();
 
     const [
         formulario,
@@ -265,6 +271,9 @@ function Checkout() {
             setCompraRealizada(
                 true
             );
+
+            
+            descontarStock(carrito);
 
 
             vaciarCarrito();
