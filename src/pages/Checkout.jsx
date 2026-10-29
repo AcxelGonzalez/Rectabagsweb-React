@@ -9,6 +9,7 @@ import useTitulo from "../hooks/useTitulo";
 import ConfirmarCompraModal from "../components/ConfirmarCompraModal";
 import { guardarCompra } from "../services/compraService";
 import { REGIONES, obtenerComunas } from "../data/regionesComunas";
+import { validarCheckout } from "../utils/validaciones";
 
 
 // Texto que se muestra en la confirmación para cada método de pago.
@@ -110,26 +111,18 @@ function Checkout() {
 
         evento.preventDefault();
 
-        const camposObligatorios = [
-            formulario.nombre,
-            formulario.apellido,
-            formulario.correo,
-            formulario.telefono,
-            formulario.direccion,
-            formulario.region,
-            formulario.comuna,
-            formulario.metodoPago
-        ];
+        const error =
+            validarCheckout(
+                formulario
+            );
 
-        const formularioCompleto = camposObligatorios.every(
-            (campo) => String(campo).trim().length > 0
-        );
 
-        if (!formularioCompleto) {
+        if (error) {
 
             setMensaje({
                 tipo: "danger",
-                texto: "Debes completar todos los datos requeridos para continuar."
+                texto:
+                    error
             });
 
             return;
@@ -213,7 +206,7 @@ function Checkout() {
             descontarStock(
                 carrito
             );
-            
+
             setCompraRealizada(true);
 
             vaciarCarrito();
