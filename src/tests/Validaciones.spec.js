@@ -3,7 +3,8 @@ import {
     validarRut,
     validarContrasena,
     validarFechaNacimiento,
-    validarTelefono
+    validarTelefono,
+    validarCheckout
 } from "../utils/validaciones";
 
 
@@ -72,5 +73,116 @@ describe("Validaciones de formularios", () => {
         expect(validarTelefono("+56 9 1234 5678")).toBeNull();
         expect(validarTelefono("812345678")).not.toBeNull();
     });
+
+    /* ---------- CHECKOUT ---------- */
+
+    describe(
+        "validarCheckout",
+        () => {
+
+            const checkoutValido = {
+                nombre:
+                    "Marco",
+
+                apellido:
+                    "Carrasco",
+
+                correo:
+                    "cliente@gmail.com",
+
+                telefono:
+                    "+56 9 1234 5678",
+
+                direccion:
+                    "Av. Principal 123",
+
+                region:
+                    "Región Metropolitana de Santiago",
+
+                comuna:
+                    "Santiago",
+
+                metodoPago:
+                    "transferencia"
+            };
+
+
+            it(
+                "debe aceptar un checkout con datos válidos",
+                () => {
+
+                    expect(
+                        validarCheckout(
+                            checkoutValido
+                        )
+                    ).toBeNull();
+
+                }
+            );
+
+
+            it(
+                "debe rechazar un checkout con campos obligatorios vacíos",
+                () => {
+
+                    const formulario = {
+                        ...checkoutValido,
+                        direccion: ""
+                    };
+
+
+                    expect(
+                        validarCheckout(
+                            formulario
+                        )
+                    ).not.toBeNull();
+
+                }
+            );
+
+
+            it(
+                "debe rechazar un correo no permitido en checkout",
+                () => {
+
+                    const formulario = {
+                        ...checkoutValido,
+                        correo:
+                            "cliente@hotmail.com"
+                    };
+
+
+                    expect(
+                        validarCheckout(
+                            formulario
+                        )
+                    ).not.toBeNull();
+
+                }
+            );
+
+
+            it(
+                "debe rechazar un teléfono inválido en checkout",
+                () => {
+
+                    const formulario = {
+                        ...checkoutValido,
+                        telefono:
+                            "123456"
+                    };
+
+
+                    expect(
+                        validarCheckout(
+                            formulario
+                        )
+                    ).not.toBeNull();
+
+                }
+            );
+
+        }
+    );
 
 });

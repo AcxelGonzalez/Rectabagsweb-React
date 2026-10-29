@@ -77,6 +77,61 @@ function ProductProvider({
 
     }, [productos]);
 
+    /*
+    * Sincroniza el catálogo cuando otra pestaña modifica
+    * los productos almacenados en localStorage.
+    *
+    * El evento "storage" se dispara en las otras pestañas
+    * del mismo origen, no en la pestaña que realizó el cambio.
+    */
+    useEffect(() => {
+
+        function alCambiarElAlmacenamiento(
+            evento
+        ) {
+
+            const cambioProductos =
+                evento.key ===
+                CLAVE_PRODUCTOS;
+
+
+            const almacenamientoLimpiado =
+                evento.key === null;
+
+
+            if (
+                !cambioProductos &&
+                !almacenamientoLimpiado
+            ) {
+
+                return;
+
+            }
+
+
+            setProductos(
+                leerProductosGuardados()
+            );
+
+        }
+
+
+        window.addEventListener(
+            "storage",
+            alCambiarElAlmacenamiento
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "storage",
+                alCambiarElAlmacenamiento
+            );
+
+        };
+
+    }, []);
 
     /*
      * Busca un producto por su id.
@@ -182,6 +237,87 @@ function ProductProvider({
         );
 
     }
+    
+    /*
+    * Comprueba que todos los productos del carrito sigan existiendo
+    * y tengan stock suficiente, sin modificar el catálogo.
+    */
+    function verificarDisponibilidad(items) {
+
+        return verificarStock(
+            items,
+            productos
+        );
+
+    }
+
+    /*
+    * Devuelve al catálogo las cantidades de una compra cancelada.
+    *
+    * Solo modifica productos que todavía existen en el catálogo.
+    * Si un producto fue eliminado posteriormente desde administración,
+    * simplemente no puede ser restaurado porque ya no existe.
+    */
+    function reponerStock(items) {
+
+        setProductos((actuales) =>
+            actuales.map(
+                (producto) => {
+
+                    const item =
+                        items.find(
+                            (itemCompra) =>
+                                itemCompra.id ===
+                                producto.id
+                        );
+
+
+                    if (!item) {
+
+                        return producto;
+
+                    }
+
+
+                    const stockActual =
+                        obtenerStockValido(
+                            producto.stock
+                        );
+
+
+                    const cantidad =
+                        Math.max(
+                            0,
+                            Math.trunc(
+                                Number(
+                                    item.cantidad
+                                ) || 0
+                            )
+                        );
+
+
+                    return {
+
+                        ...producto,
+
+                        stock:
+                            stockActual +
+                            cantidad
+
+                    };
+
+                }
+            )
+        );
+
+
+        return {
+            ok: true,
+            mensaje:
+                "Stock repuesto correctamente."
+        };
+
+    }
 
     /*
      Resta del stock las cantidades compradas, pero solo si alcanza.
@@ -258,7 +394,9 @@ function ProductProvider({
                 actualizarProducto,
                 eliminarProducto,
                 restaurarProductos,
-                descontarStock
+                verificarDisponibilidad,
+                descontarStock,
+                reponerStock
             }}
         >
 
