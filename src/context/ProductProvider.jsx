@@ -197,6 +197,74 @@ function ProductProvider({
     }
 
     /*
+    * Devuelve al catálogo las cantidades de una compra cancelada.
+    *
+    * Solo modifica productos que todavía existen en el catálogo.
+    * Si un producto fue eliminado posteriormente desde administración,
+    * simplemente no puede ser restaurado porque ya no existe.
+    */
+    function reponerStock(items) {
+
+        setProductos((actuales) =>
+            actuales.map(
+                (producto) => {
+
+                    const item =
+                        items.find(
+                            (itemCompra) =>
+                                itemCompra.id ===
+                                producto.id
+                        );
+
+
+                    if (!item) {
+
+                        return producto;
+
+                    }
+
+
+                    const stockActual =
+                        obtenerStockValido(
+                            producto.stock
+                        );
+
+
+                    const cantidad =
+                        Math.max(
+                            0,
+                            Math.trunc(
+                                Number(
+                                    item.cantidad
+                                ) || 0
+                            )
+                        );
+
+
+                    return {
+
+                        ...producto,
+
+                        stock:
+                            stockActual +
+                            cantidad
+
+                    };
+
+                }
+            )
+        );
+
+
+        return {
+            ok: true,
+            mensaje:
+                "Stock repuesto correctamente."
+        };
+
+    }
+
+    /*
      Resta del stock las cantidades compradas, pero solo si alcanza.
      Recibe los productos del carrito: [{ id, cantidad }, ...]
 
@@ -272,7 +340,8 @@ function ProductProvider({
                 eliminarProducto,
                 restaurarProductos,
                 verificarDisponibilidad,
-                descontarStock
+                descontarStock,
+                reponerStock
             }}
         >
 

@@ -502,6 +502,32 @@ describe("ProductProvider", () => {
             }
         );
 
+        it(
+            "debe reponer el stock de una compra cancelada",
+            () => {
+
+                act(() => {
+
+                    productosApi
+                        .reponerStock([
+                            {
+                                id: 1,
+                                cantidad: 3
+                            }
+                        ]);
+
+                });
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(13);
+
+            }
+        );
+
     });
 
     describe("restaurarProductos", () => {
