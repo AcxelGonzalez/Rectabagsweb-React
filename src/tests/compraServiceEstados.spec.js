@@ -100,24 +100,77 @@ describe("compraService · estados de las órdenes", () => {
 
     describe("actualizarEstadoCompra", () => {
 
-        it("debe cambiar el estado de la orden indicada", () => {
+        it(
+            "debe cambiar el estado de la orden indicada",
+            () => {
 
-            const id = crearCompra();
-            const resultado = actualizarEstadoCompra(id, "enviada");
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "confirmada"
+                    });
 
-            expect(resultado.estado).toBe("enviada");
 
-        });
+                const actualizada =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "en preparación"
+                    );
 
-        it("debe guardar el cambio, no solo devolverlo", () => {
 
-            const id = crearCompra();
+                expect(
+                    actualizada
+                ).not.toBeNull();
 
-            actualizarEstadoCompra(id, "entregada");
 
-            expect(leerCompra(id).estado).toBe("entregada");
+                expect(
+                    actualizada.estado
+                ).toBe(
+                    "en preparación"
+                );
 
-        });
+            }
+        );
+
+        it(
+            "debe guardar el cambio, no solo devolverlo",
+            () => {
+
+                const id =
+                    crearCompra();
+
+
+                const actualizada =
+                    actualizarEstadoCompra(
+                        id,
+                        "en preparación"
+                    );
+
+
+                expect(
+                    actualizada
+                ).not.toBeNull();
+
+
+                const guardada =
+                    leerCompra(
+                        id
+                    );
+
+
+                expect(
+                    guardada
+                ).toBeDefined();
+
+
+                expect(
+                    guardada.estado
+                ).toBe(
+                    "en preparación"
+                );
+
+            }
+        );
 
         it("debe permitir cancelar una orden", () => {
 

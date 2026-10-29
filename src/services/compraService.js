@@ -102,6 +102,57 @@ export const ESTADOS_COMPRA = [
     "cancelada"
 ];
 
+/*
+ * Define las transiciones válidas entre estados.
+ *
+ * Esto evita saltos incoherentes como:
+ * confirmada → entregada
+ * entregada → cancelada
+ * cancelada → enviada
+ */
+const TRANSICIONES_COMPRA = {
+
+    "confirmada": [
+        "en preparación",
+        "cancelada"
+    ],
+
+    "en preparación": [
+        "enviada",
+        "cancelada"
+    ],
+
+    "enviada": [
+        "entregada"
+    ],
+
+    "entregada": [],
+
+    "cancelada": [
+        "confirmada"
+    ]
+
+};
+
+/*
+ * Devuelve los estados a los que una compra
+ * puede avanzar desde su estado actual.
+ */
+export function obtenerEstadosPermitidos(
+    estadoActual
+) {
+
+    const estados =
+        TRANSICIONES_COMPRA[
+            estadoActual
+        ];
+
+
+    return Array.isArray(estados)
+        ? [...estados]
+        : [];
+
+}
 
 /*
  * Color de Bootstrap para mostrar cada estado.
@@ -124,34 +175,102 @@ export function colorEstado(estado) {
  * Cambia el estado de una compra y la guarda.
  * Devuelve la compra actualizada, o null si no existe.
  */
-export function actualizarEstadoCompra(compraId, nuevoEstado) {
+export function actualizarEstadoCompra(
+    compraId,
+    nuevoEstado
+) {
 
-    if (!ESTADOS_COMPRA.includes(nuevoEstado)) {
+    if (
+        !ESTADOS_COMPRA.includes(
+            nuevoEstado
+        )
+    ) {
+
         return null;
+
     }
 
-    let compraActualizada = null;
 
-    const compras = leerCompras().map((compra) => {
+    const compras =
+        leerCompras();
 
-        if (compra.id !== compraId) {
-            return compra;
-        }
 
-        compraActualizada = { ...compra, estado: nuevoEstado };
+    const compraExistente =
+        compras.find(
+            (compra) =>
+                compra.id ===
+                compraId
+        );
 
-        return compraActualizada;
 
-    });
+    if (!compraExistente) {
 
-    if (!compraActualizada) {
         return null;
+
     }
+
+
+    /*
+     * Una compra perteneciente a un período cerrado
+     * queda protegida contra modificaciones.
+     */
+    if (
+        compraExistente.archivada
+    ) {
+
+        return null;
+
+    }
+
+
+    const estadosPermitidos =
+        obtenerEstadosPermitidos(
+            compraExistente.estado
+        );
+
+
+    /*
+     * Rechazamos cualquier salto de estado
+     * que no pertenezca al flujo permitido.
+     */
+    if (
+        !estadosPermitidos.includes(
+            nuevoEstado
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    const compraActualizada = {
+
+        ...compraExistente,
+
+        estado:
+            nuevoEstado
+
+    };
+
+
+    const comprasActualizadas =
+        compras.map(
+            (compra) =>
+                compra.id ===
+                compraId
+                    ? compraActualizada
+                    : compra
+        );
+
 
     localStorage.setItem(
         CLAVE_COMPRAS,
-        JSON.stringify(compras)
+        JSON.stringify(
+            comprasActualizadas
+        )
     );
+
 
     return compraActualizada;
 
