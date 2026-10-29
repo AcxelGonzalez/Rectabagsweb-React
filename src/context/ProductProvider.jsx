@@ -182,6 +182,19 @@ function ProductProvider({
         );
 
     }
+    
+    /*
+    * Comprueba que todos los productos del carrito sigan existiendo
+    * y tengan stock suficiente, sin modificar el catálogo.
+    */
+    function verificarDisponibilidad(items) {
+
+        return verificarStock(
+            items,
+            productos
+        );
+
+    }
 
     /*
      Resta del stock las cantidades compradas, pero solo si alcanza.
@@ -258,6 +271,7 @@ function ProductProvider({
                 actualizarProducto,
                 eliminarProducto,
                 restaurarProductos,
+                verificarDisponibilidad,
                 descontarStock
             }}
         >

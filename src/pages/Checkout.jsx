@@ -60,7 +60,10 @@ function Checkout() {
         vaciarCarrito
     } = useCart();
 
-    const { descontarStock } = useProducts();
+    const {
+        verificarDisponibilidad,
+        descontarStock
+    } = useProducts();
 
     const [formulario, setFormulario] = useState(
         () => crearFormularioInicial(usuarioActual)
@@ -155,12 +158,22 @@ function Checkout() {
          carrito pudo quedar guardado varios días y el catálogo cambiar
          en ese tiempo. Si no alcanza, no se descuenta ni se guarda.
          */
-        const stock = descontarStock(carrito);
+        const stock =
+            verificarDisponibilidad(
+                carrito
+            );
 
         if (!stock.ok) {
-            navigate("/compra-error", {
-                state: { mensaje: stock.mensaje }
-            });
+
+            navigate(
+                "/compra-error",
+                {
+                    state: {
+                        mensaje:
+                            stock.mensaje
+                    }
+                }
+            );
 
             return;
 
@@ -197,6 +210,10 @@ function Checkout() {
 
             });
 
+            descontarStock(
+                carrito
+            );
+            
             setCompraRealizada(true);
 
             vaciarCarrito();

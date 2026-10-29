@@ -365,6 +365,144 @@ describe("ProductProvider", () => {
 
     });
 
+    describe("stock de productos", () => {
+
+        beforeEach(() => {
+            guardarCatalogoPrueba();
+            renderizarProductos();
+        });
+
+
+        it(
+            "debe verificar stock sin modificar el catálogo",
+            () => {
+
+                const resultado =
+                    productosApi
+                        .verificarDisponibilidad([
+                            {
+                                id: 1,
+                                cantidad: 3
+                            }
+                        ]);
+
+
+                expect(
+                    resultado.ok
+                ).toBeTrue();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(10);
+
+            }
+        );
+
+
+        it(
+            "debe detectar cuando no existe stock suficiente sin modificarlo",
+            () => {
+
+                const resultado =
+                    productosApi
+                        .verificarDisponibilidad([
+                            {
+                                id: 2,
+                                cantidad: 10
+                            }
+                        ]);
+
+
+                expect(
+                    resultado.ok
+                ).toBeFalse();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(2)
+                        .stock
+                ).toBe(4);
+
+            }
+        );
+
+
+        it(
+            "debe descontar el stock cuando existe disponibilidad",
+            () => {
+
+                let resultado;
+
+
+                act(() => {
+
+                    resultado =
+                        productosApi
+                            .descontarStock([
+                                {
+                                    id: 1,
+                                    cantidad: 3
+                                }
+                            ]);
+
+                });
+
+
+                expect(
+                    resultado.ok
+                ).toBeTrue();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(7);
+
+            }
+        );
+
+
+        it(
+            "no debe modificar el stock cuando la cantidad solicitada supera la disponible",
+            () => {
+
+                let resultado;
+
+
+                act(() => {
+
+                    resultado =
+                        productosApi
+                            .descontarStock([
+                                {
+                                    id: 2,
+                                    cantidad: 10
+                                }
+                            ]);
+
+                });
+
+
+                expect(
+                    resultado.ok
+                ).toBeFalse();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(2)
+                        .stock
+                ).toBe(4);
+
+            }
+        );
+
+    });
 
     describe("restaurarProductos", () => {
 
