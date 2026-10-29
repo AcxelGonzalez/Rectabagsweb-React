@@ -191,6 +191,134 @@ describe("ProductProvider", () => {
 
         });
 
+        it("debe sincronizar los productos cuando otra pestaña modifica localStorage", () => {
+
+                guardarCatalogoPrueba();
+
+                renderizarProductos();
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(2);
+
+
+                const catalogoExterno = [
+
+                    ...catalogoPrueba,
+
+                    {
+                        id: 3,
+                        nombre:
+                            "Musette externa",
+
+                        categoria:
+                            "musette",
+
+                        precio:
+                            18000,
+
+                        descripcion:
+                            "Producto agregado desde otra pestaña.",
+
+                        descripcionCompleta:
+                            "Producto agregado desde otra pestaña.",
+
+                        imagen:
+                            "/img/test.png",
+
+                        stock:
+                            6
+                    }
+
+                ];
+
+
+                act(() => {
+
+                    localStorage.setItem(
+                        CLAVE_PRODUCTOS,
+                        JSON.stringify(
+                            catalogoExterno
+                        )
+                    );
+
+
+                    window.dispatchEvent(
+                        new StorageEvent(
+                            "storage",
+                            {
+                                key:
+                                    CLAVE_PRODUCTOS,
+
+                                newValue:
+                                    JSON.stringify(
+                                        catalogoExterno
+                                    )
+                            }
+                        )
+                    );
+
+                });
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(3);
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(3)
+                        .nombre
+                ).toBe(
+                    "Musette externa"
+                );
+
+            }
+        );
+
+        it(
+            "debe ignorar eventos storage de otras claves",
+            () => {
+
+                guardarCatalogoPrueba();
+
+                renderizarProductos();
+
+
+                act(() => {
+
+                    localStorage.setItem(
+                        "otra_clave",
+                        JSON.stringify([
+                            {
+                                id: 99
+                            }
+                        ])
+                    );
+
+
+                    window.dispatchEvent(
+                        new StorageEvent(
+                            "storage",
+                            {
+                                key:
+                                    "otra_clave"
+                            }
+                        )
+                    );
+
+                });
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(2);
+
+            }
+        );
+        
     });
 
 

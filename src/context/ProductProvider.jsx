@@ -77,6 +77,61 @@ function ProductProvider({
 
     }, [productos]);
 
+    /*
+    * Sincroniza el catálogo cuando otra pestaña modifica
+    * los productos almacenados en localStorage.
+    *
+    * El evento "storage" se dispara en las otras pestañas
+    * del mismo origen, no en la pestaña que realizó el cambio.
+    */
+    useEffect(() => {
+
+        function alCambiarElAlmacenamiento(
+            evento
+        ) {
+
+            const cambioProductos =
+                evento.key ===
+                CLAVE_PRODUCTOS;
+
+
+            const almacenamientoLimpiado =
+                evento.key === null;
+
+
+            if (
+                !cambioProductos &&
+                !almacenamientoLimpiado
+            ) {
+
+                return;
+
+            }
+
+
+            setProductos(
+                leerProductosGuardados()
+            );
+
+        }
+
+
+        window.addEventListener(
+            "storage",
+            alCambiarElAlmacenamiento
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "storage",
+                alCambiarElAlmacenamiento
+            );
+
+        };
+
+    }, []);
 
     /*
      * Busca un producto por su id.
