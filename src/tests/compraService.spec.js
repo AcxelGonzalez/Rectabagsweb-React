@@ -1,6 +1,7 @@
 import {
     guardarCompra,
-    leerCompraPorId
+    leerCompraPorId,
+    actualizarEstadoCompra
 } from "../services/compraService";
 
 
@@ -283,6 +284,119 @@ describe(
                 ).toBe(
                     30000
                 );
+
+            }
+        );
+
+        it(
+            "debe actualizar el estado de una compra",
+            () => {
+
+                spyOn(
+                    Date,
+                    "now"
+                ).and.returnValue(
+                    5000
+                );
+
+
+                guardarCompra({
+                    subtotal:
+                        30000,
+
+                    estado:
+                        "confirmada"
+                });
+
+
+                const actualizada =
+                    actualizarEstadoCompra(
+                        "RB-5000",
+                        "cancelada"
+                    );
+
+
+                expect(
+                    actualizada
+                ).not.toBeNull();
+
+
+                expect(
+                    actualizada.estado
+                ).toBe(
+                    "cancelada"
+                );
+
+
+                expect(
+                    leerCompraPorId(
+                        "RB-5000"
+                    ).estado
+                ).toBe(
+                    "cancelada"
+                );
+
+            }
+        );
+
+        it(
+            "no debe aceptar un estado de compra inválido",
+            () => {
+
+                spyOn(
+                    Date,
+                    "now"
+                ).and.returnValue(
+                    6000
+                );
+
+
+                guardarCompra({
+                    subtotal:
+                        30000,
+
+                    estado:
+                        "confirmada"
+                });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        "RB-6000",
+                        "estado inventado"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
+
+
+                expect(
+                    leerCompraPorId(
+                        "RB-6000"
+                    ).estado
+                ).toBe(
+                    "confirmada"
+                );
+
+            }
+        );
+
+        it(
+            "debe retornar null al cambiar el estado de una compra inexistente",
+            () => {
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        "RB-INEXISTENTE",
+                        "cancelada"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
 
             }
         );

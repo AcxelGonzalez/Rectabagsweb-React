@@ -8,6 +8,32 @@ export function comprasDelPeriodo(compras) {
     );
 }
 
+/*
+ * Calcula el total histórico efectivamente gastado.
+ *
+ * Las compras canceladas no representan dinero gastado.
+ * Las compras archivadas sí se consideran, ya que archivar
+ * solo las excluye del período administrativo actual.
+ */
+export function calcularTotalGastado(compras) {
+
+    return compras
+        .filter(
+            (compra) =>
+                compra.estado !==
+                "cancelada"
+        )
+        .reduce(
+            (suma, compra) =>
+                suma +
+                Number(
+                    compra.subtotal ||
+                    0
+                ),
+            0
+        );
+
+}
 
 /*
  * Calcula las estadísticas del negocio a partir de las compras.

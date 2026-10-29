@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import useTitulo from "../../hooks/useTitulo";
 import { leerCompras } from "../../services/compraService";
+import { calcularTotalGastado } from "../../utils/estadisticas";
 
 function formatearPrecio(valor) {
     return Number(valor).toLocaleString("es-CL", {
@@ -24,10 +25,10 @@ function AdminHistorialUsuario() {
         .filter((compra) => compra.usuarioId === id)
         .reverse();
 
-    const totalGastado = compras.reduce(
-        (suma, compra) => suma + Number(compra.subtotal),
-        0
-    );
+    const totalGastado =
+        calcularTotalGastado(
+            compras
+        );
 
     if (!usuario) {
         return (
@@ -80,7 +81,10 @@ function AdminHistorialUsuario() {
                                         <th>Fecha</th>
                                         <th>Productos</th>
                                         <th>Total</th>
-                                        <th className="text-end">Acciones</th>
+                                        <th>Estado</th>
+                                        <th className="text-end">
+                                            Acciones
+                                        </th>
                                     </tr>
                                 </thead>
 
@@ -97,6 +101,19 @@ function AdminHistorialUsuario() {
                                             <td>{compra.cantidadProductos}</td>
 
                                             <td>{formatearPrecio(compra.subtotal)}</td>
+
+                                            <td>
+                                                <span
+                                                    className={
+                                                        compra.estado ===
+                                                        "cancelada"
+                                                            ? "badge text-bg-danger"
+                                                            : "badge text-bg-secondary"
+                                                    }
+                                                >
+                                                    {compra.estado}
+                                                </span>
+                                            </td>
 
                                             <td className="text-end">
                                                 <Link

@@ -9,6 +9,7 @@ import useTitulo from "../hooks/useTitulo";
 import ConfirmarCompraModal from "../components/ConfirmarCompraModal";
 import { guardarCompra } from "../services/compraService";
 import { REGIONES, obtenerComunas } from "../data/regionesComunas";
+import { validarCheckout } from "../utils/validaciones";
 
 
 // Texto que se muestra en la confirmación para cada método de pago.
@@ -60,7 +61,10 @@ function Checkout() {
         vaciarCarrito
     } = useCart();
 
-    const { descontarStock } = useProducts();
+    const {
+        verificarDisponibilidad,
+        descontarStock
+    } = useProducts();
 
     const [formulario, setFormulario] = useState(
         () => crearFormularioInicial(usuarioActual)
@@ -107,26 +111,18 @@ function Checkout() {
 
         evento.preventDefault();
 
-        const camposObligatorios = [
-            formulario.nombre,
-            formulario.apellido,
-            formulario.correo,
-            formulario.telefono,
-            formulario.direccion,
-            formulario.region,
-            formulario.comuna,
-            formulario.metodoPago
-        ];
+        const error =
+            validarCheckout(
+                formulario
+            );
 
-        const formularioCompleto = camposObligatorios.every(
-            (campo) => String(campo).trim().length > 0
-        );
 
-        if (!formularioCompleto) {
+        if (error) {
 
             setMensaje({
                 tipo: "danger",
-                texto: "Debes completar todos los datos requeridos para continuar."
+                texto:
+                    error
             });
 
             return;
@@ -155,12 +151,22 @@ function Checkout() {
          carrito pudo quedar guardado varios días y el catálogo cambiar
          en ese tiempo. Si no alcanza, no se descuenta ni se guarda.
          */
-        const stock = descontarStock(carrito);
+        const stock =
+            verificarDisponibilidad(
+                carrito
+            );
 
         if (!stock.ok) {
-            navigate("/compra-error", {
-                state: { mensaje: stock.mensaje }
-            });
+
+            navigate(
+                "/compra-error",
+                {
+                    state: {
+                        mensaje:
+                            stock.mensaje
+                    }
+                }
+            );
 
             return;
 
@@ -196,6 +202,10 @@ function Checkout() {
                 estado: "confirmada"
 
             });
+
+            descontarStock(
+                carrito
+            );
 
             setCompraRealizada(true);
 

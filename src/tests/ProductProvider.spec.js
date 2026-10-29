@@ -191,6 +191,134 @@ describe("ProductProvider", () => {
 
         });
 
+        it("debe sincronizar los productos cuando otra pestaña modifica localStorage", () => {
+
+                guardarCatalogoPrueba();
+
+                renderizarProductos();
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(2);
+
+
+                const catalogoExterno = [
+
+                    ...catalogoPrueba,
+
+                    {
+                        id: 3,
+                        nombre:
+                            "Musette externa",
+
+                        categoria:
+                            "musette",
+
+                        precio:
+                            18000,
+
+                        descripcion:
+                            "Producto agregado desde otra pestaña.",
+
+                        descripcionCompleta:
+                            "Producto agregado desde otra pestaña.",
+
+                        imagen:
+                            "/img/test.png",
+
+                        stock:
+                            6
+                    }
+
+                ];
+
+
+                act(() => {
+
+                    localStorage.setItem(
+                        CLAVE_PRODUCTOS,
+                        JSON.stringify(
+                            catalogoExterno
+                        )
+                    );
+
+
+                    window.dispatchEvent(
+                        new StorageEvent(
+                            "storage",
+                            {
+                                key:
+                                    CLAVE_PRODUCTOS,
+
+                                newValue:
+                                    JSON.stringify(
+                                        catalogoExterno
+                                    )
+                            }
+                        )
+                    );
+
+                });
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(3);
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(3)
+                        .nombre
+                ).toBe(
+                    "Musette externa"
+                );
+
+            }
+        );
+
+        it(
+            "debe ignorar eventos storage de otras claves",
+            () => {
+
+                guardarCatalogoPrueba();
+
+                renderizarProductos();
+
+
+                act(() => {
+
+                    localStorage.setItem(
+                        "otra_clave",
+                        JSON.stringify([
+                            {
+                                id: 99
+                            }
+                        ])
+                    );
+
+
+                    window.dispatchEvent(
+                        new StorageEvent(
+                            "storage",
+                            {
+                                key:
+                                    "otra_clave"
+                            }
+                        )
+                    );
+
+                });
+
+
+                expect(
+                    productosApi.totalProductos
+                ).toBe(2);
+
+            }
+        );
+        
     });
 
 
@@ -365,6 +493,170 @@ describe("ProductProvider", () => {
 
     });
 
+    describe("stock de productos", () => {
+
+        beforeEach(() => {
+            guardarCatalogoPrueba();
+            renderizarProductos();
+        });
+
+
+        it(
+            "debe verificar stock sin modificar el catálogo",
+            () => {
+
+                const resultado =
+                    productosApi
+                        .verificarDisponibilidad([
+                            {
+                                id: 1,
+                                cantidad: 3
+                            }
+                        ]);
+
+
+                expect(
+                    resultado.ok
+                ).toBeTrue();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(10);
+
+            }
+        );
+
+
+        it(
+            "debe detectar cuando no existe stock suficiente sin modificarlo",
+            () => {
+
+                const resultado =
+                    productosApi
+                        .verificarDisponibilidad([
+                            {
+                                id: 2,
+                                cantidad: 10
+                            }
+                        ]);
+
+
+                expect(
+                    resultado.ok
+                ).toBeFalse();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(2)
+                        .stock
+                ).toBe(4);
+
+            }
+        );
+
+
+        it(
+            "debe descontar el stock cuando existe disponibilidad",
+            () => {
+
+                let resultado;
+
+
+                act(() => {
+
+                    resultado =
+                        productosApi
+                            .descontarStock([
+                                {
+                                    id: 1,
+                                    cantidad: 3
+                                }
+                            ]);
+
+                });
+
+
+                expect(
+                    resultado.ok
+                ).toBeTrue();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(7);
+
+            }
+        );
+
+
+        it(
+            "no debe modificar el stock cuando la cantidad solicitada supera la disponible",
+            () => {
+
+                let resultado;
+
+
+                act(() => {
+
+                    resultado =
+                        productosApi
+                            .descontarStock([
+                                {
+                                    id: 2,
+                                    cantidad: 10
+                                }
+                            ]);
+
+                });
+
+
+                expect(
+                    resultado.ok
+                ).toBeFalse();
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(2)
+                        .stock
+                ).toBe(4);
+
+            }
+        );
+
+        it(
+            "debe reponer el stock de una compra cancelada",
+            () => {
+
+                act(() => {
+
+                    productosApi
+                        .reponerStock([
+                            {
+                                id: 1,
+                                cantidad: 3
+                            }
+                        ]);
+
+                });
+
+
+                expect(
+                    productosApi
+                        .obtenerProducto(1)
+                        .stock
+                ).toBe(13);
+
+            }
+        );
+
+    });
 
     describe("restaurarProductos", () => {
 

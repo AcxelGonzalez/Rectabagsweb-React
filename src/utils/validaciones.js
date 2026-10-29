@@ -137,6 +137,72 @@ export function validarTelefono(telefono) {
 
 }
 
+/*
+ * Valida los datos necesarios para completar una compra.
+ *
+ * Reutiliza las reglas generales del proyecto para correo
+ * y teléfono, evitando mantener validaciones diferentes
+ * entre Registro, Auth y Checkout.
+ */
+export function validarCheckout(formulario) {
+
+    const camposObligatorios = [
+        "nombre",
+        "apellido",
+        "correo",
+        "telefono",
+        "direccion",
+        "region",
+        "comuna",
+        "metodoPago"
+    ];
+
+
+    const faltaCampo =
+        camposObligatorios.some(
+            (campo) =>
+                !String(
+                    formulario?.[campo] || ""
+                ).trim()
+        );
+
+
+    if (faltaCampo) {
+
+        return "Debes completar todos los datos requeridos para continuar.";
+
+    }
+
+
+    const errorCorreo =
+        validarCorreo(
+            formulario.correo
+        );
+
+
+    if (errorCorreo) {
+
+        return errorCorreo;
+
+    }
+
+
+    const errorTelefono =
+        validarTelefono(
+            formulario.telefono
+        );
+
+
+    if (errorTelefono) {
+
+        return errorTelefono;
+
+    }
+
+
+    return null;
+
+}
 
 /*
  * Validaciones del formulario de productos (panel administrador).
