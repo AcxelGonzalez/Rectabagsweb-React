@@ -34,7 +34,7 @@ export function guardarCompra(
     const compra = {
 
         id:
-            `RB-${Date.now()}`,
+            `RB-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
 
         fecha:
             new Date().toISOString(),
