@@ -1,8 +1,4 @@
-import {
-    guardarCompra,
-    leerCompraPorId
-} from "../services/compraService";
-
+import { guardarCompra, leerCompraPorId } from "../services/compraService";
 
 describe(
     "compraService",
@@ -65,8 +61,8 @@ describe(
 
                 expect(
                     compra.id
-                ).toBe(
-                    "RB-1000"
+                ).toMatch(
+                    /^RB-1000-/
                 );
 
 
@@ -126,15 +122,15 @@ describe(
 
                 expect(
                     comprasGuardadas[0].id
-                ).toBe(
-                    "RB-1000"
+                ).toMatch(
+                    /^RB-1000-/
                 );
 
 
                 expect(
                     comprasGuardadas[1].id
-                ).toBe(
-                    "RB-2000"
+                ).toMatch(
+                    /^RB-2000-/
                 );
 
             }
@@ -153,18 +149,19 @@ describe(
                 );
 
 
-                guardarCompra({
-                    usuarioId:
-                        "usuario-prueba",
+                const guardada =
+                    guardarCompra({
+                        usuarioId:
+                            "usuario-prueba",
 
-                    subtotal:
-                        75000
-                });
+                        subtotal:
+                            75000
+                    });
 
 
                 const compra =
                     leerCompraPorId(
-                        "RB-3000"
+                        guardada.id
                     );
 
 
@@ -175,8 +172,8 @@ describe(
 
                 expect(
                     compra.id
-                ).toBe(
-                    "RB-3000"
+                ).toMatch(
+                    /^RB-3000-/
                 );
 
 
@@ -267,8 +264,8 @@ describe(
 
                 expect(
                     compra.id
-                ).toBe(
-                    "RB-4000"
+                ).toMatch(
+                    /^RB-4000-/
                 );
 
 

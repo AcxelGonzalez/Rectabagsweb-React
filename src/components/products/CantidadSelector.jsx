@@ -56,7 +56,7 @@ function CantidadSelector({
                 maximo,
                 Math.max(
                     1,
-                    nuevaCantidad
+                    Math.trunc(nuevaCantidad)
                 )
             );
 
@@ -90,6 +90,7 @@ function CantidadSelector({
                 value={cantidad}
                 min="1"
                 max={maximo}
+                step="1"
                 onChange={
                     manejarCambio
                 }
