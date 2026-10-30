@@ -2,10 +2,24 @@
  * Compras que cuentan para las estadísticas:
  * no archivadas (paso 8c) y no canceladas.
  */
-export function comprasDelPeriodo(compras) {
-    return compras.filter(
-        (compra) => !compra.archivada && compra.estado !== "cancelada"
+export function comprasDelPeriodo(
+    compras
+) {
+
+    const lista =
+        Array.isArray(compras)
+            ? compras
+            : [];
+
+
+    return lista.filter(
+        (compra) =>
+            compra &&
+            !compra.archivada &&
+            compra.estado !==
+                "cancelada"
     );
+
 }
 
 /*
@@ -15,13 +29,22 @@ export function comprasDelPeriodo(compras) {
  * Las compras archivadas sí se consideran, ya que archivar
  * solo las excluye del período administrativo actual.
  */
-export function calcularTotalGastado(compras) {
+export function calcularTotalGastado(
+    compras
+) {
 
-    return compras
+    const lista =
+        Array.isArray(compras)
+            ? compras
+            : [];
+
+
+    return lista
         .filter(
             (compra) =>
+                compra &&
                 compra.estado !==
-                "cancelada"
+                    "cancelada"
         )
         .reduce(
             (suma, compra) =>
@@ -62,22 +85,89 @@ export function calcularEstadisticas(compras) {
     // Agrupa las ventas por producto
     const ventasPorProducto = {};
 
-    validas.forEach((compra) => {
-        compra.productos.forEach((producto) => {
+    validas.forEach(
+        (compra) => {
 
-            if (!ventasPorProducto[producto.id]) {
-                ventasPorProducto[producto.id] = {
-                    nombre: producto.nombre,
-                    unidades: 0,
-                    total: 0
-                };
-            }
+            const productos =
+                Array.isArray(
+                    compra.productos
+                )
+                    ? compra.productos
+                    : [];
 
-            ventasPorProducto[producto.id].unidades += Number(producto.cantidad);
-            ventasPorProducto[producto.id].total += Number(producto.precio) * Number(producto.cantidad);
 
-        });
-    });
+            productos.forEach(
+                (producto) => {
+
+                    if (
+                        !producto ||
+                        producto.id ===
+                            undefined ||
+                        producto.id ===
+                            null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const cantidad =
+                        Number(
+                            producto.cantidad ||
+                            0
+                        );
+
+
+                    const precio =
+                        Number(
+                            producto.precio ||
+                            0
+                        );
+
+
+                    if (
+                        !ventasPorProducto[
+                            producto.id
+                        ]
+                    ) {
+
+                        ventasPorProducto[
+                            producto.id
+                        ] = {
+
+                            nombre:
+                                producto.nombre ||
+                                "Producto",
+
+                            unidades:
+                                0,
+
+                            total:
+                                0
+
+                        };
+
+                    }
+
+
+                    ventasPorProducto[
+                        producto.id
+                    ].unidades +=
+                        cantidad;
+
+
+                    ventasPorProducto[
+                        producto.id
+                    ].total +=
+                        precio *
+                        cantidad;
+
+                }
+            );
+
+        }
+    );
 
     // De más vendido a menos vendido
     const rankingProductos = Object.values(ventasPorProducto)
@@ -86,11 +176,35 @@ export function calcularEstadisticas(compras) {
     // Cuántas compras hay en cada estado (incluye canceladas)
     const comprasPorEstado = {};
 
-    compras
-        .filter((compra) => !compra.archivada)
-        .forEach((compra) => {
-            comprasPorEstado[compra.estado] = (comprasPorEstado[compra.estado] || 0) + 1;
-        });
+    const listaCompras =
+        Array.isArray(compras)
+            ? compras
+            : [];
+
+
+    listaCompras
+        .filter(
+            (compra) =>
+                compra &&
+                !compra.archivada &&
+                compra.estado
+        )
+        .forEach(
+            (compra) => {
+
+                comprasPorEstado[
+                    compra.estado
+                ] =
+                    (
+                        comprasPorEstado[
+                            compra.estado
+                        ] ||
+                        0
+                    ) +
+                    1;
+
+            }
+        );
 
     return {
         cantidadOrdenes: validas.length,
