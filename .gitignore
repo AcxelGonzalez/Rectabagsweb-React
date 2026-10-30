@@ -1,6 +1,10 @@
 node_modules/
 dist/
 coverage/
+.vitest/
 
 .env
 .DS_Store
+
+# Archivos temporales de editores de documentos
+.~lock.*#

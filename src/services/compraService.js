@@ -102,6 +102,87 @@ export const ESTADOS_COMPRA = [
     "cancelada"
 ];
 
+/*
+ * Define las transiciones válidas entre estados.
+ *
+ * Esto evita saltos incoherentes como:
+ * confirmada → entregada
+ * entregada → cancelada
+ * cancelada → enviada
+ */
+const TRANSICIONES_COMPRA = {
+
+    "confirmada": [
+        "en preparación",
+        "cancelada"
+    ],
+
+    "en preparación": [
+        "enviada",
+        "cancelada"
+    ],
+
+    "enviada": [
+        "entregada"
+    ],
+
+    "entregada": [],
+
+    "cancelada": [
+        "confirmada"
+    ]
+
+};
+
+/*
+ * Devuelve los estados a los que una compra
+ * puede avanzar desde su estado actual.
+ */
+export function obtenerEstadosPermitidos(
+    estadoActual
+) {
+
+    const estados =
+        TRANSICIONES_COMPRA[
+            estadoActual
+        ];
+
+
+    return Array.isArray(estados)
+        ? [...estados]
+        : [];
+
+}
+
+/*
+ * Una orden solamente puede archivarse cuando su ciclo
+ * ya terminó.
+ *
+ * Las órdenes todavía en proceso deben permanecer activas
+ * para que puedan continuar avanzando de estado.
+ */
+export function esCompraArchivable(
+    compra
+) {
+
+    if (
+        !compra ||
+        compra.archivada
+    ) {
+
+        return false;
+
+    }
+
+
+    return [
+        "entregada",
+        "cancelada"
+    ].includes(
+        compra.estado
+    );
+
+}
 
 /*
  * Color de Bootstrap para mostrar cada estado.
@@ -124,66 +205,172 @@ export function colorEstado(estado) {
  * Cambia el estado de una compra y la guarda.
  * Devuelve la compra actualizada, o null si no existe.
  */
-export function actualizarEstadoCompra(compraId, nuevoEstado) {
+export function actualizarEstadoCompra(
+    compraId,
+    nuevoEstado
+) {
 
-    if (!ESTADOS_COMPRA.includes(nuevoEstado)) {
+    if (
+        !ESTADOS_COMPRA.includes(
+            nuevoEstado
+        )
+    ) {
+
         return null;
+
     }
 
-    let compraActualizada = null;
 
-    const compras = leerCompras().map((compra) => {
+    const compras =
+        leerCompras();
 
-        if (compra.id !== compraId) {
-            return compra;
-        }
 
-        compraActualizada = { ...compra, estado: nuevoEstado };
+    const compraExistente =
+        compras.find(
+            (compra) =>
+                compra.id ===
+                compraId
+        );
 
-        return compraActualizada;
 
-    });
+    if (!compraExistente) {
 
-    if (!compraActualizada) {
         return null;
+
     }
+
+
+    /*
+     * Una compra perteneciente a un período cerrado
+     * queda protegida contra modificaciones.
+     */
+    if (
+        compraExistente.archivada
+    ) {
+
+        return null;
+
+    }
+
+
+    const estadosPermitidos =
+        obtenerEstadosPermitidos(
+            compraExistente.estado
+        );
+
+
+    /*
+     * Rechazamos cualquier salto de estado
+     * que no pertenezca al flujo permitido.
+     */
+    if (
+        !estadosPermitidos.includes(
+            nuevoEstado
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    const compraActualizada = {
+
+        ...compraExistente,
+
+        estado:
+            nuevoEstado
+
+    };
+
+
+    const comprasActualizadas =
+        compras.map(
+            (compra) =>
+                compra.id ===
+                compraId
+                    ? compraActualizada
+                    : compra
+        );
+
 
     localStorage.setItem(
         CLAVE_COMPRAS,
-        JSON.stringify(compras)
+        JSON.stringify(
+            comprasActualizadas
+        )
     );
+
 
     return compraActualizada;
 
 }
 
 /*
- * Cierre de periodo: marca como archivadas todas las compras
- * que aún no lo están. No se borran: el cliente las sigue viendo.
- * Devuelve cuántas compras se archivaron.
+ * Cierre de periodo.
+ *
+ * Solo archiva órdenes cuyo ciclo ya terminó:
+ * - entregadas
+ * - canceladas
+ *
+ * Las órdenes todavía activas permanecen disponibles
+ * para continuar su procesamiento.
+ *
+ * Las compras no se eliminan: el cliente mantiene
+ * acceso a su historial.
  */
 export function archivarCompras() {
 
-    const fechaCierre = new Date().toISOString();
+    const fechaCierre =
+        new Date()
+            .toISOString();
 
-    let cantidad = 0;
 
-    const compras = leerCompras().map((compra) => {
+    let cantidad =
+        0;
 
-        if (compra.archivada) {
-            return compra;
-        }
 
-        cantidad++;
+    const compras =
+        leerCompras()
+            .map(
+                (compra) => {
 
-        return { ...compra, archivada: true, fechaCierre };
+                    if (
+                        !esCompraArchivable(
+                            compra
+                        )
+                    ) {
 
-    });
+                        return compra;
+
+                    }
+
+
+                    cantidad++;
+
+
+                    return {
+
+                        ...compra,
+
+                        archivada:
+                            true,
+
+                        fechaCierre
+
+                    };
+
+                }
+            );
+
 
     localStorage.setItem(
         CLAVE_COMPRAS,
-        JSON.stringify(compras)
+        JSON.stringify(
+            compras
+        )
     );
+
 
     return cantidad;
 

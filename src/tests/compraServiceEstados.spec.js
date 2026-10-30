@@ -100,24 +100,77 @@ describe("compraService · estados de las órdenes", () => {
 
     describe("actualizarEstadoCompra", () => {
 
-        it("debe cambiar el estado de la orden indicada", () => {
+        it(
+            "debe cambiar el estado de la orden indicada",
+            () => {
 
-            const id = crearCompra();
-            const resultado = actualizarEstadoCompra(id, "enviada");
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "confirmada"
+                    });
 
-            expect(resultado.estado).toBe("enviada");
 
-        });
+                const actualizada =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "en preparación"
+                    );
 
-        it("debe guardar el cambio, no solo devolverlo", () => {
 
-            const id = crearCompra();
+                expect(
+                    actualizada
+                ).not.toBeNull();
 
-            actualizarEstadoCompra(id, "entregada");
 
-            expect(leerCompra(id).estado).toBe("entregada");
+                expect(
+                    actualizada.estado
+                ).toBe(
+                    "en preparación"
+                );
 
-        });
+            }
+        );
+
+        it(
+            "debe guardar el cambio, no solo devolverlo",
+            () => {
+
+                const id =
+                    crearCompra();
+
+
+                const actualizada =
+                    actualizarEstadoCompra(
+                        id,
+                        "en preparación"
+                    );
+
+
+                expect(
+                    actualizada
+                ).not.toBeNull();
+
+
+                const guardada =
+                    leerCompra(
+                        id
+                    );
+
+
+                expect(
+                    guardada
+                ).toBeDefined();
+
+
+                expect(
+                    guardada.estado
+                ).toBe(
+                    "en preparación"
+                );
+
+            }
+        );
 
         it("debe permitir cancelar una orden", () => {
 
@@ -171,55 +224,261 @@ describe("compraService · estados de las órdenes", () => {
     });
 
 
-    describe("archivarCompras", () => {
+    describe(
+        "archivarCompras",
+        () => {
 
-        it("debe archivar todas las órdenes pendientes", () => {
+            it(
+                "debe archivar órdenes entregadas y canceladas",
+                () => {
 
-            crearCompra();
-            crearCompra();
+                    const entregada =
+                        crearCompra({
+                            estado:
+                                "entregada"
+                        });
 
-            expect(archivarCompras()).toBe(2);
 
-        });
+                    const cancelada =
+                        crearCompra({
+                            estado:
+                                "cancelada"
+                        });
 
-        it("debe marcar cada orden como archivada con su fecha de cierre", () => {
 
-            const id = crearCompra();
+                    expect(
+                        archivarCompras()
+                    ).toBe(2);
 
-            archivarCompras();
 
-            expect(leerCompra(id).archivada).toBeTrue();
-            expect(leerCompra(id).fechaCierre).toBeDefined();
+                    expect(
+                        leerCompra(
+                            entregada
+                        ).archivada
+                    ).toBe(true);
 
-        });
 
-        it("no debe volver a archivar lo que ya estaba archivado", () => {
+                    expect(
+                        leerCompra(
+                            cancelada
+                        ).archivada
+                    ).toBe(true);
 
-            crearCompra();
+                }
+            );
 
-            archivarCompras();
 
-            expect(archivarCompras()).toBe(0);
+            it(
+                "no debe archivar órdenes que todavía están activas",
+                () => {
 
-        });
+                    const confirmada =
+                        crearCompra({
+                            estado:
+                                "confirmada"
+                        });
 
-        it("debe conservar las órdenes archivadas, no borrarlas", () => {
 
-            crearCompra();
+                    const preparacion =
+                        crearCompra({
+                            estado:
+                                "en preparación"
+                        });
 
-            archivarCompras();
 
-            expect(leerCompras().length).toBe(1);
+                    const enviada =
+                        crearCompra({
+                            estado:
+                                "enviada"
+                        });
 
-        });
 
-        it("debe devolver cero cuando no hay ninguna orden", () => {
+                    expect(
+                        archivarCompras()
+                    ).toBe(0);
 
-            expect(archivarCompras()).toBe(0);
 
-        });
+                    expect(
+                        leerCompra(
+                            confirmada
+                        ).archivada
+                    ).not.toBe(true);
 
-    });
+
+                    expect(
+                        leerCompra(
+                            preparacion
+                        ).archivada
+                    ).not.toBe(true);
+
+
+                    expect(
+                        leerCompra(
+                            enviada
+                        ).archivada
+                    ).not.toBe(true);
+
+                }
+            );
+
+
+            it(
+                "debe archivar solo las finalizadas y mantener activas las demás",
+                () => {
+
+                    const entregada =
+                        crearCompra({
+                            estado:
+                                "entregada"
+                        });
+
+
+                    const cancelada =
+                        crearCompra({
+                            estado:
+                                "cancelada"
+                        });
+
+
+                    const confirmada =
+                        crearCompra({
+                            estado:
+                                "confirmada"
+                        });
+
+
+                    const enviada =
+                        crearCompra({
+                            estado:
+                                "enviada"
+                        });
+
+
+                    expect(
+                        archivarCompras()
+                    ).toBe(2);
+
+
+                    expect(
+                        leerCompra(
+                            entregada
+                        ).archivada
+                    ).toBe(true);
+
+
+                    expect(
+                        leerCompra(
+                            cancelada
+                        ).archivada
+                    ).toBe(true);
+
+
+                    expect(
+                        leerCompra(
+                            confirmada
+                        ).archivada
+                    ).not.toBe(true);
+
+
+                    expect(
+                        leerCompra(
+                            enviada
+                        ).archivada
+                    ).not.toBe(true);
+
+                }
+            );
+
+
+            it(
+                "debe guardar la fecha de cierre en las órdenes archivadas",
+                () => {
+
+                    const id =
+                        crearCompra({
+                            estado:
+                                "entregada"
+                        });
+
+
+                    archivarCompras();
+
+
+                    expect(
+                        leerCompra(
+                            id
+                        ).archivada
+                    ).toBe(true);
+
+
+                    expect(
+                        leerCompra(
+                            id
+                        ).fechaCierre
+                    ).toBeDefined();
+
+                }
+            );
+
+
+            it(
+                "no debe volver a archivar una orden ya archivada",
+                () => {
+
+                    crearCompra({
+                        estado:
+                            "entregada"
+                    });
+
+
+                    expect(
+                        archivarCompras()
+                    ).toBe(1);
+
+
+                    expect(
+                        archivarCompras()
+                    ).toBe(0);
+
+                }
+            );
+
+
+            it(
+                "debe conservar las órdenes archivadas y no borrarlas",
+                () => {
+
+                    crearCompra({
+                        estado:
+                            "entregada"
+                    });
+
+
+                    archivarCompras();
+
+
+                    expect(
+                        leerCompras()
+                            .length
+                    ).toBe(1);
+
+                }
+            );
+
+
+            it(
+                "debe devolver cero cuando no existen órdenes",
+                () => {
+
+                    expect(
+                        archivarCompras()
+                    ).toBe(0);
+
+                }
+            );
+
+        }
+    );
 
 
     describe("resistencia a datos dañados", () => {

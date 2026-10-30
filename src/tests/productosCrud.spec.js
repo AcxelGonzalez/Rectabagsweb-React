@@ -122,7 +122,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = crearProducto(lista, datosValidos());
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(resultado.productos.length).toBe(3);
             expect(resultado.producto.id).toBe(3);
 
@@ -152,7 +152,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 datosValidos({ nombre: "" })
             );
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.productos.length).toBe(2);
 
         });
@@ -164,7 +164,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 datosValidos({ precio: 0 })
             );
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.mensaje).toContain("precio");
 
         });
@@ -176,7 +176,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 datosValidos({ categoria: "zapatos" })
             );
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
 
         });
 
@@ -187,7 +187,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 datosValidos({ nombre: "rc-30" })
             );
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.mensaje).toBe("Ya existe un producto con ese nombre.");
 
         });
@@ -201,7 +201,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = actualizarProducto(lista, 1, { precio: 49990 });
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(resultado.productos[0].precio).toBe(49990);
             expect(resultado.productos[1].precio).toBe(25000);
 
@@ -228,7 +228,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = actualizarProducto(lista, 99, { precio: 1000 });
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.mensaje).toContain("No se encontró");
 
         });
@@ -237,7 +237,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = actualizarProducto(lista, 1, { stock: -4 });
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
 
         });
 
@@ -249,7 +249,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 { nombre: "Cilindro CL-10" }
             );
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
 
         });
 
@@ -261,7 +261,7 @@ describe("CRUD de productos (capa de datos)", () => {
                 { nombre: "RC-30", precio: 46000 }
             );
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
 
         });
 
@@ -274,7 +274,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = eliminarProducto(lista, 1);
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(resultado.productos.length).toBe(1);
             expect(resultado.productos[0].id).toBe(2);
 
@@ -292,7 +292,7 @@ describe("CRUD de productos (capa de datos)", () => {
 
             const resultado = eliminarProducto(lista, 99);
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.productos.length).toBe(2);
 
         });

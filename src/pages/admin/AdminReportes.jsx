@@ -4,7 +4,8 @@ import useTitulo from "../../hooks/useTitulo";
 import {
     leerCompras,
     colorEstado,
-    archivarCompras
+    archivarCompras,
+    esCompraArchivable
 } from "../../services/compraService";
 import { calcularEstadisticas } from "../../utils/estadisticas";
 
@@ -52,8 +53,12 @@ function AdminReportes() {
         comprasPorEstado
     } = calcularEstadisticas(compras);
 
+    const cantidadArchivables =
+        compras.filter(
+            esCompraArchivable
+        ).length;
 
-    function descargarPdf() {
+    function imprimirReporte() {
         window.print();
     }
 
@@ -65,7 +70,9 @@ function AdminReportes() {
         setCompras(leerCompras());
         setConfirmandoCierre(false);
 
-        setMensaje(`Periodo cerrado: se archivaron ${cantidad} órdenes.`);
+        setMensaje(
+            `Periodo cerrado: se archivaron ${cantidad} órdenes finalizadas. Las órdenes en proceso permanecen activas.`
+        );
 
     }
 
@@ -96,15 +103,23 @@ function AdminReportes() {
                         <button
                             type="button"
                             className="btn btn-outline-dark"
-                            onClick={descargarPdf}
+                            onClick={imprimirReporte}
                         >
-                            Descargar PDF
+                            Imprimir / Guardar como PDF
                         </button>
                         <button
                             type="button"
                             className="btn btn-danger"
-                            onClick={() => setConfirmandoCierre(true)}
-                            disabled={cantidadOrdenes === 0 && Object.keys(comprasPorEstado).length === 0}
+                            onClick={
+                                () =>
+                                    setConfirmandoCierre(
+                                        true
+                                    )
+                            }
+                            disabled={
+                                cantidadArchivables ===
+                                0
+                            }
                         >
                             Cerrar periodo
                         </button>
@@ -255,12 +270,21 @@ function AdminReportes() {
 
                                 <div className="modal-body">
                                     <p>
-                                        Las órdenes actuales se <strong>archivarán</strong>: ya no
-                                        aparecerán en Órdenes ni en Reportes. Los clientes las
-                                        seguirán viendo en su perfil.
+                                        Solo se archivarán las órdenes
+                                        <strong> entregadas o canceladas</strong>.
+                                        Estas dejarán de aparecer entre las órdenes
+                                        activas y en las estadísticas del período,
+                                        pero los clientes seguirán viéndolas en su historial.
                                     </p>
+
+                                    <p>
+                                        Las órdenes
+                                        <strong> confirmadas, en preparación o enviadas</strong>
+                                        permanecerán activas para continuar su procesamiento.
+                                    </p>
+
                                     <p className="mb-0">
-                                        Te recomendamos <strong>descargar el PDF</strong> antes de cerrar.
+                                        Te recomendamos <strong>imprimir o guardar el reporte como PDF</strong> antes de cerrar.
                                     </p>
                                 </div>
 

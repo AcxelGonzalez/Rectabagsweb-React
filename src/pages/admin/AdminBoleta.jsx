@@ -6,7 +6,7 @@ import Boleta from "../../components/Boleta";
 import {
     leerCompraPorId,
     actualizarEstadoCompra,
-    ESTADOS_COMPRA
+    obtenerEstadosPermitidos
 } from "../../services/compraService";
 
 function AdminBoleta() {
@@ -40,6 +40,11 @@ function AdminBoleta() {
             </section>
         );
     }
+
+    const estadosPermitidos =
+        obtenerEstadosPermitidos(
+            compra.estado
+        );
 
     function cambiarEstado(evento) {
 
@@ -227,25 +232,55 @@ function AdminBoleta() {
     }
 
     // Selector que se envía a la boleta como prop
-    const selectorEstado = (
-        <div className="align-self-start">
-            <label htmlFor="estado-compra" className="form-label small text-secondary mb-1">
-                Estado de la orden
-            </label>
-            <select
-                id="estado-compra"
-                className="form-select form-select-sm text-capitalize"
-                value={compra.estado}
-                onChange={cambiarEstado}
-            >
-                {ESTADOS_COMPRA.map((estado) => (
-                    <option key={estado} value={estado}>
-                        {estado}
-                    </option>
-                ))}
-            </select>
-        </div>
-    );
+    const puedeEditarEstado =
+        !compra.archivada &&
+        estadosPermitidos.length > 0;
+
+
+    const selectorEstado =
+        puedeEditarEstado
+            ? (
+                <div className="align-self-start">
+
+                    <label
+                        htmlFor="estado-compra"
+                        className="form-label small text-secondary mb-1"
+                    >
+                        Estado de la orden
+                    </label>
+
+                    <select
+                        id="estado-compra"
+                        className="form-select form-select-sm text-capitalize"
+                        value={compra.estado}
+                        onChange={cambiarEstado}
+                    >
+
+                        <option
+                            value={compra.estado}
+                        >
+                            {compra.estado}
+                        </option>
+
+
+                        {estadosPermitidos.map(
+                            (estado) => (
+
+                                <option
+                                    key={estado}
+                                    value={estado}
+                                >
+                                    {estado}
+                                </option>
+
+                            )
+                        )}
+
+                    </select>
+
+                </div>
+            )
+            : null;
 
     return (
 
@@ -255,6 +290,17 @@ function AdminBoleta() {
                 <Link to="/admin/ordenes" className="small text-secondary">
                     ← Volver a órdenes
                 </Link>
+
+                {compra.archivada && (
+
+                    <div
+                        className="alert alert-secondary mt-3 mb-0"
+                        role="alert"
+                    >
+                        Esta orden pertenece a un período cerrado y se encuentra en modo solo lectura.
+                    </div>
+
+                )}
 
                 {mensajeEstado && (
 

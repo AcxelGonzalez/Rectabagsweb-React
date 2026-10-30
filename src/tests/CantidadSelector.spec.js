@@ -140,9 +140,7 @@ describe(
             () => {
 
                 const onCambiar =
-                    jasmine.createSpy(
-                        "onCambiar"
-                    );
+                    vi.fn();
 
 
                 renderizarSelector({
@@ -180,9 +178,7 @@ describe(
 
                 expect(
                     onCambiar
-                        .calls
-                        .count()
-                ).toBe(1);
+                ).toHaveBeenCalledTimes(1);
 
             }
         );
@@ -193,9 +189,7 @@ describe(
             () => {
 
                 const onCambiar =
-                    jasmine.createSpy(
-                        "onCambiar"
-                    );
+                    vi.fn();
 
 
                 renderizarSelector({
@@ -233,9 +227,7 @@ describe(
 
                 expect(
                     onCambiar
-                        .calls
-                        .count()
-                ).toBe(1);
+                ).toHaveBeenCalledTimes(1);
 
             }
         );
@@ -304,9 +296,7 @@ describe(
             () => {
 
                 const onCambiar =
-                    jasmine.createSpy(
-                        "onCambiar"
-                    );
+                    vi.fn();
 
 
                 renderizarSelector({

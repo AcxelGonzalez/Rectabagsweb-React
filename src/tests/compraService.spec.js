@@ -1,4 +1,8 @@
-import { guardarCompra, leerCompraPorId } from "../services/compraService";
+import {
+    guardarCompra,
+    leerCompraPorId,
+    actualizarEstadoCompra
+} from "../services/compraService";
 
 describe(
     "compraService",
@@ -30,10 +34,10 @@ describe(
             "debe guardar una compra en LocalStorage",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     1000
                 );
 
@@ -86,13 +90,16 @@ describe(
             "debe conservar las compras anteriores al guardar una nueva",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValues(
-                    1000,
-                    2000
-                );
+                )
+                    .mockReturnValueOnce(
+                        1000
+                    )
+                    .mockReturnValueOnce(
+                        2000
+                    );
 
 
                 guardarCompra({
@@ -141,10 +148,10 @@ describe(
             "debe encontrar una compra utilizando su identificador",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     3000
                 );
 
@@ -239,10 +246,10 @@ describe(
                 );
 
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     4000
                 );
 
@@ -279,6 +286,295 @@ describe(
                         .subtotal
                 ).toBe(
                     30000
+                );
+
+            }
+        );
+
+        it(
+            "debe permitir avanzar de confirmada a en preparación",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        subtotal:
+                            30000,
+
+                        estado:
+                            "confirmada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "en preparación"
+                    );
+
+
+                expect(
+                    resultado
+                ).not.toBeNull();
+
+
+                expect(
+                    resultado.estado
+                ).toBe(
+                    "en preparación"
+                );
+
+
+                expect(
+                    leerCompraPorId(
+                        compra.id
+                    ).estado
+                ).toBe(
+                    "en preparación"
+                );
+
+            }
+        );
+
+        it(
+            "no debe permitir saltar de confirmada a enviada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "confirmada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "enviada"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
+
+
+                expect(
+                    leerCompraPorId(
+                        compra.id
+                    ).estado
+                ).toBe(
+                    "confirmada"
+                );
+
+            }
+        );
+
+        it(
+            "debe permitir avanzar de en preparación a enviada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "en preparación"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "enviada"
+                    );
+
+
+                expect(
+                    resultado
+                ).not.toBeNull();
+
+
+                expect(
+                    resultado.estado
+                ).toBe(
+                    "enviada"
+                );
+
+            }
+        );
+
+        it(
+            "debe permitir avanzar de enviada a entregada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "enviada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "entregada"
+                    );
+
+
+                expect(
+                    resultado
+                ).not.toBeNull();
+
+
+                expect(
+                    resultado.estado
+                ).toBe(
+                    "entregada"
+                );
+
+            }
+        );
+
+        it(
+            "no debe permitir cancelar una orden ya entregada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "entregada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "cancelada"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
+
+
+                expect(
+                    leerCompraPorId(
+                        compra.id
+                    ).estado
+                ).toBe(
+                    "entregada"
+                );
+
+            }
+        );
+
+        it(
+            "debe permitir reactivar una orden cancelada como confirmada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "cancelada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "confirmada"
+                    );
+
+
+                expect(
+                    resultado
+                ).not.toBeNull();
+
+
+                expect(
+                    resultado.estado
+                ).toBe(
+                    "confirmada"
+                );
+
+            }
+        );
+
+        it(
+            "no debe permitir reactivar una orden cancelada directamente como enviada",
+            () => {
+
+                const compra =
+                    guardarCompra({
+                        estado:
+                            "cancelada"
+                    });
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        compra.id,
+                        "enviada"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
+
+
+                expect(
+                    leerCompraPorId(
+                        compra.id
+                    ).estado
+                ).toBe(
+                    "cancelada"
+                );
+
+            }
+        );
+
+        it(
+            "no debe modificar el estado de una orden archivada",
+            () => {
+
+                localStorage.setItem(
+                    "recta_compras",
+                    JSON.stringify([
+                        {
+                            id:
+                                "RB-ARCHIVADA",
+
+                            estado:
+                                "confirmada",
+
+                            archivada:
+                                true,
+
+                            subtotal:
+                                30000
+                        }
+                    ])
+                );
+
+
+                const resultado =
+                    actualizarEstadoCompra(
+                        "RB-ARCHIVADA",
+                        "en preparación"
+                    );
+
+
+                expect(
+                    resultado
+                ).toBeNull();
+
+
+                expect(
+                    leerCompraPorId(
+                        "RB-ARCHIVADA"
+                    ).estado
+                ).toBe(
+                    "confirmada"
                 );
 
             }

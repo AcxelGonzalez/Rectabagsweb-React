@@ -75,7 +75,33 @@ export default defineConfig([
             globals: {
 
                 ...globals.browser,
-                ...globals.jasmine
+
+                describe:
+                    "readonly",
+
+                it:
+                    "readonly",
+
+                test:
+                    "readonly",
+
+                expect:
+                    "readonly",
+
+                beforeAll:
+                    "readonly",
+
+                afterAll:
+                    "readonly",
+
+                beforeEach:
+                    "readonly",
+
+                afterEach:
+                    "readonly",
+
+                vi:
+                    "readonly"
 
             }
 

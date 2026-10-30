@@ -69,7 +69,7 @@ describe("Sincronización del carrito con el catálogo", () => {
 
             const r = sincronizarCarrito(carritoDePrueba(), catalogoDePrueba());
 
-            expect(r.huboCambios).toBeFalse();
+            expect(r.huboCambios).toBe(false);
             expect(r.cambios.length).toBe(0);
 
         });
@@ -95,7 +95,7 @@ describe("Sincronización del carrito con el catálogo", () => {
                 catalogoDePrueba({ precio: 55000 })
             );
 
-            expect(r.huboCambios).toBeTrue();
+            expect(r.huboCambios).toBe(true);
             expect(r.carrito[0].precio).toBe(55000);
 
         });
@@ -148,7 +148,7 @@ describe("Sincronización del carrito con el catálogo", () => {
             );
 
             expect(r.carrito[0].cantidad).toBe(1);
-            expect(r.cambios.some((c) => c.tipo === "stock")).toBeTrue();
+            expect(r.cambios.some((c) => c.tipo === "stock")).toBe(true);
 
         });
 

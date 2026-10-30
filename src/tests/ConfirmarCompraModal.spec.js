@@ -7,13 +7,12 @@ import ConfirmarCompraModal
 
 
 /*
- Pruebas del componente ConfirmarCompraModal.
- 
+Pruebas del componente ConfirmarCompraModal.
  * Cubren las cuatro categorías pedidas:
- - renderizado correcto (la lista muestra todos los productos),
- - renderizado condicional (el método de pago solo si existe),
- - propiedades recibidas (incluida una función: formatearPrecio),
- - eventos (los clics ejecutan onConfirmar y onCancelar).
+    - renderizado correcto (la lista muestra todos los productos),
+    - renderizado condicional (el método de pago solo si existe),
+    - propiedades recibidas (incluida una función: formatearPrecio),
+    - eventos (los clics ejecutan onConfirmar y onCancelar).
  */
 
 describe("ConfirmarCompraModal", () => {
@@ -45,10 +44,16 @@ describe("ConfirmarCompraModal", () => {
             comuna: "Santiago",
             region: "Región Metropolitana",
             metodoPago: "Transferencia bancaria",
-            formatearPrecio: jasmine.createSpy("formatearPrecio")
-                .and.callFake(formatoPrueba),
-            onConfirmar: jasmine.createSpy("onConfirmar"),
-            onCancelar: jasmine.createSpy("onCancelar"),
+            formatearPrecio:
+                vi.fn(
+                    formatoPrueba
+                ),
+
+            onConfirmar:
+                vi.fn(),
+
+            onCancelar:
+                vi.fn(),
             ...cambios
         };
 
