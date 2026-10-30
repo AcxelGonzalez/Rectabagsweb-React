@@ -155,6 +155,36 @@ export function obtenerEstadosPermitidos(
 }
 
 /*
+ * Una orden solamente puede archivarse cuando su ciclo
+ * ya terminó.
+ *
+ * Las órdenes todavía en proceso deben permanecer activas
+ * para que puedan continuar avanzando de estado.
+ */
+export function esCompraArchivable(
+    compra
+) {
+
+    if (
+        !compra ||
+        compra.archivada
+    ) {
+
+        return false;
+
+    }
+
+
+    return [
+        "entregada",
+        "cancelada"
+    ].includes(
+        compra.estado
+    );
+
+}
+
+/*
  * Color de Bootstrap para mostrar cada estado.
  */
 export function colorEstado(estado) {
@@ -277,32 +307,70 @@ export function actualizarEstadoCompra(
 }
 
 /*
- * Cierre de periodo: marca como archivadas todas las compras
- * que aún no lo están. No se borran: el cliente las sigue viendo.
- * Devuelve cuántas compras se archivaron.
+ * Cierre de periodo.
+ *
+ * Solo archiva órdenes cuyo ciclo ya terminó:
+ * - entregadas
+ * - canceladas
+ *
+ * Las órdenes todavía activas permanecen disponibles
+ * para continuar su procesamiento.
+ *
+ * Las compras no se eliminan: el cliente mantiene
+ * acceso a su historial.
  */
 export function archivarCompras() {
 
-    const fechaCierre = new Date().toISOString();
+    const fechaCierre =
+        new Date()
+            .toISOString();
 
-    let cantidad = 0;
 
-    const compras = leerCompras().map((compra) => {
+    let cantidad =
+        0;
 
-        if (compra.archivada) {
-            return compra;
-        }
 
-        cantidad++;
+    const compras =
+        leerCompras()
+            .map(
+                (compra) => {
 
-        return { ...compra, archivada: true, fechaCierre };
+                    if (
+                        !esCompraArchivable(
+                            compra
+                        )
+                    ) {
 
-    });
+                        return compra;
+
+                    }
+
+
+                    cantidad++;
+
+
+                    return {
+
+                        ...compra,
+
+                        archivada:
+                            true,
+
+                        fechaCierre
+
+                    };
+
+                }
+            );
+
 
     localStorage.setItem(
         CLAVE_COMPRAS,
-        JSON.stringify(compras)
+        JSON.stringify(
+            compras
+        )
     );
+
 
     return cantidad;
 
