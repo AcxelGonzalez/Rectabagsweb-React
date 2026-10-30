@@ -58,7 +58,7 @@ function AdminReportes() {
             esCompraArchivable
         ).length;
 
-    function descargarPdf() {
+    function imprimirReporte() {
         window.print();
     }
 
@@ -103,9 +103,9 @@ function AdminReportes() {
                         <button
                             type="button"
                             className="btn btn-outline-dark"
-                            onClick={descargarPdf}
+                            onClick={imprimirReporte}
                         >
-                            Descargar PDF
+                            Imprimir / Guardar como PDF
                         </button>
                         <button
                             type="button"
@@ -282,9 +282,9 @@ function AdminReportes() {
                                         <strong> confirmadas, en preparación o enviadas</strong>
                                         permanecerán activas para continuar su procesamiento.
                                     </p>
-                                    
+
                                     <p className="mb-0">
-                                        Te recomendamos <strong>descargar el PDF</strong> antes de cerrar.
+                                        Te recomendamos <strong>imprimir o guardar el reporte como PDF</strong> antes de cerrar.
                                     </p>
                                 </div>
 
