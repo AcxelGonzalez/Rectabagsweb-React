@@ -255,14 +255,14 @@ describe("compraService · estados de las órdenes", () => {
                         leerCompra(
                             entregada
                         ).archivada
-                    ).toBeTrue();
+                    ).toBe(true);
 
 
                     expect(
                         leerCompra(
                             cancelada
                         ).archivada
-                    ).toBeTrue();
+                    ).toBe(true);
 
                 }
             );
@@ -302,21 +302,21 @@ describe("compraService · estados de las órdenes", () => {
                         leerCompra(
                             confirmada
                         ).archivada
-                    ).not.toBeTrue();
+                    ).not.toBe(true);
 
 
                     expect(
                         leerCompra(
                             preparacion
                         ).archivada
-                    ).not.toBeTrue();
+                    ).not.toBe(true);
 
 
                     expect(
                         leerCompra(
                             enviada
                         ).archivada
-                    ).not.toBeTrue();
+                    ).not.toBe(true);
 
                 }
             );
@@ -363,28 +363,28 @@ describe("compraService · estados de las órdenes", () => {
                         leerCompra(
                             entregada
                         ).archivada
-                    ).toBeTrue();
+                    ).toBe(true);
 
 
                     expect(
                         leerCompra(
                             cancelada
                         ).archivada
-                    ).toBeTrue();
+                    ).toBe(true);
 
 
                     expect(
                         leerCompra(
                             confirmada
                         ).archivada
-                    ).not.toBeTrue();
+                    ).not.toBe(true);
 
 
                     expect(
                         leerCompra(
                             enviada
                         ).archivada
-                    ).not.toBeTrue();
+                    ).not.toBe(true);
 
                 }
             );
@@ -408,7 +408,7 @@ describe("compraService · estados de las órdenes", () => {
                         leerCompra(
                             id
                         ).archivada
-                    ).toBeTrue();
+                    ).toBe(true);
 
 
                     expect(

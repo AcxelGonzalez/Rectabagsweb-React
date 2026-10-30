@@ -38,7 +38,7 @@ describe("verificarStock", () => {
 
             const r = verificarStock([itemCarrito()], catalogoDePrueba());
 
-            expect(r.ok).toBeTrue();
+            expect(r.ok).toBe(true);
 
         });
 
@@ -58,7 +58,7 @@ describe("verificarStock", () => {
                 catalogoDePrueba()
             );
 
-            expect(r.ok).toBeTrue();
+            expect(r.ok).toBe(true);
 
         });
 
@@ -74,7 +74,7 @@ describe("verificarStock", () => {
                 catalogoDePrueba({ stock: 2 })
             );
 
-            expect(r.ok).toBeFalse();
+            expect(r.ok).toBe(false);
 
         });
 
@@ -110,7 +110,7 @@ describe("verificarStock", () => {
                 catalogoDePrueba({ stock: 0 })
             );
 
-            expect(r.ok).toBeFalse();
+            expect(r.ok).toBe(false);
             expect(r.faltantes[0].texto).toContain("sin stock");
 
         });
@@ -121,7 +121,7 @@ describe("verificarStock", () => {
 
             const r = verificarStock([itemCarrito()], soloElSegundo);
 
-            expect(r.ok).toBeFalse();
+            expect(r.ok).toBe(false);
             expect(r.faltantes[0].texto).toContain("ya no está disponible");
 
         });
@@ -146,13 +146,13 @@ describe("verificarStock", () => {
 
         it("debe aprobar un carrito vacío", () => {
 
-            expect(verificarStock([], catalogoDePrueba()).ok).toBeTrue();
+            expect(verificarStock([], catalogoDePrueba()).ok).toBe(true);
 
         });
 
         it("debe tolerar valores que no son arreglos", () => {
 
-            expect(verificarStock(null, null).ok).toBeTrue();
+            expect(verificarStock(null, null).ok).toBe(true);
 
         });
 

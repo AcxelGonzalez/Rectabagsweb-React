@@ -160,9 +160,7 @@ describe(
             () => {
 
                 const onCategoriaChange =
-                    jasmine.createSpy(
-                        "onCategoriaChange"
-                    );
+                    vi.fn();
 
                 renderizarFiltro(
                     "todos",
@@ -207,9 +205,7 @@ describe(
 
                 expect(
                     onCategoriaChange
-                        .calls
-                        .count()
-                ).toBe(1);
+                ).toHaveBeenCalledTimes(1);
 
             }
         );

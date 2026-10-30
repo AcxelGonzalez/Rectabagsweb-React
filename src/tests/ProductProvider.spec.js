@@ -359,7 +359,7 @@ describe("ProductProvider", () => {
                 resultado = productosApi.crearProducto(datosValidos());
             });
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(productosApi.totalProductos).toBe(3);
 
         });
@@ -394,7 +394,7 @@ describe("ProductProvider", () => {
                 );
             });
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(productosApi.totalProductos).toBe(2);
 
         });
@@ -417,7 +417,7 @@ describe("ProductProvider", () => {
                 resultado = productosApi.actualizarProducto(1, { precio: 49990 });
             });
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(productosApi.obtenerProducto(1).precio).toBe(49990);
 
         });
@@ -440,7 +440,7 @@ describe("ProductProvider", () => {
                 resultado = productosApi.actualizarProducto(99, { precio: 1000 });
             });
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(resultado.mensaje).toContain("No se encontró");
 
         });
@@ -463,7 +463,7 @@ describe("ProductProvider", () => {
                 resultado = productosApi.eliminarProducto(1);
             });
 
-            expect(resultado.ok).toBeTrue();
+            expect(resultado.ok).toBe(true);
             expect(productosApi.totalProductos).toBe(1);
 
         });
@@ -486,7 +486,7 @@ describe("ProductProvider", () => {
                 resultado = productosApi.eliminarProducto(99);
             });
 
-            expect(resultado.ok).toBeFalse();
+            expect(resultado.ok).toBe(false);
             expect(productosApi.totalProductos).toBe(2);
 
         });
@@ -517,7 +517,7 @@ describe("ProductProvider", () => {
 
                 expect(
                     resultado.ok
-                ).toBeTrue();
+                ).toBe(true);
 
 
                 expect(
@@ -546,7 +546,7 @@ describe("ProductProvider", () => {
 
                 expect(
                     resultado.ok
-                ).toBeFalse();
+                ).toBe(false);
 
 
                 expect(
@@ -582,7 +582,7 @@ describe("ProductProvider", () => {
 
                 expect(
                     resultado.ok
-                ).toBeTrue();
+                ).toBe(true);
 
 
                 expect(
@@ -618,7 +618,7 @@ describe("ProductProvider", () => {
 
                 expect(
                     resultado.ok
-                ).toBeFalse();
+                ).toBe(false);
 
 
                 expect(

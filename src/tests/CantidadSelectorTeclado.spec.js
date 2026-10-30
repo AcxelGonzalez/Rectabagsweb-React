@@ -23,7 +23,8 @@ describe("CantidadSelector · entrada por teclado", () => {
 
     function renderizar(cantidad = 1, maximo = 10) {
 
-        onCambiar = jasmine.createSpy("onCambiar");
+        onCambiar =
+            vi.fn();
 
         act(() => {
             raiz.render(

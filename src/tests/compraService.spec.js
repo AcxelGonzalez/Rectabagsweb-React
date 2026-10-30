@@ -34,10 +34,10 @@ describe(
             "debe guardar una compra en LocalStorage",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     1000
                 );
 
@@ -90,13 +90,16 @@ describe(
             "debe conservar las compras anteriores al guardar una nueva",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValues(
-                    1000,
-                    2000
-                );
+                )
+                    .mockReturnValueOnce(
+                        1000
+                    )
+                    .mockReturnValueOnce(
+                        2000
+                    );
 
 
                 guardarCompra({
@@ -145,10 +148,10 @@ describe(
             "debe encontrar una compra utilizando su identificador",
             () => {
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     3000
                 );
 
@@ -243,10 +246,10 @@ describe(
                 );
 
 
-                spyOn(
+                vi.spyOn(
                     Date,
                     "now"
-                ).and.returnValue(
+                ).mockReturnValue(
                     4000
                 );
 
