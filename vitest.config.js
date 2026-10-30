@@ -75,8 +75,8 @@ export default mergeConfig(
             /*
              * Restaura automáticamente vi.spyOn().
              *
-             * Esto se aproxima al comportamiento que
-             * teníamos con los spies de Jasmine.
+             * Restaura automáticamente los spies entre pruebas
+             * para evitar contaminación entre casos.
              */
             restoreMocks:
                 true,
