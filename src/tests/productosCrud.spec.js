@@ -9,11 +9,7 @@ import {
 
 
 /*
- * Pruebas del CRUD de productos (capa de datos).
- *
- * Se trabaja sobre una lista de prueba pequeña y controlada, que se
- * vuelve a crear antes de cada prueba para que ninguna dependa de lo
- * que hizo la anterior.
+Crear, editar y eliminar productos del catálogo, con sus validaciones.
  */
 
 function crearListaDePrueba() {

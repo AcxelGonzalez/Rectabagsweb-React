@@ -1,18 +1,12 @@
-import React, {
-    act
-} from "react";
+import React, { act } from "react";
 
-import {
-    createRoot
-} from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
-import AuthProvider
-    from "../context/AuthProvider";
+import AuthProvider from "../context/AuthProvider";
 
-import useAuth
-    from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
-
+/* Registro, inicio de sesión, recuperación de contraseña y perfil.*/
 describe(
     "AuthProvider",
     () => {

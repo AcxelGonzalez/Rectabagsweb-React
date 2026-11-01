@@ -1,22 +1,14 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 
-import {
-    useSearchParams
-} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
-import useProducts
-    from "../hooks/useProducts";
+import useProducts from "../hooks/useProducts";
 
-import ProductCard
-    from "../components/products/ProductCard";
+import ProductCard from "../components/products/ProductCard";
 
-import ProductFilter
-    from "../components/products/ProductFilter";
+import ProductFilter from "../components/products/ProductFilter";
 
-import useTitulo
-    from "../hooks/useTitulo";
+import useTitulo from "../hooks/useTitulo";
 
 import "../css/style_catalogo.css";
 

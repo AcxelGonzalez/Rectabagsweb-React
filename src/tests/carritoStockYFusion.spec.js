@@ -3,8 +3,7 @@ import { fusionarCarritos, verificarStock } from "../utils/carrito";
 
 /*
  * Pruebas de las dos funciones puras que protegen la compra:
- - verificarStock: revisa que el catálogo alcance para el carrito, justo antes de registrar la compra
- - fusionarCarritos: une el carrito de invitado con el del usuario cuando alguien inicia sesión.
+Que alcance el stock antes de comprar y que el carrito de visitante no se pierda al iniciar sesión.
  */
 
 function catalogoDePrueba(cambios = {}) {

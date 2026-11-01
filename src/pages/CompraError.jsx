@@ -3,8 +3,7 @@ import {
     useLocation
 } from "react-router-dom";
 
-import useTitulo
-    from "../hooks/useTitulo";
+import useTitulo from "../hooks/useTitulo";
 
 
 function CompraError() {

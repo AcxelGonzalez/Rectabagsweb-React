@@ -7,6 +7,7 @@ import ConfirmarCompraModal
 
 
 /*
+La ventana de confirmación de compra.
 Pruebas del componente ConfirmarCompraModal.
  * Cubren las cuatro categorías pedidas:
     - renderizado correcto (la lista muestra todos los productos),
