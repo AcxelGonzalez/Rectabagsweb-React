@@ -1,16 +1,10 @@
-import React, {
-    act
-} from "react";
+import React, { act } from "react";
 
-import {
-    createRoot
-} from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
-import CartProvider
-    from "../context/CartProvider";
+import CartProvider from "../context/CartProvider";
 
-import useCart
-    from "../hooks/useCart";
+import useCart from "../hooks/useCart";
 
 
 describe(

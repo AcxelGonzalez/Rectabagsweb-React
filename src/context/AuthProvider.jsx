@@ -3,12 +3,9 @@ import {
     useState
 } from "react";
 
-import AuthContext
-    from "./AuthContext";
+import AuthContext from "./AuthContext";
 
-import {
-    usuariosIniciales
-} from "../data/usuariosIniciales";
+import { usuariosIniciales } from "../data/usuariosIniciales";
 
 import {
     validarCorreo,

@@ -10,10 +10,7 @@ import {
 
 /*
  * Pruebas del ciclo de estados de las órdenes.
- *
- * El otro archivo cubre el registro y la lectura de compras. Aquí se
- * cubren las funciones que agregó el panel de administración: cambiar
- * el estado de una orden, su color y el cierre de periodo.
+El avance de una orden entre sus estados, las transiciones permitidas y el cierrel ciclo
  */
 
 describe("compraService · estados de las órdenes", () => {

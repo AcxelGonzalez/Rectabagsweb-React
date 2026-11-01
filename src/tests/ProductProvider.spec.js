@@ -1,23 +1,12 @@
-import React, {
-    act
-} from "react";
+import React, { act } from "react";
 
-import {
-    createRoot
-} from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
-import ProductProvider
-    from "../context/ProductProvider";
+import ProductProvider from "../context/ProductProvider";
 
-import useProducts
-    from "../hooks/useProducts";
+import useProducts from "../hooks/useProducts";
 
-
-/*
- * Pruebas del ProductProvider: estado, persistencia en localStorage
- * y las operaciones CRUD que usa el panel de administración.
- */
-
+/* El catálogo compartido, su guardado, las operaciones del panel y el manejo del stock*/
 describe("ProductProvider", () => {
 
     const CLAVE_PRODUCTOS = "recta_productos";

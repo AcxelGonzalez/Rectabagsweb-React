@@ -1,10 +1,6 @@
-import {
-    obtenerStockValido
-} from "../utils/stock";
+import { obtenerStockValido } from "../utils/stock";
 
-import {
-    validarProducto
-} from "../utils/validaciones";
+import { validarProducto } from "../utils/validaciones";
 
 
 export const productos = [

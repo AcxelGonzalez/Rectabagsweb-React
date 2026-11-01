@@ -7,7 +7,7 @@ import {
     validarCheckout
 } from "../utils/validaciones";
 
-
+/* Correo, RUN, contraseña, fecha, teléfono y los datos del checkout */
 describe("Validaciones de formularios", () => {
 
     /* ---------- CORREO ---------- */

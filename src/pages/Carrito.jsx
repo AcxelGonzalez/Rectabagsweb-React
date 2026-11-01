@@ -32,10 +32,8 @@ function Carrito() {
     const [productoEliminar, setProductoEliminar] = useState(null);
 
     /*
-     * Pone el carrito al día con el catálogo al entrar a la página y
-     * cada vez que cambian los productos. Si el administrador editó un
-     * precio, cambió el stock o eliminó un producto, el carrito se
-     * corrige y se le avisa al cliente qué pasó.
+     Actualiza el carrito al cía con el catálogo al entrar a la página cuando cambian los productos. 
+     Si el administrador editó un precio, cambió el stock o eliminó un producto, el carrito se actualiza y se le avisa al cliente con un mensaje
      */
     useEffect(() => {
 
