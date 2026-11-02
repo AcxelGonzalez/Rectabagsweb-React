@@ -4,7 +4,7 @@ HOJA DE ESTILOS: VISTAS LOGIN Y REGISTRO
 
 /* Fondo color durazno/crema pálido exacto al mockup */
 .login-section {
-    background-color: #FAEFDF; 
+     background-color: var(--rb-crema); 
     
     /* Defensa: calc() permite hacer matemáticas en CSS. 
        Aquí tomamos el alto total (100vh) y le restamos los 90px del header. */
@@ -17,13 +17,6 @@ HOJA DE ESTILOS: VISTAS LOGIN Y REGISTRO
 /* ==========================================================================
 TIPOGRAFÍAS CORPORATIVAS
 ========================================================================== */
-.titulo-mono {
-    /* Familia tipográfica monoespaciada para estética técnica/urbana */
-    font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', monospace;
-    font-weight: 500;
-    letter-spacing: -1px;
-}
-
 .texto-mono {
     font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', monospace;
 }

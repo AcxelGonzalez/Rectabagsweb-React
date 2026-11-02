@@ -244,16 +244,25 @@ function Checkout() {
 
 
                 {usuarioActual && (
-                    <div className="alert alert-light border mb-4" role="status">
+                     <div
+                        className="alert mb-4"
+                        role="status"
+                        style={{
+                            backgroundColor: 'var(--rb-arena)',
+                            border: 0,
+                            borderLeft: '4px solid var(--rb-negro)'
+                        }}
+                    >
                         Hemos completado tus datos utilizando la información de tu perfil.
                     </div>
                 )}
 
 
+                 <div className="rounded-5 p-3 p-md-4 p-lg-5" style={{ backgroundColor: 'var(--rb-arena)' }}>
+
                 <div className="row g-4">
 
                     <div className="col-lg-7">
-
                         <div className="card border-0 shadow-sm rounded-4">
 
                             <div className="card-body p-4 p-md-5">
@@ -466,14 +475,18 @@ function Checkout() {
 
                     <div className="col-lg-5">
 
-                        <div className="card border-0 shadow-sm rounded-4">
+                        <div
+                            className="card border-0 shadow-sm rounded-4 overflow-hidden sticky-lg-top"
+                            style={{ top: '110px' }}
+                        >
 
-                            <div className="card-body p-4">
-
-                                <h2 className="h4 fw-bold mb-4">
+                            <div className="px-4 py-3 text-white" style={{ backgroundColor: 'var(--rb-negro)' }}>
+                                <h2 className="h5 mb-0">
                                     Resumen del pedido
                                 </h2>
+                            </div>
 
+                            <div className="card-body p-4">
                                 {carrito.map((item) => (
                                     <div
                                         key={item.id}
@@ -505,8 +518,7 @@ function Checkout() {
                                     <strong>Total productos</strong>
                                     <strong>{formatearPrecio(subtotal)}</strong>
                                 </div>
-
-                                <p className="small text-secondary mt-3 mb-0">
+  <p className="small text-secondary mt-3 mb-0">
                                     El costo de despacho no está incluido y se coordinará
                                     posteriormente.
                                 </p>
@@ -516,6 +528,8 @@ function Checkout() {
                         </div>
 
                     </div>
+
+                </div>
 
                 </div>
 

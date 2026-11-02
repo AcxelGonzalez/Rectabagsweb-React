@@ -43,9 +43,12 @@ function AdminOrdenes() {
                     <div className="card border-0 shadow-sm rounded-4">
                         <div className="table-responsive">
 
-                            <table className="table align-middle mb-0">
+                            <table
+                                className="table table-striped table-hover align-middle mb-0"
+                                style={{ '--bs-table-bg': '#FFFFFF' }}
+                            >
 
-                                <thead className="table-light">
+                                <thead className="table-dark">
                                     <tr>
                                         <th>N° orden</th>
                                         <th>Fecha</th>

@@ -172,12 +172,12 @@ function Contacto() {
 
                                         {/* Nombre */}
                                         <div className="col-md-6">
-                                            <label htmlFor="nombre" className="form-label small text-secondary fw-bold">
+                                            <label htmlFor="nombre" className="form-label fw-semibold">
                                                 Nombre
                                             </label>
                                             <input
                                                 type="text"
-                                                className="form-control bg-light border-0 py-2"
+                                                className="form-control  py-2"
                                                 id="nombre"
                                                 name="nombre"
                                                 placeholder="Tu nombre"
@@ -189,12 +189,12 @@ function Contacto() {
 
                                         {/* Correo */}
                                         <div className="col-md-6">
-                                            <label htmlFor="correo" className="form-label small text-secondary fw-bold">
+                                            <label htmlFor="correo" className="form-label fw-semibold">
                                                 Correo Electrónico
                                             </label>
                                             <input
                                                 type="email"
-                                                className="form-control bg-light border-0 py-2"
+                                                className="form-control  py-2"
                                                 id="correo"
                                                 name="correo"
                                                 placeholder="ejemplo@correo.com"
@@ -206,11 +206,11 @@ function Contacto() {
 
                                         {/* cuadro mensaje*/}
                                         <div className="col-12">
-                                            <label htmlFor="asunto" className="form-label small text-secondary fw-bold">
+                                            <label htmlFor="asunto" className="form-label fw-semibold">
                                                 Asunto
                                             </label>
                                             <select
-                                                className="form-select bg-light border-0 py-2"
+                                                className="form-select  py-2"
                                                 id="asunto"
                                                 name="asunto"
                                                 value={datos.asunto}
@@ -228,11 +228,11 @@ function Contacto() {
                                         </div>
 
                                         <div className="col-12">
-                                            <label htmlFor="mensaje" className="form-label small text-secondary fw-bold">
+                                            <label htmlFor="mensaje" className="form-label fw-semibold">
                                                 Mensaje
                                             </label>
                                             <textarea
-                                                className="form-control bg-light border-0 py-2"
+                                                className="form-control  py-2"
                                                 id="mensaje"
                                                 name="mensaje"
                                                 rows={5}

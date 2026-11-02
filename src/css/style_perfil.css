@@ -1,0 +1,81 @@
+/* ==========================================================================
+   PERFIL DE USUARIO (según mockup)
+   ========================================================================== */
+
+/* Menú lateral */
+.perfil-menu {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+    box-shadow: 0 4px 18px rgba(17, 17, 17, 0.08);
+}
+
+.perfil-menu .nav-link {
+    color: var(--rb-texto);
+    background: transparent;
+    border: 0;
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.perfil-menu .nav-link:hover {
+    background-color: rgba(17, 17, 17, 0.06);
+}
+
+.perfil-menu .nav-link.active {
+    background-color: var(--rb-negro);
+    color: #FFFFFF;
+}
+
+/* Panel principal */
+.perfil-panel {
+    background-color: var(--rb-arena);
+    border-radius: 1.5rem;
+}
+
+/* Tarjetas internas */
+.perfil-tarjeta {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+}
+
+/* Cada compra del historial */
+.perfil-compra {
+    background-color: var(--rb-crema);
+    border: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.perfil-compra summary {
+    cursor: pointer;
+}
+
+/* Redes sociales del menú lateral */
+.perfil-red {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--rb-texto);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+}
+
+.perfil-red:hover {
+    color: var(--rb-oliva);
+}
+
+/* Cuadrado negro redondeado */
+.perfil-red-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background-color: var(--rb-negro);
+    border-radius: 0.5rem;
+}
+
+/* El ícono es negro: el filtro lo vuelve blanco */
+.perfil-red-icono img {
+    width: 18px;
+    height: 18px;
+    filter: invert(1);
+}

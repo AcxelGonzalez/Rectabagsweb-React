@@ -32,10 +32,6 @@
     box-shadow 0.2s ease;
 }
 
-.catalogo-page .product-card:hover {
-  transform: translateY(-3px);
-}
-
 .catalogo-page .product-card__image {
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -56,4 +52,64 @@
   .catalogo-page .product-card__image {
     aspect-ratio: 4 / 3;
   }
+}
+
+/* ==========================================================================
+   BANDA DEL TÍTULO
+   ========================================================================== */
+
+.catalogo-banda {
+  background-color: var(--rb-negro);
+}
+
+.catalogo-banda p {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ==========================================================================
+   TARJETAS VIVAS
+   ========================================================================== */
+
+/* La tarjeta se levanta al pasar el mouse */
+.catalogo-page .product-card.shadow-sm:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(17, 17, 17, 0.15) !important;
+}
+
+/* Zoom suave de la foto */
+.product-card__imagen-contenedor {
+  overflow: hidden;
+}
+
+.catalogo-page .product-card__image {
+  transition: transform 0.4s ease;
+}
+
+.catalogo-page .product-card:hover .product-card__image {
+  transform: scale(1.06);
+}
+
+/* Categoría sobre el nombre */
+.product-card__categoria {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--rb-texto-suave);
+  margin-bottom: 0.15rem;
+}
+
+/* Precio destacado */
+.product-card__precio {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.precio-oferta {
+  color: var(--bs-danger);
+}
+
+/* Badge de oferta en terracota, por encima de la foto */
+.badge-oferta {
+  background-color: var(--bs-danger);
+  z-index: 2;
 }
