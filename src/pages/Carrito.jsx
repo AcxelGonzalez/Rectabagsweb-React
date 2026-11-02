@@ -145,11 +145,11 @@ function Carrito() {
 
                                                 {/* Imagen */}
                                                 <div className="col-4 col-md-3">
-                                                    <div className="bg-light rounded-4 d-flex align-items-center justify-content-center p-2"
+                                                      <div className="bg-light rounded-4 overflow-hidden d-flex align-items-center justify-content-center"
                                                         style={{ height: '150px' }}>
                                                         {item.imagen ? (
                                                             <img src={item.imagen} alt={item.nombre}
-                                                                className="img-fluid w-100 h-100 object-fit-contain" />
+                                                                className="w-100 h-100 object-fit-cover" />
                                                         ) : (
                                                             <span className="fs-1">🛍️</span>
                                                         )}

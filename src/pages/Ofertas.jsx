@@ -18,17 +18,19 @@ function Ofertas() {
 
     return (
 
-        <section className="catalogo-page py-5">
+        <section className="catalogo-page pb-5">
 
-            <div className="container">
-
-                <h1 className="fw-bold text-center mb-2">
+            {/* Banda negra con el título (mismo estilo que el Catálogo) */}
+            <div className="catalogo-banda text-white text-center py-5 mb-5">
+                <h1 className="mb-2">
                     Ofertas
                 </h1>
-
-                <p className="text-center text-secondary mb-5">
-                    Productos con precio rebajado.
+                <p className="mb-0">
+                    {productosEnOferta.length} {productosEnOferta.length === 1 ? "producto rebajado" : "productos rebajados"} por tiempo limitado
                 </p>
+            </div>
+
+            <div className="container">
 
                 <div className="row g-4">
 

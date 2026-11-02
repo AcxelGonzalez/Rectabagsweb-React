@@ -4,7 +4,7 @@ HOJA DE ESTILOS: VISTAS LOGIN Y REGISTRO
 
 /* Fondo color durazno/crema pálido exacto al mockup */
 .login-section {
-    background-color: #FAEFDF; 
+     background-color: var(--rb-crema); 
     
     /* Defensa: calc() permite hacer matemáticas en CSS. 
        Aquí tomamos el alto total (100vh) y le restamos los 90px del header. */
