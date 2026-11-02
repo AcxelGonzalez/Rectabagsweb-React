@@ -23,10 +23,9 @@ function Login() {
     const location = useLocation();
 
     /*
-     * Si el usuario llegó aquí porque intentó entrar a una página
-     * protegida, se le devuelve a esa página después de iniciar sesión.
-     * Si entró al login por su cuenta, se le lleva al inicio.
-     */
+    Si el usuario llegó aquí porque intentó entrar a una página,protegida, se le devuelve a esa página después de iniciar sesión.
+    Si entró al login por su cuenta, se le lleva al inicio.
+    */
     const destino =
         location.state?.from?.pathname || "/";
 

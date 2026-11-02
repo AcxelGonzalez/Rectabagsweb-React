@@ -16,16 +16,6 @@ import RutaAdmin
     from "../components/RutaAdmin";
 
 
-/*
- * Pruebas del guardia de las rutas del panel de administración.
- *
- * Se monta un enrutador de prueba con tres destinos posibles y se
- * cambia la sesión guardada en localStorage para representar a un
- * visitante, a un cliente y a un administrador.
- *
- * Cubre el requisito no funcional 3.3.2 del ERS, "Protección de Rutas".
- */
-
 describe("RutaAdmin", () => {
 
     const CLAVE_SESION = "recta_usuario_actual";
