@@ -18,31 +18,38 @@ function ProductCard({ producto }) {
         <article className="card product-card h-100 border-0 shadow-sm">
 
             {tieneOferta && (
-                <span className="badge bg-danger position-absolute top-0 start-0 m-2">
+                <span className="badge badge-oferta position-absolute top-0 start-0 m-2">
                     Oferta
                 </span>
             )}
 
-            <img src={producto.imagen} className="card-img-top product-card__image" alt={producto.nombre} />
+            {/* Contenedor para que el zoom de la foto no se salga de la tarjeta */}
+            <div className="product-card__imagen-contenedor">
+                <img src={producto.imagen} className="card-img-top product-card__image" alt={producto.nombre} />
+            </div>
 
             <div className="card-body d-flex flex-column">
 
-                <h3 className="h5 fw-bold">{producto.nombre}</h3>
+                <span className="product-card__categoria">
+                    {producto.categoria}
+                </span>
+
+                <h3 className="h5 fw-bold mb-1">{producto.nombre}</h3>
 
                 {tieneOferta ? (
-                    <p className="fw-bold">
-                        <span className="text-decoration-line-through text-secondary fw-normal me-2">
+                    <p className="product-card__precio">
+                        <span className="text-decoration-line-through text-secondary fw-normal fs-6 me-2">
                             {formatearPrecio(producto.precio)}
                         </span>
-                        <span className="text-danger">
+                        <span className="precio-oferta">
                             {formatearPrecio(producto.precioOferta)}
                         </span>
                     </p>
                 ) : (
-                    <p className="fw-bold">{formatearPrecio(producto.precio)}</p>
+                    <p className="product-card__precio">{formatearPrecio(producto.precio)}</p>
                 )}
 
-                <p className="card-text flex-grow-1">{producto.descripcion}</p>
+                <p className="card-text text-secondary flex-grow-1">{producto.descripcion}</p>
 
                 <Link to={`/producto/${producto.id}`} className="btn btn-dark mt-auto">
                     Ver producto

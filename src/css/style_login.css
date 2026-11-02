@@ -17,13 +17,6 @@ HOJA DE ESTILOS: VISTAS LOGIN Y REGISTRO
 /* ==========================================================================
 TIPOGRAFÍAS CORPORATIVAS
 ========================================================================== */
-.titulo-mono {
-    /* Familia tipográfica monoespaciada para estética técnica/urbana */
-    font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', monospace;
-    font-weight: 500;
-    letter-spacing: -1px;
-}
-
 .texto-mono {
     font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', monospace;
 }
