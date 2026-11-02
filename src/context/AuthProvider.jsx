@@ -1,7 +1,4 @@
-import {
-    useEffect,
-    useState
-} from "react";
+import { useEffect, useState} from "react";
 
 import AuthContext from "./AuthContext";
 
@@ -96,7 +93,6 @@ function leerUsuariosGuardados() {
                 )
             );
 
-
         return agregarUsuariosIniciales(
             usuarios
         );
@@ -123,7 +119,6 @@ function leerSesionGuardada() {
                 )
             );
 
-
         return usuario &&
             typeof usuario === "object"
             ? usuario
@@ -136,7 +131,6 @@ function leerSesionGuardada() {
     }
 
 }
-
 
 function AuthProvider({
     children

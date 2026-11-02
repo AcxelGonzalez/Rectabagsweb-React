@@ -1,13 +1,8 @@
-import useCart
-    from "../hooks/useCart";
-
+import useCart from "../hooks/useCart";
 
 function ContadorCarrito() {
 
-    const {
-        cantidadProductos
-    } = useCart();
-
+    const { cantidadProductos } = useCart();
 
     if (
         cantidadProductos === 0
@@ -16,7 +11,6 @@ function ContadorCarrito() {
         return null;
 
     }
-
 
     return (
 
@@ -39,6 +33,5 @@ function ContadorCarrito() {
     );
 
 }
-
 
 export default ContadorCarrito;

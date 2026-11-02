@@ -1,7 +1,3 @@
-/*
- * Compras que cuentan para las estadísticas:
- * no archivadas (paso 8c) y no canceladas.
- */
 export function comprasDelPeriodo(
     compras
 ) {

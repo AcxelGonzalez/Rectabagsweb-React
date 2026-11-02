@@ -1,6 +1,5 @@
 /*
  * Validaciones de formularios de Rectabags.
- *
  * Cada función devuelve:
  * - null   → el dato es válido.
  * - texto  → el mensaje de error para mostrar al usuario.

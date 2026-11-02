@@ -1,10 +1,6 @@
-import {
-    useEffect,
-    useState
-} from "react";
+import { useEffect, useState } from "react";
 
-import ProductContext
-    from "./ProductContext";
+import ProductContext from "./ProductContext";
 
 import { obtenerStockValido } from "../utils/stock";
 
@@ -66,8 +62,8 @@ function ProductProvider({
 
 
     /*
-     * Guarda los productos cada vez que cambian.
-     */
+    Guarda los productos cada vez que cambian.
+    */
     useEffect(() => {
 
         localStorage.setItem(
@@ -78,11 +74,7 @@ function ProductProvider({
     }, [productos]);
 
     /*
-    * Sincroniza el catálogo cuando otra pestaña modifica
-    * los productos almacenados en localStorage.
-    *
-    * El evento "storage" se dispara en las otras pestañas
-    * del mismo origen, no en la pestaña que realizó el cambio.
+        Sincroniza el catálogo cuando otra pestaña modifica los productos ya almacenados
     */
     useEffect(() => {
 
@@ -134,10 +126,8 @@ function ProductProvider({
     }, []);
 
     /*
-     * Busca un producto por su id.
-     * El id de la URL llega como texto ("3"),
-     * por eso se convierte con Number().
-     */
+    Busca un producto por su id.
+    */
     function obtenerProducto(id) {
 
         return obtenerProductoPorId(
@@ -149,9 +139,8 @@ function ProductProvider({
 
 
     /*
-     * Devuelve los productos de una categoría.
-     * "todos" entrega la lista completa.
-     */
+    Devuelve los productos de una categoría.
+    */
     function obtenerPorCategoria(categoria) {
 
         return obtenerProductosPorCategoria(
@@ -239,8 +228,8 @@ function ProductProvider({
     }
     
     /*
-    * Comprueba que todos los productos del carrito sigan existiendo
-    * y tengan stock suficiente, sin modificar el catálogo.
+    Comprueba que todos los productos del carrito sigan existiendo
+    y tengan stock suficiente, sin modificar el catálogo.
     */
     function verificarDisponibilidad(items) {
 
@@ -252,11 +241,7 @@ function ProductProvider({
     }
 
     /*
-    * Devuelve al catálogo las cantidades de una compra cancelada.
-    *
-    * Solo modifica productos que todavía existen en el catálogo.
-    * Si un producto fue eliminado posteriormente desde administración,
-    * simplemente no puede ser restaurado porque ya no existe.
+    Devuelve al catálogo las cantidades de una compra que se canceló, solo modifica productos existentes.
     */
     function reponerStock(items) {
 
@@ -321,11 +306,9 @@ function ProductProvider({
 
     /*
      Resta del stock las cantidades compradas, pero solo si alcanza.
-     Recibe los productos del carrito: [{ id, cantidad }, ...]
 
      Antes de tocar nada verifica el carrito contra el catálogo: si algún
-     producto no alcanza no se descuenta nada y se devuelve el detalle,
-     para que el checkout no registre una venta imposible.
+     producto no alcanza no se descuenta nada y se devuelve el detalle, para que el checkout no registre una venta que no se pueda operar.
      */
     function descontarStock(items) {
 
@@ -360,9 +343,9 @@ function ProductProvider({
 
 
     /*
-     * Vuelve al catálogo original de productos.js.
-     * Sirve para dejar la tienda como estaba después de hacer
-     * pruebas en el panel de administración.
+    Vuelve al catálogo original de productos.js.
+    Sirve para dejar la tienda como estaba después de hacer
+    pruebas en el panel de administración.
      */
     function restaurarProductos() {
 
