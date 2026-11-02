@@ -194,15 +194,11 @@ function AdminBoleta() {
 
 
         /*
-        * -----------------------------------------------------------
         * CASO 3
         * Cambio entre estados activos.
         *
         * Ejemplo:
-        * confirmada → enviada
-        *
-        * El stock no se modifica.
-        * -----------------------------------------------------------
+        * confirmada → en preparación
         */
         const actualizada =
             actualizarEstadoCompra(

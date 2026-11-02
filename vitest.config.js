@@ -20,7 +20,7 @@ export default mergeConfig(
              * vi, etc. disponibles globalmente.
              *
              * Esto evita tener que modificar los imports
-             * de los 16 archivos de pruebas.
+             * de los archivos de pruebas.
              */
             globals:
                 true,
@@ -73,11 +73,9 @@ export default mergeConfig(
 
 
             /*
-             * Restaura automáticamente vi.spyOn().
-             *
-             * Restaura automáticamente los spies entre pruebas
-             * para evitar contaminación entre casos.
-             */
+            * Restaura automáticamente los spies entre pruebas
+            * para evitar contaminación entre casos.
+            */
             restoreMocks:
                 true,
 
