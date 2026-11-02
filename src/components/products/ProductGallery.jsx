@@ -15,68 +15,39 @@ function ProductGallery({
         imagenes[0]
     );
 
+
     return (
 
-        <div
-            className="
-                producto-galeria
-                d-flex
-                flex-column-reverse
-                flex-lg-row
-                gap-3
-            "
-        >
+        <div className="producto-galeria d-flex flex-column-reverse flex-lg-row gap-3">
 
-            <div
-                className="
-                    producto-miniaturas
-                    d-flex
-                    flex-row
-                    flex-lg-column
-                    gap-2
-                    overflow-auto
-                    flex-shrink-0
-                "
-            >
+            <div className="producto-miniaturas d-flex flex-row flex-lg-column gap-2 overflow-auto flex-shrink-0">
 
                 {
                     imagenes.map(
-                        (imagen, indice) => (
+                        (
+                            imagen,
+                            indice
+                        ) => (
 
                             <button
                                 key={imagen}
                                 type="button"
-                                className={
-                                    `
-                                    producto-miniatura
-                                    btn
-                                    p-0
-                                    rounded-4
-                                    overflow-hidden
-                                    flex-shrink-0
-                                    ${
-                                        imagenPrincipal === imagen
-                                            ? "active"
-                                            : ""
-                                    }
-                                    `
+                                className={`producto-miniatura btn p-0 rounded-4 overflow-hidden flex-shrink-0 ${
+                                    imagenPrincipal === imagen
+                                        ? "active"
+                                        : ""
+                                }`}
+                                onClick={() =>
+                                    setImagenPrincipal(
+                                        imagen
+                                    )
                                 }
-                                onClick={
-                                    () =>
-                                        setImagenPrincipal(
-                                            imagen
-                                        )
-                                }
-                                aria-label={
-                                    `Ver imagen ${indice + 1} de ${nombre}`
-                                }
+                                aria-label={`Ver imagen ${indice + 1} de ${nombre}`}
                             >
 
                                 <img
                                     src={imagen}
-                                    alt={
-                                        `${nombre} - vista ${indice + 1}`
-                                    }
+                                    alt={`${nombre} - vista ${indice + 1}`}
                                 />
 
                             </button>
@@ -88,15 +59,7 @@ function ProductGallery({
             </div>
 
 
-            <div
-                className="
-                    producto-imagen-principal
-                    bg-white
-                    rounded-4
-                    overflow-hidden
-                    flex-grow-1
-                "
-            >
+            <div className="producto-imagen-principal bg-white rounded-4 overflow-hidden flex-grow-1">
 
                 <img
                     src={imagenPrincipal}

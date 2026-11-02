@@ -1,19 +1,20 @@
 import { Link } from "react-router-dom";
-
+import useTitulo from "../hooks/useTitulo";
 import SeccionRedes
     from "../components/SeccionRedes";
 
 import "../css/style_home.css";
 
 function Home() {
+    useTitulo("Bienvenido a RectaBags");
     return (
         <>
-            <section className="hero-section d-flex align-items-end">
-                
-                <div className="container mb-5">
+           <section className="hero-section d-flex align-items-end">
+                <div className="container-fluid px-4 px-md-5 mb-4">
                     <div className="hero-content text-white">
-                    
-                        <h2 className="display-4 fw-bold mb-1">La mochila perfecta</h2>
+                        
+                        <h2 className="hero-titulo display-4 mb-1">La mochila perfecta</h2>
+
                         <p className="fs-5">para viajar, trabajar y explorar</p>
                     </div>
                 </div>

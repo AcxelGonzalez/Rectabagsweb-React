@@ -56,7 +56,7 @@ function CantidadSelector({
                 maximo,
                 Math.max(
                     1,
-                    nuevaCantidad
+                    Math.trunc(nuevaCantidad)
                 )
             );
 
@@ -70,29 +70,12 @@ function CantidadSelector({
 
     return (
 
-        <div
-            className="
-                producto-cantidad
-                input-group
-                rounded-4
-                overflow-hidden
-                border
-                border-secondary-subtle
-                bg-white
-            "
-        >
+        <div className="producto-cantidad input-group rounded-4 overflow-hidden border border-secondary-subtle bg-white">
 
             <button
                 type="button"
-                className="
-                    btn
-                    btn-light
-                    border-0
-                    fw-bold
-                "
-                onClick={
-                    disminuir
-                }
+                className="btn btn-light border-0 fw-bold"
+                onClick={disminuir}
                 disabled={
                     cantidad <= 1
                 }
@@ -103,15 +86,11 @@ function CantidadSelector({
 
             <input
                 type="number"
-                className="
-                    form-control
-                    border-0
-                    text-center
-                    fw-bold
-                "
+                className="form-control border-0 text-center fw-bold"
                 value={cantidad}
                 min="1"
                 max={maximo}
+                step="1"
                 onChange={
                     manejarCambio
                 }
@@ -121,15 +100,8 @@ function CantidadSelector({
 
             <button
                 type="button"
-                className="
-                    btn
-                    btn-light
-                    border-0
-                    fw-bold
-                "
-                onClick={
-                    aumentar
-                }
+                className="btn btn-light border-0 fw-bold"
+                onClick={aumentar}
                 disabled={
                     cantidad >= maximo
                 }

@@ -11,18 +11,99 @@ html, body, #root {
 }
 
 /* ==========================================================================
+   PALETA RECTABAGS
+   ========================================================================== */
+
+:root {
+    --rb-negro: #111111;
+    --rb-crema: #F6EEE6;
+    --rb-arena: #E8DED8;
+    --rb-durazno: #EFD2B8;
+    --rb-camel: #B89A7E;
+    --rb-oliva: #556040;
+    --rb-terracota: #D9825B;
+    --rb-texto: #1A1A1A;
+    --rb-texto-suave: #6B6259;
+    --rb-fuente-titulos: "Bowlby One SC", "Arial Black", sans-serif;
+
+    /* Variables de Bootstrap: así toda la página toma la paleta */
+    --bs-body-bg: var(--rb-crema);
+    --bs-body-color: var(--rb-texto);
+    --bs-secondary-rgb: 107, 98, 89;
+    --bs-link-color-rgb: 85, 96, 64;
+    --bs-secondary-bg: var(--rb-arena);
+    --bs-link-hover-color-rgb: 17, 17, 17;
+}
+
+body {
+    background-color: var(--rb-crema);
+    color: var(--rb-texto);
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+
+/* Botones negros: al pasar el mouse se ponen gris oscuro */
+.btn-dark,
+.btn-secondary {
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-bg: var(--rb-negro);
+    --bs-btn-border-color: var(--rb-negro);
+    --bs-btn-hover-color: #FFFFFF;
+    --bs-btn-hover-bg: #333333;
+    --bs-btn-hover-border-color: #333333;
+    --bs-btn-active-bg: #000000;
+    --bs-btn-active-border-color: #000000;
+}
+
+/* ==========================================================================
+   CAMPOS DE FORMULARIO
+   ========================================================================== */
+
+/* Borde camel al escribir en un campo (en vez del azul de Bootstrap) */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--rb-camel);
+    box-shadow: 0 0 0 0.2rem rgba(184, 154, 126, 0.35);
+}
+
+/* Campos blancos para que resalten sobre el fondo crema */
+.form-control,
+.form-select {
+    background-color: #FFFFFF;
+}
+
+/* ==========================================================================
+   TARJETAS
+   ========================================================================== */
+
+/* Tarjetas blancas con una sombra suave */
+.card {
+    --bs-card-bg: #FFFFFF;
+}
+
+.card.shadow-sm {
+    box-shadow: 0 4px 18px rgba(17, 17, 17, 0.08) !important;
+}
+
+/* ==========================================================================
    TIPOGRAFÍA GENERAL
    ========================================================================== */
 
+h1,
+h2,
 .titulo-mono {
-    font-family:
-        "Courier New",
-        Courier,
-        "Lucida Sans Typewriter",
-        monospace;
+    font-family: var(--rb-fuente-titulos);
+    font-weight: 400 !important;
+    letter-spacing: 0.5px;
+}
 
-    font-weight: 500;
-    letter-spacing: -1px;
+/* Excepción: el título de la portada del Home usa la letra normal */
+.hero-titulo {
+    font-family: var(--bs-body-font-family);
+    font-weight: 700 !important;
+    letter-spacing: normal;
 }
 
 /* ==========================================================================
@@ -32,4 +113,19 @@ html, body, #root {
 .redes-img {
     aspect-ratio: 1 / 1;
     object-fit: cover;
+}
+
+
+/* Al imprimir (PDF de reportes) se ocultan el menú y el pie de página */
+@media print {
+
+    .header-principal,
+    footer {
+        display: none !important;
+    }
+
+    body {
+        padding-top: 0 !important;
+    }
+
 }

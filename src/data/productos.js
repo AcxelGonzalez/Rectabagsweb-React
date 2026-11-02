@@ -1,3 +1,8 @@
+import { obtenerStockValido } from "../utils/stock";
+
+import { validarProducto } from "../utils/validaciones";
+
+
 export const productos = [
 
     {
@@ -120,6 +125,7 @@ export const productos = [
         nombre: "Musette",
         categoria: "musette",
         precio: 18000,
+        precioOferta: 14990,
 
         descripcion:
             "Bolso ligero inspirado en las clásicas musette de ciclismo.",
@@ -203,6 +209,8 @@ export const productos = [
         nombre: "Hippouch porta U-Lock",
         categoria: "otros",
         precio: 40000,
+        precioOferta: 34990,
+        
         descripcion:
             "Hippouch porta U-Lock customizable de Rectabags.",
         descripcionCompleta:
@@ -251,3 +259,485 @@ export const productos = [
     }
 
 ];
+
+/*
+ * ---------------------------------------------------------------
+ * Operaciones CRUD sobre los productos
+ * ---------------------------------------------------------------
+ *
+ * Estas funciones son puras: nunca modifican la lista que reciben,
+ * siempre devuelven una lista nueva. Así el ProductProvider puede
+ * usarlas con setProductos() sin efectos secundarios, y las pruebas
+ * unitarias pueden ejecutarlas sin necesitar React ni localStorage.
+ *
+ * Todas devuelven el mismo formato de respuesta:
+ * {
+ *   ok:        true / false
+ *   mensaje:   texto para mostrar al usuario
+ *   productos: la lista resultante
+ *   producto:  el producto creado o actualizado (cuando corresponde)
+ * }
+ */
+
+
+function normalizarLista(
+    lista
+) {
+
+    return Array.isArray(lista)
+        ? lista
+        : [];
+
+}
+
+
+function normalizarTexto(
+    texto
+) {
+
+    return String(
+        texto || ""
+    ).trim();
+
+}
+
+
+/*
+ * Calcula el id que le corresponde al próximo producto:
+ * el mayor id existente + 1. Con la lista vacía parte en 1.
+ */
+export function siguienteId(
+    lista
+) {
+
+    const productosActuales =
+        normalizarLista(lista);
+
+
+    if (
+        productosActuales.length === 0
+    ) {
+
+        return 1;
+
+    }
+
+
+    const idMayor =
+        productosActuales.reduce(
+            (mayor, producto) =>
+                Math.max(
+                    mayor,
+                    Number(producto.id) || 0
+                ),
+            0
+        );
+
+
+    return idMayor + 1;
+
+}
+
+
+/*
+ * READ - Busca un producto por su id.
+ * El id puede llegar como texto desde la URL ("3"), por eso Number().
+ */
+export function obtenerProductoPorId(
+    lista,
+    id
+) {
+
+    return (
+        normalizarLista(lista).find(
+            (producto) =>
+                producto.id === Number(id)
+        ) || null
+    );
+
+}
+
+
+/*
+ * READ - Filtra los productos por categoría.
+ * La categoría "todos" devuelve la lista completa.
+ */
+export function obtenerProductosPorCategoria(
+    lista,
+    categoria
+) {
+
+    const productosActuales =
+        normalizarLista(lista);
+
+
+    const valor =
+        normalizarTexto(
+            categoria
+        ).toLowerCase();
+
+
+    if (
+        !valor ||
+        valor === "todos"
+    ) {
+
+        return productosActuales;
+
+    }
+
+
+    return productosActuales.filter(
+        (producto) =>
+            String(
+                producto.categoria || ""
+            ).toLowerCase() === valor
+    );
+
+}
+
+
+/*
+ * Revisa si el nombre ya lo usa otro producto.
+ * idActual permite excluirse a sí mismo al editar.
+ */
+function nombreRepetido(
+    lista,
+    nombre,
+    idActual
+) {
+
+    const valor =
+        normalizarTexto(
+            nombre
+        ).toLowerCase();
+
+
+    return normalizarLista(lista).some(
+        (producto) =>
+            producto.id !== Number(idActual) &&
+            normalizarTexto(
+                producto.nombre
+            ).toLowerCase() === valor
+    );
+
+}
+
+export const STOCK_CRITICO_POR_DEFECTO = 3;
+
+/*
+ * Convierte el precio de oferta del formulario.
+ * Vacío, 0 o inválido significa "sin oferta" (null).
+ */
+function normalizarPrecioOferta(valor) {
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero) && numero > 0
+        ? numero
+        : null;
+
+}
+
+/*
+ * Convierte el stock crítico del formulario.
+ * Si viene vacío se usa el valor por defecto.
+ */
+function normalizarStockCritico(valor) {
+
+    if (valor === undefined || valor === null || valor === "") {
+        return STOCK_CRITICO_POR_DEFECTO;
+    }
+
+    const numero = Math.trunc(Number(valor));
+
+    return Number.isFinite(numero) && numero >= 0
+        ? numero
+        : STOCK_CRITICO_POR_DEFECTO;
+
+}
+
+/*
+ * Deja los datos del formulario en el formato que usa la tienda.
+ */
+function armarProducto(
+    datos,
+    base
+) {
+
+    const original =
+        base || {};
+
+    const descripcion =
+        normalizarTexto(
+            datos.descripcion
+        );
+
+
+    return {
+
+        ...original,
+
+        nombre:
+            normalizarTexto(
+                datos.nombre
+            ),
+
+        categoria:
+            normalizarTexto(
+                datos.categoria
+            ).toLowerCase(),
+
+        precio:
+            Number(datos.precio),
+
+        descripcion,
+
+        descripcionCompleta:
+            normalizarTexto(
+                datos.descripcionCompleta
+            ) || descripcion,
+
+        imagen:
+            normalizarTexto(
+                datos.imagen
+            ) ||
+            original.imagen ||
+            "/img/FOTOS_EJEMPLOS_TEMP/mochi.png",
+
+        stock:
+            obtenerStockValido(
+                datos.stock
+            ),
+            
+        precioOferta:
+            normalizarPrecioOferta(
+                datos.precioOferta
+            ),
+
+        stockCritico:
+            normalizarStockCritico(
+                datos.stockCritico
+            )
+
+
+    };
+
+}
+
+
+/*
+ * CREATE - Agrega un producto nuevo al final de la lista.
+ */
+export function crearProducto(
+    lista,
+    datos
+) {
+
+    const productosActuales =
+        normalizarLista(lista);
+
+
+    const error =
+        validarProducto(datos);
+
+
+    if (error) {
+
+        return {
+            ok: false,
+            mensaje: error,
+            productos: productosActuales
+        };
+
+    }
+
+
+    if (
+        nombreRepetido(
+            productosActuales,
+            datos.nombre,
+            null
+        )
+    ) {
+
+        return {
+            ok: false,
+            mensaje:
+                "Ya existe un producto con ese nombre.",
+            productos: productosActuales
+        };
+
+    }
+
+
+    const nuevoProducto =
+        armarProducto(
+            datos,
+            {
+                id:
+                    siguienteId(
+                        productosActuales
+                    )
+            }
+        );
+
+
+    return {
+        ok: true,
+        mensaje:
+            "Producto creado correctamente.",
+        producto: nuevoProducto,
+        productos: [
+            ...productosActuales,
+            nuevoProducto
+        ]
+    };
+
+}
+
+
+/*
+ * UPDATE - Reemplaza los datos de un producto existente.
+ * Los campos que no vengan en "cambios" se mantienen.
+ */
+export function actualizarProducto(
+    lista,
+    id,
+    cambios
+) {
+
+    const productosActuales =
+        normalizarLista(lista);
+
+
+    const productoExistente =
+        obtenerProductoPorId(
+            productosActuales,
+            id
+        );
+
+
+    if (!productoExistente) {
+
+        return {
+            ok: false,
+            mensaje:
+                "No se encontró el producto que intentas editar.",
+            productos: productosActuales
+        };
+
+    }
+
+
+    const datosCombinados = {
+        ...productoExistente,
+        ...(cambios || {})
+    };
+
+
+    const error =
+        validarProducto(
+            datosCombinados
+        );
+
+
+    if (error) {
+
+        return {
+            ok: false,
+            mensaje: error,
+            productos: productosActuales
+        };
+
+    }
+
+
+    if (
+        nombreRepetido(
+            productosActuales,
+            datosCombinados.nombre,
+            productoExistente.id
+        )
+    ) {
+
+        return {
+            ok: false,
+            mensaje:
+                "Ya existe otro producto con ese nombre.",
+            productos: productosActuales
+        };
+
+    }
+
+
+    const productoActualizado =
+        armarProducto(
+            datosCombinados,
+            productoExistente
+        );
+
+
+    return {
+        ok: true,
+        mensaje:
+            "Producto actualizado correctamente.",
+        producto: productoActualizado,
+        productos:
+            productosActuales.map(
+                (producto) =>
+                    producto.id ===
+                        productoExistente.id
+                        ? productoActualizado
+                        : producto
+            )
+    };
+
+}
+
+
+/*
+ * DELETE - Quita un producto de la lista.
+ */
+export function eliminarProducto(
+    lista,
+    id
+) {
+
+    const productosActuales =
+        normalizarLista(lista);
+
+
+    const productoExistente =
+        obtenerProductoPorId(
+            productosActuales,
+            id
+        );
+
+
+    if (!productoExistente) {
+
+        return {
+            ok: false,
+            mensaje:
+                "No se encontró el producto que intentas eliminar.",
+            productos: productosActuales
+        };
+
+    }
+
+
+    return {
+        ok: true,
+        mensaje:
+            "Producto eliminado correctamente.",
+        producto: productoExistente,
+        productos:
+            productosActuales.filter(
+                (producto) =>
+                    producto.id !==
+                    productoExistente.id
+            )
+    };
+
+}

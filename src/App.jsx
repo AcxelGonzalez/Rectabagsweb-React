@@ -1,111 +1,87 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ActualizarTop from "./components/ActualizarTop";
 
+import RutaAdmin from "./components/RutaAdmin";
 import Layout from "./components/Layout";
-
 import Home from "./pages/Home";
 import Catalogo from "./pages/Catalogo";
 import ProductoDetalle from "./pages/ProductoDetalle";
-import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
 import Blog from "./pages/Blog";
 import ImpactoAmbiental from "./pages/ImpactoAmbiental";
+import Contacto from "./pages/Contacto";
 import QuienesSomos from "./pages/QuienesSomos";
 import TerminosCompra from "./pages/TerminosCompra";
 import TerminosRegistro from "./pages/TerminosRegistro";
+import AdminPanel from "./pages/admin/AdminPanel";
+import Login from "./pages/Login";
+import Registro from "./pages/Registro";
+import Carrito from "./pages/Carrito";
+import RecuperarContrasena from "./pages/RecuperarContrasena";
+import PaginaEnConstruccion from "./pages/PaginaEnConstruccion";
+import Perfil from "./pages/Perfil";
+import Ofertas from "./pages/Ofertas";
+import MiBoleta from "./pages/MiBoleta";
+import Checkout from "./pages/Checkout";
+import CompraExitosa from "./pages/CompraExitosa";
+import CompraError from "./pages/CompraError";
+
+import AdminProductoForm from "./pages/admin/AdminProductoForm";
+import AdminUsuarios from "./pages/admin/AdminUsuarios";
+import AdminProductos from "./pages/admin/AdminProductos";
+import AdminUsuarioForm from "./pages/admin/AdminUsuarioForm";
+import AdminOrdenes from "./pages/admin/AdminOrdenes";
+import AdminBoleta from "./pages/admin/AdminBoleta";
+import AdminHistorialUsuario from "./pages/admin/AdminHistorialUsuario";
+import AdminReportes from "./pages/admin/AdminReportes";
+
+
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* ==============================
-                    LAYOUT GENERAL
-                   ============================== */}
+    return (
+        <BrowserRouter>
+            <ActualizarTop/>
+            <Routes>
+                {/* Layout comparte el encabezado y pie de página entre todas las rutas. */}
+                <Route element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/catalogo" element={<Catalogo />} />
+                    <Route path="/ofertas" element={<Ofertas />} />
+                    <Route path="/producto/:id" element={<ProductoDetalle />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/contacto" element={<Contacto />} />
+                    <Route path="/impacto-ambiental" element={<ImpactoAmbiental />} />
+                    <Route path="/quienes-somos" element={<QuienesSomos />} />
+                    <Route path="/terminos-compra" element={<TerminosCompra />} />
+                    <Route path="/terminos-registro" element={<TerminosRegistro />} />
+                    <Route path="/login" element={<Login/>} />
+                    <Route path="/registro" element={<Registro/>} />
+                    <Route path="/recuperar-contrasena" element={<RecuperarContrasena/>} />
+                    <Route path="/carrito" element={<Carrito/>} />
+                    <Route path="/perfil" element={<Perfil />} />
+                    <Route path="/mis-compras/:id" element={<MiBoleta />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/compra-exitosa" element={<CompraExitosa />} />
+                    <Route path="/compra-error" element={<CompraError />} />
 
-        <Route element={<Layout />}>
-        
-          {/* HOME */}
-          <Route path="/" element={<Home />} />
+                    {/* AQUI SOLO ENTRA DIOS */}
+                    <Route element={<RutaAdmin />}>
+                        <Route path="/admin" element={<AdminPanel />} />
+                        <Route path="/admin/productos" element={<AdminProductos />} />
+                        <Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
+                        <Route path="/admin/productos/:id/editar" element={<AdminProductoForm />} />
+                        <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+                        <Route path="/admin/usuarios/:id/editar" element={<AdminUsuarioForm />} />
+                        <Route path="/admin/ordenes" element={<AdminOrdenes />} />
+                        <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
+                        <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
+                        <Route path="/admin/reportes" element={<AdminReportes />} />
+                    </Route>
 
-          {/* CATÁLOGO */}
-          <Route
-              path="/catalogo"
-              element={<Catalogo />}
-          />
-
-          {/* PRODUCTO DETALLE */}
-          <Route
-              path="/producto/:id"
-              element={
-                  <ProductoDetalle />
-              }
-          />
-
-          {/* BLOG */}
-          <Route
-              path="/blog"
-              element={<Blog />}
-          />
-
-          {/* CONTACTO */}
-          <Route
-            path="/contacto"
-            element={<PaginaEnConstruccion titulo="Contacto" />}
-          />
-
-          {/* IMPACTO */}
-          <Route
-              path="/impacto-ambiental"
-              element={<ImpactoAmbiental />}
-          />
-
-          {/* NOSOTROS */}
-          <Route
-              path="/quienes-somos"
-              element={<QuienesSomos />}
-          />
-
-          {/* TÉRMINOS */}
-          <Route
-              path="/terminos-compra"
-              element={<TerminosCompra />}
-          />
-
-          <Route
-              path="/terminos-registro"
-              element={<TerminosRegistro />}
-          />
-
-          {/* AUTENTICACIÓN */}
-          <Route
-            path="/login"
-            element={<PaginaEnConstruccion titulo="Iniciar Sesión" />}
-          />
-
-          <Route
-            path="/registro"
-            element={<PaginaEnConstruccion titulo="Registro" />}
-          />
-
-          {/* CARRITO */}
-          <Route
-            path="/carrito"
-            element={<PaginaEnConstruccion titulo="Carrito" />}
-          />
-
-          {/* PERFIL */}
-          <Route
-            path="/perfil"
-            element={<PaginaEnConstruccion titulo="Mi Perfil" />}
-          />
-
-          {/* 404 */}
-          <Route
-            path="*"
-            element={<PaginaEnConstruccion titulo="Página no encontrada" />}
-          />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+                    <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
