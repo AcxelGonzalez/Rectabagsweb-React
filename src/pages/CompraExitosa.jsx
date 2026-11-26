@@ -7,10 +7,6 @@ import {
 import useTitulo
     from "../hooks/useTitulo";
 
-import {
-    leerCompraPorId
-} from "../services/compraService";
-
 
 function CompraExitosa() {
 
@@ -23,17 +19,10 @@ function CompraExitosa() {
         useLocation();
 
 
-    const compraId =
-        location.state?.compraId;
+    const compra = location.state?.compra;
 
 
-    const compra =
-        leerCompraPorId(
-            compraId
-        );
-
-
-    if (!compraId || !compra) {
+    if (!compra?.idBoleta) {
 
         return (
             <Navigate
@@ -103,7 +92,7 @@ function CompraExitosa() {
                                             Número de compra:
                                         </strong>{" "}
 
-                                        {compra.id}
+                                        {compra.folio}
 
                                     </p>
 
@@ -115,7 +104,7 @@ function CompraExitosa() {
                                         </strong>{" "}
 
                                         {
-                                            compra.cantidadProductos
+                                            compra.detalles.reduce((cantidad, detalle) => cantidad + detalle.cantidad, 0)
                                         }
 
                                     </p>
@@ -129,7 +118,7 @@ function CompraExitosa() {
 
                                         {
                                             formatearPrecio(
-                                                compra.subtotal
+                                                compra.total
                                             )
                                         }
 

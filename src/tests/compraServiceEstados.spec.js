@@ -3,7 +3,6 @@ import {
     actualizarEstadoCompra,
     archivarCompras,
     colorEstado,
-    guardarCompra,
     leerCompras
 } from "../services/compraService";
 
@@ -17,11 +16,17 @@ describe("compraService · estados de las órdenes", () => {
 
     const CLAVE_COMPRAS = "recta_compras";
 
+    // Datos locales de las ordenes anteriores; el alta nueva ya utiliza la API.
+    function guardarCompraLocal(datos) {
+        const compra = { id: crypto.randomUUID(), ...datos };
+        localStorage.setItem(CLAVE_COMPRAS, JSON.stringify([...leerCompras(), compra]));
+        return compra;
+    }
 
     // Registra una compra de prueba y devuelve su id.
     function crearCompra(cambios = {}) {
 
-        const compra = guardarCompra({
+        const compra = guardarCompraLocal({
             usuarioId: "cli-1",
             cliente: { nombre: "Acxel" },
             productos: [{ id: 1, nombre: "RC-30", precio: 45000, cantidad: 1 }],
@@ -102,7 +107,7 @@ describe("compraService · estados de las órdenes", () => {
             () => {
 
                 const compra =
-                    guardarCompra({
+                    guardarCompraLocal({
                         estado:
                             "confirmada"
                     });

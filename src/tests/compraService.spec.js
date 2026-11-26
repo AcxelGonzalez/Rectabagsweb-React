@@ -1,584 +1,97 @@
-import {
-    guardarCompra,
-    leerCompraPorId,
-    actualizarEstadoCompra
-} from "../services/compraService";
-
-describe(
-    "compraService",
-    () => {
-
-        const CLAVE_COMPRAS =
-            "recta_compras";
-
-
-        beforeEach(
-            () => {
-
-                localStorage.clear();
-
-            }
-        );
-
-
-        afterEach(
-            () => {
-
-                localStorage.clear();
-
-            }
-        );
-
-
-        it(
-            "debe guardar una compra en LocalStorage",
-            () => {
-
-                vi.spyOn(
-                    Date,
-                    "now"
-                ).mockReturnValue(
-                    1000
-                );
-
-
-                const compra =
-                    guardarCompra({
-                        usuarioId:
-                            "usuario-1",
-
-                        cantidadProductos:
-                            2,
-
-                        subtotal:
-                            50000
-                    });
-
-
-                const comprasGuardadas =
-                    JSON.parse(
-                        localStorage.getItem(
-                            CLAVE_COMPRAS
-                        )
-                    );
-
-
-                expect(
-                    compra.id
-                ).toMatch(
-                    /^RB-1000-/
-                );
-
-
-                expect(
-                    comprasGuardadas.length
-                ).toBe(1);
-
-
-                expect(
-                    comprasGuardadas[0]
-                        .subtotal
-                ).toBe(
-                    50000
-                );
-
-            }
-        );
-
-
-        it(
-            "debe conservar las compras anteriores al guardar una nueva",
-            () => {
-
-                vi.spyOn(
-                    Date,
-                    "now"
-                )
-                    .mockReturnValueOnce(
-                        1000
-                    )
-                    .mockReturnValueOnce(
-                        2000
-                    );
-
-
-                guardarCompra({
-                    subtotal:
-                        10000
-                });
-
-
-                guardarCompra({
-                    subtotal:
-                        20000
-                });
-
-
-                const comprasGuardadas =
-                    JSON.parse(
-                        localStorage.getItem(
-                            CLAVE_COMPRAS
-                        )
-                    );
-
-
-                expect(
-                    comprasGuardadas.length
-                ).toBe(2);
-
-
-                expect(
-                    comprasGuardadas[0].id
-                ).toMatch(
-                    /^RB-1000-/
-                );
-
-
-                expect(
-                    comprasGuardadas[1].id
-                ).toMatch(
-                    /^RB-2000-/
-                );
-
-            }
-        );
-
-
-        it(
-            "debe encontrar una compra utilizando su identificador",
-            () => {
-
-                vi.spyOn(
-                    Date,
-                    "now"
-                ).mockReturnValue(
-                    3000
-                );
-
-
-                const guardada =
-                    guardarCompra({
-                        usuarioId:
-                            "usuario-prueba",
-
-                        subtotal:
-                            75000
-                    });
-
-
-                const compra =
-                    leerCompraPorId(
-                        guardada.id
-                    );
-
-
-                expect(
-                    compra
-                ).not.toBeNull();
-
-
-                expect(
-                    compra.id
-                ).toMatch(
-                    /^RB-3000-/
-                );
-
-
-                expect(
-                    compra.usuarioId
-                ).toBe(
-                    "usuario-prueba"
-                );
-
-
-                expect(
-                    compra.subtotal
-                ).toBe(
-                    75000
-                );
-
-            }
-        );
-
-
-        it(
-            "debe retornar null cuando la compra no existe",
-            () => {
-
-                const resultado =
-                    leerCompraPorId(
-                        "RB-INEXISTENTE"
-                    );
-
-
-                expect(
-                    resultado
-                ).toBeNull();
-
-            }
-        );
-
-
-        it(
-            "debe retornar null cuando no se entrega un identificador",
-            () => {
-
-                expect(
-                    leerCompraPorId()
-                ).toBeNull();
-
-
-                expect(
-                    leerCompraPorId("")
-                ).toBeNull();
-
-            }
-        );
-
-
-        it(
-            "debe recuperarse si LocalStorage contiene datos inválidos",
-            () => {
-
-                localStorage.setItem(
-                    CLAVE_COMPRAS,
-                    "contenido-no-valido"
-                );
-
-
-                vi.spyOn(
-                    Date,
-                    "now"
-                ).mockReturnValue(
-                    4000
-                );
-
-
-                const compra =
-                    guardarCompra({
-                        subtotal:
-                            30000
-                    });
-
-
-                const comprasGuardadas =
-                    JSON.parse(
-                        localStorage.getItem(
-                            CLAVE_COMPRAS
-                        )
-                    );
-
-
-                expect(
-                    compra.id
-                ).toMatch(
-                    /^RB-4000-/
-                );
-
-
-                expect(
-                    comprasGuardadas.length
-                ).toBe(1);
-
-
-                expect(
-                    comprasGuardadas[0]
-                        .subtotal
-                ).toBe(
-                    30000
-                );
-
-            }
-        );
-
-        it(
-            "debe permitir avanzar de confirmada a en preparación",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        subtotal:
-                            30000,
-
-                        estado:
-                            "confirmada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "en preparación"
-                    );
-
-
-                expect(
-                    resultado
-                ).not.toBeNull();
-
-
-                expect(
-                    resultado.estado
-                ).toBe(
-                    "en preparación"
-                );
-
-
-                expect(
-                    leerCompraPorId(
-                        compra.id
-                    ).estado
-                ).toBe(
-                    "en preparación"
-                );
-
-            }
-        );
-
-        it(
-            "no debe permitir saltar de confirmada a enviada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "confirmada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "enviada"
-                    );
-
-
-                expect(
-                    resultado
-                ).toBeNull();
-
-
-                expect(
-                    leerCompraPorId(
-                        compra.id
-                    ).estado
-                ).toBe(
-                    "confirmada"
-                );
-
-            }
-        );
-
-        it(
-            "debe permitir avanzar de en preparación a enviada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "en preparación"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "enviada"
-                    );
-
-
-                expect(
-                    resultado
-                ).not.toBeNull();
-
-
-                expect(
-                    resultado.estado
-                ).toBe(
-                    "enviada"
-                );
-
-            }
-        );
-
-        it(
-            "debe permitir avanzar de enviada a entregada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "enviada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "entregada"
-                    );
-
-
-                expect(
-                    resultado
-                ).not.toBeNull();
-
-
-                expect(
-                    resultado.estado
-                ).toBe(
-                    "entregada"
-                );
-
-            }
-        );
-
-        it(
-            "no debe permitir cancelar una orden ya entregada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "entregada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "cancelada"
-                    );
-
-
-                expect(
-                    resultado
-                ).toBeNull();
-
-
-                expect(
-                    leerCompraPorId(
-                        compra.id
-                    ).estado
-                ).toBe(
-                    "entregada"
-                );
-
-            }
-        );
-
-        it(
-            "debe permitir reactivar una orden cancelada como confirmada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "cancelada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "confirmada"
-                    );
-
-
-                expect(
-                    resultado
-                ).not.toBeNull();
-
-
-                expect(
-                    resultado.estado
-                ).toBe(
-                    "confirmada"
-                );
-
-            }
-        );
-
-        it(
-            "no debe permitir reactivar una orden cancelada directamente como enviada",
-            () => {
-
-                const compra =
-                    guardarCompra({
-                        estado:
-                            "cancelada"
-                    });
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        compra.id,
-                        "enviada"
-                    );
-
-
-                expect(
-                    resultado
-                ).toBeNull();
-
-
-                expect(
-                    leerCompraPorId(
-                        compra.id
-                    ).estado
-                ).toBe(
-                    "cancelada"
-                );
-
-            }
-        );
-
-        it(
-            "no debe modificar el estado de una orden archivada",
-            () => {
-
-                localStorage.setItem(
-                    "recta_compras",
-                    JSON.stringify([
-                        {
-                            id:
-                                "RB-ARCHIVADA",
-
-                            estado:
-                                "confirmada",
-
-                            archivada:
-                                true,
-
-                            subtotal:
-                                30000
-                        }
-                    ])
-                );
-
-
-                const resultado =
-                    actualizarEstadoCompra(
-                        "RB-ARCHIVADA",
-                        "en preparación"
-                    );
-
-
-                expect(
-                    resultado
-                ).toBeNull();
-
-
-                expect(
-                    leerCompraPorId(
-                        "RB-ARCHIVADA"
-                    ).estado
-                ).toBe(
-                    "confirmada"
-                );
-
-            }
-        );
-
+import api from "../services/api";
+import { guardarCompra, leerCompraPorId, leerCompras, actualizarEstadoCompra } from "../services/compraService";
+
+vi.mock("../services/api", () => ({ default: { post: vi.fn() } }));
+
+beforeEach(() => {
+    localStorage.clear();
+    api.post.mockReset();
+});
+afterEach(() => localStorage.clear());
+
+describe("guardarCompra con el backend", () => {
+    const request = {
+        nombreCliente: "Marco", apellidoCliente: "Carrasco", correoCliente: "cliente@gmail.com",
+        telefonoCliente: "912345678", direccionCliente: "Av. Principal 123",
+        region: "Región Metropolitana", comuna: "Santiago", metodoPago: "transferencia",
+        items: [{ idProducto: 1, cantidad: 2 }]
+    };
+
+    it("envía la compra a /boletas y devuelve el comprobante del servidor", async () => {
+        const boleta = { idBoleta: 10, folio: "RB-2026-prueba", total: 15980.50 };
+        api.post.mockResolvedValue({ data: boleta });
+        const respuesta = await guardarCompra(request);
+        expect(api.post).toHaveBeenCalledExactlyOnceWith("/boletas", request);
+        expect(respuesta).toBe(boleta);
+        expect(localStorage.getItem("recta_compras")).toBeNull();
+    });
+
+    it("propaga el error de stock sin guardar una compra local", async () => {
+        const error = { response: { status: 400, data: { mensaje: "Stock insuficiente para Mochila." } } };
+        api.post.mockRejectedValue(error);
+        await expect(guardarCompra(request)).rejects.toBe(error);
+        expect(localStorage.getItem("recta_compras")).toBeNull();
+    });
+
+    it("propaga los errores de conexión para que el checkout conserve el carrito", async () => {
+        const error = new Error("Network Error");
+        api.post.mockRejectedValue(error);
+        await expect(guardarCompra(request)).rejects.toBe(error);
+    });
+});
+
+// Estas lecturas y transiciones conservan su alcance local hasta la migracion de ordenes.
+describe("consulta y estados de compras locales existentes", () => {
+    function crearCompraLocal(cambios = {}) {
+        const compra = { id: "RB-LOCAL", usuarioId: "cliente-1", subtotal: 30000, estado: "confirmada", ...cambios };
+        localStorage.setItem("recta_compras", JSON.stringify([compra]));
+        return compra;
     }
-);
+
+    it("encuentra una compra existente por identificador", () => {
+        const compra = crearCompraLocal();
+        expect(leerCompraPorId(compra.id)).toEqual(compra);
+    });
+
+    it("devuelve null para una compra inexistente", () => {
+        expect(leerCompraPorId("RB-INEXISTENTE")).toBeNull();
+    });
+
+    it("devuelve null si no se entrega un identificador", () => {
+        expect(leerCompraPorId()).toBeNull();
+        expect(leerCompraPorId("")).toBeNull();
+    });
+
+    it("tolera compras locales dañadas sin afectar el servicio remoto", () => {
+        localStorage.setItem("recta_compras", "contenido-no-valido");
+        expect(leerCompras()).toEqual([]);
+        expect(leerCompraPorId("RB-LOCAL")).toBeNull();
+    });
+
+    for (const [anterior, siguiente] of [
+        ["confirmada", "en preparación"], ["en preparación", "enviada"],
+        ["enviada", "entregada"], ["cancelada", "confirmada"]
+    ]) {
+        it(`permite la transición local de ${anterior} a ${siguiente}`, () => {
+            const compra = crearCompraLocal({ estado: anterior });
+            expect(actualizarEstadoCompra(compra.id, siguiente).estado).toBe(siguiente);
+            expect(leerCompraPorId(compra.id).estado).toBe(siguiente);
+        });
+    }
+
+    for (const [anterior, siguiente] of [
+        ["confirmada", "enviada"], ["entregada", "cancelada"], ["cancelada", "enviada"]
+    ]) {
+        it(`rechaza la transición local de ${anterior} a ${siguiente}`, () => {
+            const compra = crearCompraLocal({ estado: anterior });
+            expect(actualizarEstadoCompra(compra.id, siguiente)).toBeNull();
+            expect(leerCompraPorId(compra.id).estado).toBe(anterior);
+        });
+    }
+
+    it("no modifica una orden local archivada", () => {
+        const compra = crearCompraLocal({ archivada: true });
+        expect(actualizarEstadoCompra(compra.id, "en preparación")).toBeNull();
+        expect(leerCompraPorId(compra.id).estado).toBe("confirmada");
+    });
+});

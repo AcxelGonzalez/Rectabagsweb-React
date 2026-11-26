@@ -1,3 +1,5 @@
+import api from "./api";
+
 const CLAVE_COMPRAS =
     "recta_compras";
 
@@ -27,37 +29,9 @@ export function leerCompras() {
 }
 
 
-export function guardarCompra(
-    datosCompra
-) {
-
-    const compra = {
-
-        id:
-            `RB-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
-
-        fecha:
-            new Date().toISOString(),
-
-        ...datosCompra
-
-    };
-
-
-    const compras =
-        leerCompras();
-
-
-    localStorage.setItem(
-        CLAVE_COMPRAS,
-        JSON.stringify([
-            ...compras,
-            compra
-        ])
-    );
-
-    return compra;
-
+export async function guardarCompra(datosCompra) {
+    const { data } = await api.post("/boletas", datosCompra);
+    return data;
 }
 
 

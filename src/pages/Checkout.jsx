@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
-import useProducts from "../hooks/useProducts";
 import useTitulo from "../hooks/useTitulo";
 
 import ConfirmarCompraModal from "../components/ConfirmarCompraModal";
@@ -61,11 +60,6 @@ function Checkout() {
         vaciarCarrito
     } = useCart();
 
-    const {
-        verificarDisponibilidad,
-        descontarStock
-    } = useProducts();
-
     const [formulario, setFormulario] = useState(
         () => crearFormularioInicial(usuarioActual)
     );
@@ -73,6 +67,8 @@ function Checkout() {
     const [mensaje, setMensaje] = useState(null);
 
     const [compraRealizada, setCompraRealizada] = useState(false);
+    const [procesando, setProcesando] = useState(false);
+    const envioEnCurso = useRef(false);
 
     // Controla la ventana de confirmación previa al registro de la compra.
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
@@ -110,6 +106,7 @@ function Checkout() {
     function envio(evento) {
 
         evento.preventDefault();
+        if (envioEnCurso.current) return;
 
         const error =
             validarCheckout(
@@ -142,86 +139,42 @@ function Checkout() {
 
 
     // Registra la compra. Solo corre cuando el usuario responde que sí.
-    function confirmarCompra() {
-
+    async function confirmarCompra() {
+        if (envioEnCurso.current) return;
+        envioEnCurso.current = true;
+        setProcesando(true);
         setMostrarConfirmacion(false);
-
-        /*
-         Antes de registrar nada se revisa que el stock alcance. El
-         carrito pudo quedar guardado varios días y el catálogo cambiar
-         en ese tiempo. Si no alcanza, no se descuenta ni se guarda.
-         */
-        const stock =
-            verificarDisponibilidad(
-                carrito
-            );
-
-        if (!stock.ok) {
-
-            navigate(
-                "/compra-error",
-                {
-                    state: {
-                        mensaje:
-                            stock.mensaje
-                    }
-                }
-            );
-
-            return;
-
-        }
-
         try {
-
-            const compra = guardarCompra({
-
-                usuarioId: usuarioActual?.id || null,
-
-                cliente: {
-                    nombre: formulario.nombre.trim(),
-                    apellido: formulario.apellido.trim(),
-                    correo: formulario.correo.trim().toLowerCase(),
-                    telefono: formulario.telefono.trim(),
-                    direccion: formulario.direccion.trim(),
-                    region: formulario.region.trim(),
-                    comuna: formulario.comuna.trim()
-                },
-
+            // Los precios, el estado y el stock los determina el backend.
+            const compra = await guardarCompra({
+                nombreCliente: formulario.nombre.trim(),
+                apellidoCliente: formulario.apellido.trim(),
+                correoCliente: formulario.correo.trim().toLowerCase(),
+                telefonoCliente: formulario.telefono.trim(),
+                direccionCliente: formulario.direccion.trim(),
+                region: formulario.region.trim(),
+                comuna: formulario.comuna.trim(),
                 metodoPago: formulario.metodoPago,
-
-                productos: carrito.map((item) => ({
-                    id: item.id,
-                    nombre: item.nombre,
-                    precio: item.precio,
+                items: carrito.map((item) => ({
+                    idProducto: item.id,
                     cantidad: item.cantidad
-                })),
-
-                cantidadProductos,
-                subtotal,
-                estado: "confirmada"
-
+                }))
             });
-
-            descontarStock(
-                carrito
-            );
-
             setCompraRealizada(true);
-
             vaciarCarrito();
-
             navigate("/compra-exitosa", {
                 replace: true,
-                state: { compraId: compra.id }
+                state: { compra }
             });
-
-        } catch {
-
+        } catch (error) {
             navigate("/compra-error", {
-                state: { mensaje: "No fue posible registrar la compra." }
+                state: {
+                    mensaje: error.response?.data?.mensaje || "No fue posible registrar la compra."
+                }
             });
-
+        } finally {
+            envioEnCurso.current = false;
+            setProcesando(false);
         }
 
     }
@@ -271,7 +224,7 @@ function Checkout() {
                                     Datos del comprador
                                 </h2>
 
-                                <form id="form-checkout" onSubmit={envio}>
+                                <form id="form-checkout" onSubmit={envio} aria-busy={procesando}>
 
                                     <div className="row g-3">
 
@@ -286,6 +239,7 @@ function Checkout() {
                                                 type="text"
                                                 id="checkout-nombre"
                                                 name="nombre"
+                                                maxLength={50}
                                                 className="form-control"
                                                 value={formulario.nombre}
                                                 onChange={cambioFormulario}
@@ -304,6 +258,7 @@ function Checkout() {
                                                 type="text"
                                                 id="checkout-apellido"
                                                 name="apellido"
+                                                maxLength={50}
                                                 className="form-control"
                                                 value={formulario.apellido}
                                                 onChange={cambioFormulario}
@@ -322,6 +277,7 @@ function Checkout() {
                                                 type="email"
                                                 id="checkout-correo"
                                                 name="correo"
+                                                maxLength={100}
                                                 className="form-control"
                                                 value={formulario.correo}
                                                 onChange={cambioFormulario}
@@ -340,6 +296,7 @@ function Checkout() {
                                                 type="tel"
                                                 id="checkout-telefono"
                                                 name="telefono"
+                                                maxLength={20}
                                                 className="form-control"
                                                 value={formulario.telefono}
                                                 onChange={cambioFormulario}
@@ -358,6 +315,7 @@ function Checkout() {
                                                 type="text"
                                                 id="checkout-direccion"
                                                 name="direccion"
+                                                maxLength={120}
                                                 className="form-control"
                                                 value={formulario.direccion}
                                                 onChange={cambioFormulario}
@@ -463,9 +421,10 @@ function Checkout() {
 
                                     <button
                                         type="submit"
+                                        disabled={procesando}
                                         className="btn btn-dark w-100 mt-4 py-2 fw-bold"
                                     >
-                                        Confirmar compra
+                                        {procesando ? "Procesando compra…" : "Confirmar compra"}
                                     </button>
                                 </form>
                             </div>
