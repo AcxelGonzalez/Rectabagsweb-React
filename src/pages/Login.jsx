@@ -69,14 +69,14 @@ function Login() {
 
     }
 
-    function envio(evento) 
+    async function envio(evento) 
     {
 
         evento.preventDefault();
 
 
         const resultado =
-            iniciarSesion(
+            await iniciarSesion(
                 formulario.correo,
                 formulario.contrasena
             );

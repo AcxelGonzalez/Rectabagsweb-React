@@ -1,775 +1,353 @@
-import { useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import AuthContext from "./AuthContext";
 
-import { usuariosIniciales } from "../data/usuariosIniciales";
-
-import {
-    validarCorreo,
-    validarRut,
-    validarContrasena,
-    validarFechaNacimiento,
-    validarTelefono
-} from "../utils/validaciones";
+import api from "../services/api";
 
 
-const CLAVE_USUARIOS =
-    "recta_usuarios";
+const CLAVE_TOKEN = "recta_token";
 
-const CLAVE_SESION =
-    "recta_usuario_actual";
+const CLAVE_SESION = "recta_usuario_actual";
 
 
-function normalizarCorreo(
-    correo
-) {
+// Lee la sesión guardada para mostrar algo mientras el backend responde
+function leerSesionGuardada() {
 
-    return String(
-        correo || ""
-    )
-        .trim()
-        .toLowerCase();
+    try {
+        const texto = localStorage.getItem(CLAVE_SESION);
+        return texto ? JSON.parse(texto) : null;
+
+    } catch {
+        return null;
+    }
 
 }
 
 
-function normalizarRut(
-    rut
-) {
+// El backend envía los errores como { "mensaje": "..." }
+function mensajeDeError(error, porDefecto) {
 
-    return String(
-        rut || ""
-    )
-        .replace(
-            /[.\-\s]/g,
-            ""
-        )
+    return error?.response?.data?.mensaje || porDefecto;
+
+}
+
+
+// El RUN viaja al backend sin puntos ni guion: "12.345.678-5" → "123456785"
+function normalizarRun(valor) {
+
+    return String(valor || "")
+        .replace(/[.\-\s]/g, "")
         .toUpperCase();
 
 }
 
-function agregarUsuariosIniciales(
-    usuariosGuardados
-) {
 
-    const usuarios =
-        Array.isArray(
-            usuariosGuardados
-        )
-            ? usuariosGuardados
-            : [];
+function AuthProvider({ children }) {
+
+    const [usuarioActual, setUsuarioActual] = useState(leerSesionGuardada);
+
+    const [usuarios, setUsuarios] = useState([]);
+
+    const [cargandoSesion, setCargandoSesion] = useState(true);
 
 
-    const usuariosFaltantes =
-        usuariosIniciales.filter(
-            (usuarioInicial) =>
-                !usuarios.some(
-                    (usuarioGuardado) =>
-                        normalizarCorreo(
-                            usuarioGuardado.correo
-                        ) ===
-                        normalizarCorreo(
-                            usuarioInicial.correo
-                        )
-                )
-        );
+    function guardarSesion(usuario) {
 
-
-    return [
-        ...usuarios,
-        ...usuariosFaltantes
-    ];
-
-}
-
-function leerUsuariosGuardados() {
-
-    try {
-
-        const usuarios =
-            JSON.parse(
-                localStorage.getItem(
-                    CLAVE_USUARIOS
-                )
-            );
-
-        return agregarUsuariosIniciales(
-            usuarios
-        );
-
-    } catch {
-
-        return agregarUsuariosIniciales(
-            []
-        );
+        setUsuarioActual(usuario);
+        localStorage.setItem(CLAVE_SESION, JSON.stringify(usuario));
 
     }
 
-}
 
+    function borrarSesion() {
 
-function leerSesionGuardada() {
-
-    try {
-
-        const usuario =
-            JSON.parse(
-                localStorage.getItem(
-                    CLAVE_SESION
-                )
-            );
-
-        return usuario &&
-            typeof usuario === "object"
-            ? usuario
-            : null;
-
-    } catch {
-
-        return null;
+        setUsuarioActual(null);
+        setUsuarios([]);
+        localStorage.removeItem(CLAVE_TOKEN);
+        localStorage.removeItem(CLAVE_SESION);
 
     }
 
-}
 
-function AuthProvider({
-    children
-}) {
-
-    const [
-        usuarios,
-        setUsuarios
-    ] = useState(
-        leerUsuariosGuardados
-    );
-
-
-    const [
-        usuarioActual,
-        setUsuarioActual
-    ] = useState(
-        leerSesionGuardada
-    );
-
-
+    /*
+     * Al abrir la aplicación: si hay token guardado, se le pregunta al
+     * backend quién es. Así, si el token venció, la sesión se cierra sola.
+     */
     useEffect(() => {
 
-        localStorage.setItem(
-            CLAVE_USUARIOS,
-            JSON.stringify(
-                usuarios
-            )
-        );
+        const token = localStorage.getItem(CLAVE_TOKEN);
 
-    }, [usuarios]);
+        if (!token) {
+            setCargandoSesion(false);
+            return;
+        }
+
+        api.get("/usuarios/me")
+            .then(({ data }) => {
+                setUsuarioActual(data);
+                localStorage.setItem(CLAVE_SESION, JSON.stringify(data));
+            })
+            .catch(() => {
+                localStorage.removeItem(CLAVE_TOKEN);
+                localStorage.removeItem(CLAVE_SESION);
+                setUsuarioActual(null);
+            })
+            .finally(() => {
+                setCargandoSesion(false);
+            });
+
+    }, []);
 
 
-    useEffect(() => {
+    const esAdmin = usuarioActual?.rol === "ADMIN";
 
-        if (usuarioActual) {
+    const esVendedor = usuarioActual?.rol === "VENDEDOR";
 
-            localStorage.setItem(
-                CLAVE_SESION,
-                JSON.stringify(
-                    usuarioActual
-                )
-            );
 
-        } else {
+    /*
+     * La lista completa de usuarios es solo para el administrador:
+     * a los demás el backend les responde 403.
+     */
+    const cargarUsuarios = useCallback(async () => {
 
-            localStorage.removeItem(
-                CLAVE_SESION
-            );
+        if (usuarioActual?.rol !== "ADMIN") {
+            setUsuarios([]);
+            return;
+        }
 
+        try {
+            const { data } = await api.get("/usuarios");
+            setUsuarios(data);
+
+        } catch {
+            setUsuarios([]);
         }
 
     }, [usuarioActual]);
 
 
-    function registrarUsuario(
-        datos
-    ) {
+    useEffect(() => {
 
-        const correo =
-            normalizarCorreo(
-                datos.correo
-            );
+        cargarUsuarios();
 
-        const rut =
-            normalizarRut(
-                datos.rut
-            );
-
-        const nombre =
-            String(
-                datos.nombre || ""
-            ).trim();
-
-        const apellido =
-            String(
-                datos.apellido || ""
-            ).trim();
-
-        const telefono =
-            String(
-                datos.telefono || ""
-            ).trim();
+    }, [cargarUsuarios]);
 
 
-        if (
-            !correo ||
-            !rut ||
-            !nombre ||
-            !apellido ||
-            !datos.fechaNacimiento ||
-            !telefono ||
-            !datos.contrasena
-        ) {
+    // ------------------------------------------------------------------
+    // Sesión
+    // ------------------------------------------------------------------
+
+    async function iniciarSesion(correo, contrasena) {
+
+        try {
+            const { data } = await api.post("/auth/login", {
+                correo,
+                contrasena
+            });
+
+            localStorage.setItem(CLAVE_TOKEN, data.token);
+            guardarSesion(data.usuario);
+
+            return {
+                ok: true,
+                mensaje: "Sesión iniciada correctamente.",
+                usuario: data.usuario
+            };
+
+        } catch (error) {
 
             return {
                 ok: false,
-                mensaje:
-                    "Debes completar todos los campos obligatorios."
+                mensaje: mensajeDeError(error, "No fue posible iniciar sesión.")
             };
 
         }
-          
-        const errores = [
-            validarCorreo(correo),
-            validarRut(datos.rut),
-            validarFechaNacimiento(datos.fechaNacimiento),
-            validarTelefono(telefono),
-            validarContrasena(datos.contrasena)
-        ];
-
-        const primerError =
-            errores.find(
-                (error) => error !== null
-            );
-
-        if (primerError) {
-
-            return {
-                ok: false,
-                mensaje: primerError
-            };
-
-        }
-
-        const correoExiste =
-            usuarios.some(
-                (usuario) =>
-                    normalizarCorreo(
-                        usuario.correo
-                    ) === correo
-            );
-
-
-        if (correoExiste) {
-
-            return {
-                ok: false,
-                mensaje:
-                    "El correo ya se encuentra registrado."
-            };
-
-        }
-
-
-        const rutExiste =
-            usuarios.some(
-                (usuario) =>
-                    normalizarRut(
-                        usuario.rut
-                    ) === rut
-            );
-
-
-        if (rutExiste) {
-
-            return {
-                ok: false,
-                mensaje:
-                    "El RUT ya se encuentra registrado."
-            };
-
-        }
-
-
-        const nuevoUsuario = {
-
-            id:
-                crypto.randomUUID(),
-
-            nombre,
-
-            apellido,
-
-            fechaNacimiento:
-                datos.fechaNacimiento,
-
-            rut:
-                datos.rut.trim(),
-
-            telefono,
-
-            correo,
-
-            contrasena:
-                datos.contrasena,
-
-            region:
-                datos.region || "",
-
-            comuna:
-                datos.comuna || "",
-
-            direccion:
-                String(
-                    datos.direccion || ""
-                ).trim(),
-
-            rol:
-                "cliente"
-
-        };
-
-
-        setUsuarios(
-            (usuariosActuales) => [
-                ...usuariosActuales,
-                nuevoUsuario
-            ]
-        );
-
-
-        return {
-            ok: true,
-            mensaje:
-                "Usuario registrado correctamente.",
-            usuario:
-                nuevoUsuario
-        };
-
-    }
-
-
-    function iniciarSesion(
-        correo,
-        contrasena
-    ) {
-
-        const correoNormalizado =
-            normalizarCorreo(
-                correo
-            );
-
-        const errorLogin =
-            validarCorreo(correoNormalizado) ||
-            validarContrasena(contrasena);
-
-        if (errorLogin) {
-
-            return {
-                ok: false,
-                mensaje: errorLogin
-            };
-
-        }
-
-        const usuario =
-            usuarios.find(
-                (item) =>
-                    normalizarCorreo(
-                        item.correo
-                    ) ===
-                        correoNormalizado &&
-                    item.contrasena ===
-                        contrasena
-            );
-
-
-        if (!usuario) {
-
-            return {
-                ok: false,
-                mensaje:
-                    "Correo o contraseña incorrectos."
-            };
-
-        }
-
-
-        const sesion = {
-
-            id:
-                usuario.id,
-
-            nombre:
-                usuario.nombre,
-
-            apellido:
-                usuario.apellido,
-
-            fechaNacimiento:
-                usuario.fechaNacimiento || "",
-
-            rut:
-                usuario.rut,
-
-            telefono:
-                usuario.telefono || "",
-
-            correo:
-                usuario.correo,
-
-            region:
-                usuario.region || "",
-
-            comuna:
-                usuario.comuna || "",
-
-            direccion:
-                usuario.direccion || "",
-
-            rol:
-                usuario.rol
-
-        };
-
-
-        setUsuarioActual(
-            sesion
-        );
-
-
-        return {
-            ok: true,
-            mensaje:
-                "Sesión iniciada correctamente.",
-            usuario:
-                sesion
-        };
 
     }
 
 
     function cerrarSesion() {
 
-        setUsuarioActual(
-            null
-        );
+        borrarSesion();
 
     }
 
 
-    function recuperarContrasena(
-        correo,
-        rut,
-        nuevaContrasena
-    ) {
-        const errorContrasena =
-            validarContrasena(nuevaContrasena);
+    // ------------------------------------------------------------------
+    // Registro de clientes
+    // ------------------------------------------------------------------
 
-        if (errorContrasena) {
+    async function registrarUsuario(datos) {
+
+        try {
+            await api.post("/auth/registro", {
+                run: normalizarRun(datos.rut ?? datos.run),
+                nombre: datos.nombre,
+                apellido: datos.apellido,
+                correo: datos.correo,
+                contrasena: datos.contrasena,
+                telefono: datos.telefono,
+                region: datos.region,
+                comuna: datos.comuna,
+                direccion: datos.direccion
+            });
+
+            return {
+                ok: true,
+                mensaje: "Usuario registrado correctamente."
+            };
+
+        } catch (error) {
 
             return {
                 ok: false,
-                mensaje: errorContrasena
+                mensaje: mensajeDeError(error, "No fue posible registrar el usuario.")
             };
 
         }
-
-        const correoNormalizado =
-            normalizarCorreo(
-                correo
-            );
-
-        const rutNormalizado =
-            normalizarRut(
-                rut
-            );
-
-
-        const usuarioExiste =
-            usuarios.some(
-                (usuario) =>
-                    normalizarCorreo(
-                        usuario.correo
-                    ) ===
-                        correoNormalizado &&
-                    normalizarRut(
-                        usuario.rut
-                    ) ===
-                        rutNormalizado
-            );
-
-
-        if (!usuarioExiste) {
-
-            return {
-                ok: false,
-                mensaje:
-                    "No se encontró un usuario con los datos ingresados."
-            };
-
-        }
-
-
-        setUsuarios(
-            (usuariosActuales) =>
-                usuariosActuales.map(
-                    (usuario) => {
-
-                        const mismoUsuario =
-                            normalizarCorreo(
-                                usuario.correo
-                            ) ===
-                                correoNormalizado &&
-                            normalizarRut(
-                                usuario.rut
-                            ) ===
-                                rutNormalizado;
-
-
-                        if (
-                            !mismoUsuario
-                        ) {
-
-                            return usuario;
-
-                        }
-
-
-                        return {
-                            ...usuario,
-                            contrasena:
-                                nuevaContrasena
-                        };
-
-                    }
-                )
-        );
-
-
-        return {
-            ok: true,
-            mensaje:
-                "Contraseña actualizada correctamente."
-        };
 
     }
 
-    function actualizarPerfil(
-        datos
-    ) {
 
-        if (!usuarioActual) {
+    // ------------------------------------------------------------------
+    // Mi perfil
+    // ------------------------------------------------------------------
+
+    async function actualizarPerfil(datos) {
+
+        try {
+            const { data } = await api.put("/usuarios/me", {
+                nombre: datos.nombre,
+                apellido: datos.apellido,
+                contrasena: datos.contrasena || null,
+                telefono: datos.telefono,
+                region: datos.region,
+                comuna: datos.comuna,
+                direccion: datos.direccion
+            });
+
+            guardarSesion(data);
 
             return {
-                ok: false,
-                mensaje:
-                    "Debes iniciar sesión para actualizar tu perfil."
+                ok: true,
+                mensaje: "Datos actualizados correctamente.",
+                usuario: data
             };
 
-        }        
-        const telefonoPerfil =
-            String(datos.telefono || "").trim();
-
-        const fechaPerfil =
-            String(datos.fechaNacimiento || "");
-
-        const errorPerfil =
-            (telefonoPerfil && validarTelefono(telefonoPerfil)) ||
-            (fechaPerfil && validarFechaNacimiento(fechaPerfil));
-
-        if (errorPerfil) {
+        } catch (error) {
 
             return {
                 ok: false,
-                mensaje: errorPerfil
-            };
-
-        }
-
-
-        const nombre =
-            String(
-                datos.nombre || ""
-            ).trim();
-
-        const apellido =
-            String(
-                datos.apellido || ""
-            ).trim();
-
-
-        if (
-            !nombre ||
-            !apellido
-        ) {
-
-            return {
-                ok: false,
-                mensaje:
-                    "Nombre y apellido son obligatorios."
+                mensaje: mensajeDeError(error, "No fue posible actualizar tus datos.")
             };
 
         }
-
-
-        const cambios = {
-
-            nombre,
-
-            apellido,
-
-            fechaNacimiento:
-                String(
-                    datos.fechaNacimiento || ""
-                ),
-
-            telefono:
-                String(
-                    datos.telefono || ""
-                ).trim(),
-
-            region:
-                String(
-                    datos.region || ""
-                ),
-
-            comuna:
-                String(
-                    datos.comuna || ""
-                ),
-
-            direccion:
-                String(
-                    datos.direccion || ""
-                ).trim()
-
-        };
-
-
-        setUsuarios(
-            (usuariosActuales) =>
-                usuariosActuales.map(
-                    (usuario) => {
-
-                        if (
-                            usuario.id !==
-                            usuarioActual.id
-                        ) {
-
-                            return usuario;
-
-                        }
-
-
-                        return {
-                            ...usuario,
-                            ...cambios
-                        };
-
-                    }
-                )
-        );
-
-
-        const sesionActualizada = {
-            ...usuarioActual,
-            ...cambios
-        };
-
-
-        setUsuarioActual(
-            sesionActualizada
-        );
-
-
-        return {
-            ok: true,
-            mensaje:
-                "Perfil actualizado correctamente.",
-            usuario:
-                sesionActualizada
-        };
 
     }
 
-    /*
-     * ADMIN: modifica los datos y el rol de un usuario.
-     */
-    function actualizarUsuario(id, datos) {
 
-        const usuario = usuarios.find((item) => item.id === id);
+    // ------------------------------------------------------------------
+    // Administración de usuarios (solo ADMIN)
+    // ------------------------------------------------------------------
 
-        if (!usuario) {
-            return { ok: false, mensaje: "No se encontró el usuario." };
+    async function crearUsuario(datos) {
+
+        try {
+            await api.post("/usuarios", {
+                run: normalizarRun(datos.rut ?? datos.run),
+                nombre: datos.nombre,
+                apellido: datos.apellido,
+                correo: datos.correo,
+                contrasena: datos.contrasena,
+                telefono: datos.telefono,
+                region: datos.region,
+                comuna: datos.comuna,
+                direccion: datos.direccion,
+                rol: datos.rol
+            });
+
+            await cargarUsuarios();
+
+            return { ok: true, mensaje: "Usuario creado correctamente." };
+
+        } catch (error) {
+
+            return {
+                ok: false,
+                mensaje: mensajeDeError(error, "No fue posible crear el usuario.")
+            };
+
         }
 
-        const nombre = String(datos.nombre || "").trim();
-        const apellido = String(datos.apellido || "").trim();
-        const telefono = String(datos.telefono || "").trim();
-        const rol = datos.rol;
+    }
 
-        if (!nombre || !apellido) {
-            return { ok: false, mensaje: "Nombre y apellido son obligatorios." };
+
+    async function actualizarUsuario(id, datos) {
+
+        try {
+            await api.put(`/usuarios/${id}`, {
+                run: normalizarRun(datos.rut ?? datos.run),
+                nombre: datos.nombre,
+                apellido: datos.apellido,
+                correo: datos.correo,
+                contrasena: datos.contrasena || null,
+                telefono: datos.telefono,
+                region: datos.region,
+                comuna: datos.comuna,
+                direccion: datos.direccion,
+                rol: datos.rol
+            });
+
+            await cargarUsuarios();
+
+            return { ok: true, mensaje: "Usuario actualizado correctamente." };
+
+        } catch (error) {
+
+            return {
+                ok: false,
+                mensaje: mensajeDeError(error, "No fue posible actualizar el usuario.")
+            };
+
         }
 
-        const errorTelefono = telefono && validarTelefono(telefono);
+    }
 
-        if (errorTelefono) {
-            return { ok: false, mensaje: errorTelefono };
+
+    async function eliminarUsuario(id) {
+
+        try {
+            await api.delete(`/usuarios/${id}`);
+
+            await cargarUsuarios();
+
+            return { ok: true, mensaje: "Usuario eliminado correctamente." };
+
+        } catch (error) {
+
+            return {
+                ok: false,
+                mensaje: mensajeDeError(error, "No fue posible eliminar el usuario.")
+            };
+
         }
-
-        if (rol !== "cliente" && rol !== "admin") {
-            return { ok: false, mensaje: "El rol debe ser Cliente o Administrador." };
-        }
-
-        if (id === usuarioActual?.id && rol !== usuario.rol) {
-            return { ok: false, mensaje: "No puedes cambiar tu propio rol." };
-        }
-
-        const cambios = { nombre, apellido, telefono, rol };
-
-        setUsuarios((actuales) =>
-            actuales.map((item) =>
-                item.id === id ? { ...item, ...cambios } : item
-            )
-        );
-
-        // Si el admin se edita a sí mismo, también se actualiza su sesión
-        if (id === usuarioActual?.id) {
-            setUsuarioActual({ ...usuarioActual, ...cambios });
-        }
-
-        return { ok: true, mensaje: "Usuario actualizado correctamente." };
 
     }
 
 
     /*
-     * ADMIN: elimina un usuario.
+     * La recuperación de contraseña no tiene endpoint en el backend.
+     * Se deja avisando, para no simular algo que no ocurre.
      */
-    function eliminarUsuario(id) {
+    async function recuperarContrasena() {
 
-        if (id === usuarioActual?.id) {
-            return { ok: false, mensaje: "No puedes eliminar tu propia cuenta." };
-        }
-
-        if (!usuarios.some((item) => item.id === id)) {
-            return { ok: false, mensaje: "No se encontró el usuario." };
-        }
-
-        setUsuarios((actuales) =>
-            actuales.filter((item) => item.id !== id)
-        );
-
-        return { ok: true, mensaje: "Usuario eliminado correctamente." };
+        return {
+            ok: false,
+            mensaje: "La recuperación de contraseña no está disponible. Contacta al administrador."
+        };
 
     }
+
 
     return (
 
@@ -777,18 +355,18 @@ function AuthProvider({
             value={{
                 usuarios,
                 usuarioActual,
-                estaAutenticado:
-                    Boolean(
-                        usuarioActual
-                    ),
-                esAdmin:
-                    usuarioActual?.rol === 
-                    "admin",
+                cargandoSesion,
+                estaAutenticado: Boolean(usuarioActual),
+                esAdmin,
+                esVendedor,
+                puedeEntrarAlPanel: esAdmin || esVendedor,
+                cargarUsuarios,
                 registrarUsuario,
                 iniciarSesion,
                 cerrarSesion,
                 recuperarContrasena,
                 actualizarPerfil,
+                crearUsuario,
                 actualizarUsuario,
                 eliminarUsuario
             }}
