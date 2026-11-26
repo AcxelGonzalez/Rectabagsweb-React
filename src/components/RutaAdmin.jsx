@@ -2,14 +2,29 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 
-/*
-se usa como ruta para que solo el admin ingrese a /admin/productos,
-si el usuario es Cliente, se devuelve al Home
- */
+/* Deja entrar al ADMIN y al VENDEDOR. 
+Un cliente se devuelve al inicio y un visitante va al login.
+*/
 function RutaAdmin() {
 
-    const { estaAutenticado, esAdmin } = useAuth();
+    const {
+        estaAutenticado,
+        puedeEntrarAlPanel,
+        cargandoSesion
+    } = useAuth();
+
     const location = useLocation();
+
+    // Mientras el backend confirma el token no se decide nada
+    if (cargandoSesion) {
+
+        return (
+            <div className="container py-5 text-center text-secondary">
+                Comprobando tu sesión...
+            </div>
+        );
+
+    }
 
     if (!estaAutenticado) {
 
@@ -20,13 +35,16 @@ function RutaAdmin() {
                 state={{ from: location }}
             />
         );
+
     }
 
-    if (!esAdmin) {
+
+    if (!puedeEntrarAlPanel) {
 
         return <Navigate to="/" replace />;
 
     }
+
     return <Outlet />;
 
 }
