@@ -5,9 +5,7 @@ import useTitulo from "../../hooks/useTitulo";
 import CampoFormulario from "../../components/admin/CampoFormulario";
 import { obtenerStockValido } from "../../utils/stock";
 import {
-    CATEGORIAS_PRODUCTO,
     validarNombreProducto,
-    validarCategoriaProducto,
     validarPrecioProducto,
     validarPrecioOferta,
     validarStockProducto,
@@ -16,37 +14,43 @@ import {
 } from "../../utils/validaciones";
 
 
-/*
- * Datos iniciales del formulario.
- * - Crear: todo vacío.
- * - Editar: los datos del producto.
- */
+/* Código: requerido, de 3 a 20 caracteres (igual que el backend) */
+function validarCodigo(codigo) {
+    const valor = String(codigo || "").trim();
+    if (valor.length < 3) return "El código debe tener al menos 3 caracteres.";
+    if (valor.length > 20) return "El código no puede superar 20 caracteres.";
+    return null;
+}
+
+/* Categoría: requerida */
+function validarCategoria(idCategoria) {
+    return idCategoria ? null : "Selecciona una categoría.";
+}
+
+
 function crearFormularioInicial(producto) {
 
     return {
+        codigo: producto?.codigo ?? "",
         nombre: producto?.nombre ?? "",
-        categoria: producto?.categoria ?? "",
+        idCategoria: producto?.idCategoria ?? "",
         precio: producto?.precio ?? "",
         precioOferta: producto?.precioOferta ?? "",
         stock: producto ? obtenerStockValido(producto.stock) : "",
         stockCritico: producto?.stockCritico ?? "",
         descripcion: producto?.descripcion ?? "",
-        descripcionCompleta: producto?.descripcionCompleta ?? "",
         imagen: producto?.imagen ?? ""
     };
 
 }
 
 
-/*
- * Revisa cada campo con las validaciones de utils/validaciones.js.
- * Devuelve un objeto: { campo: null | "mensaje de error" }.
- */
 function validarFormulario(formulario) {
 
     return {
+        codigo: validarCodigo(formulario.codigo),
         nombre: validarNombreProducto(formulario.nombre),
-        categoria: validarCategoriaProducto(formulario.categoria),
+        idCategoria: validarCategoria(formulario.idCategoria),
         precio: validarPrecioProducto(formulario.precio),
         precioOferta: validarPrecioOferta(formulario.precioOferta, formulario.precio),
         stock: validarStockProducto(formulario.stock),
@@ -57,18 +61,15 @@ function validarFormulario(formulario) {
 }
 
 
+/*
+ * Página: espera a que carguen los productos y después
+ * muestra el formulario (crear o editar).
+ */
 function AdminProductoForm() {
 
     const { id } = useParams();
-    const navigate = useNavigate();
+    const { obtenerProducto, cargando } = useProducts();
 
-    const {
-        obtenerProducto,
-        crearProducto,
-        actualizarProducto
-    } = useProducts();
-
-    // Si la URL trae un id, estamos editando
     const esEdicion = id !== undefined;
     const producto = esEdicion ? obtenerProducto(id) : null;
 
@@ -78,17 +79,14 @@ function AdminProductoForm() {
             : "Nuevo producto | Panel de administración"
     );
 
-    const [formulario, setFormulario] = useState(
-        () => crearFormularioInicial(producto)
-    );
+    if (cargando) {
+        return (
+            <section className="py-5">
+                <div className="container">Cargando…</div>
+            </section>
+        );
+    }
 
-    // Campos que el usuario ya visitó (para mostrar sus errores)
-    const [tocados, setTocados] = useState({});
-
-    const [mensajeError, setMensajeError] = useState(null);
-
-
-    // Editar un producto que no existe (por ejemplo /admin/productos/999/editar)
     if (esEdicion && !producto) {
         return (
             <section className="py-5">
@@ -101,6 +99,28 @@ function AdminProductoForm() {
             </section>
         );
     }
+
+    return <FormularioProducto producto={producto} esEdicion={esEdicion} />;
+
+}
+
+
+/*
+ * Formulario de producto (ya con los datos cargados).
+ */
+function FormularioProducto({ producto, esEdicion }) {
+
+    const navigate = useNavigate();
+
+    const { crearProducto, actualizarProducto, categorias } = useProducts();
+
+    const [formulario, setFormulario] = useState(
+        () => crearFormularioInicial(producto)
+    );
+
+    const [tocados, setTocados] = useState({});
+    const [mensajeError, setMensajeError] = useState(null);
+    const [guardando, setGuardando] = useState(false);
 
 
     const errores = validarFormulario(formulario);
@@ -121,17 +141,15 @@ function AdminProductoForm() {
         setTocados((anteriores) => ({ ...anteriores, [name]: true }));
     }
 
-    // Solo muestra el error si el usuario ya pasó por ese campo
     function errorDe(campo) {
         return tocados[campo] ? errores[campo] : null;
     }
 
 
-    function envio(evento) {
+    async function envio(evento) {
 
         evento.preventDefault();
 
-        // Al enviar, se marcan todos los campos para mostrar sus errores
         setTocados(
             Object.fromEntries(
                 Object.keys(errores).map((campo) => [campo, true])
@@ -143,16 +161,20 @@ function AdminProductoForm() {
             return;
         }
 
-        const resultado = esEdicion
-            ? actualizarProducto(producto.id, formulario)
-            : crearProducto(formulario);
+        setGuardando(true);
 
+        const resultado = esEdicion
+            ? await actualizarProducto(producto.id, formulario)
+            : await crearProducto(formulario);
+
+        setGuardando(false);
+
+        // Si el backend responde 400, aquí aparece su mensaje
         if (!resultado.ok) {
             setMensajeError(resultado.mensaje);
             return;
         }
 
-        // Vuelve a la tabla y le pasa el mensaje de éxito
         navigate("/admin/productos", {
             state: { mensaje: resultado.mensaje }
         });
@@ -181,6 +203,18 @@ function AdminProductoForm() {
 
                             <div className="row g-3">
 
+                                <div className="col-md-4">
+                                    <CampoFormulario
+                                        etiqueta="Código"
+                                        nombre="codigo"
+                                        valor={formulario.codigo}
+                                        onChange={cambio}
+                                        onBlur={salirDeCampo}
+                                        error={errorDe("codigo")}
+                                        ayuda="De 3 a 20 caracteres. Ej: RC-30"
+                                    />
+                                </div>
+
                                 <div className="col-md-8">
                                     <CampoFormulario
                                         etiqueta="Nombre"
@@ -192,20 +226,23 @@ function AdminProductoForm() {
                                     />
                                 </div>
 
-                                <div className="col-md-4">
+                                <div className="col-md-6">
                                     <CampoFormulario
                                         etiqueta="Categoría"
-                                        nombre="categoria"
+                                        nombre="idCategoria"
                                         como="select"
-                                        valor={formulario.categoria}
+                                        valor={formulario.idCategoria}
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
-                                        error={errorDe("categoria")}
+                                        error={errorDe("idCategoria")}
                                     >
                                         <option value="">Selecciona…</option>
-                                        {CATEGORIAS_PRODUCTO.map((categoria) => (
-                                            <option key={categoria} value={categoria}>
-                                                {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+                                        {categorias.map((categoria) => (
+                                            <option
+                                                key={categoria.idCategoria}
+                                                value={categoria.idCategoria}
+                                            >
+                                                {categoria.nombre}
                                             </option>
                                         ))}
                                     </CampoFormulario>
@@ -213,10 +250,22 @@ function AdminProductoForm() {
 
                                 <div className="col-md-6">
                                     <CampoFormulario
+                                        etiqueta="Imagen (opcional)"
+                                        nombre="imagen"
+                                        valor={formulario.imagen}
+                                        onChange={cambio}
+                                        onBlur={salirDeCampo}
+                                        ayuda="Ej: /img/Musette/Musette_main.png"
+                                    />
+                                </div>
+
+                                <div className="col-md-6">
+                                    <CampoFormulario
                                         etiqueta="Precio"
                                         nombre="precio"
                                         tipo="number"
-                                        min="1"
+                                        min="0"
+                                        step="0.01"
                                         valor={formulario.precio}
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
@@ -229,7 +278,8 @@ function AdminProductoForm() {
                                         etiqueta="Precio de oferta (opcional)"
                                         nombre="precioOferta"
                                         tipo="number"
-                                        min="1"
+                                        min="0"
+                                        step="0.01"
                                         valor={formulario.precioOferta}
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
@@ -261,56 +311,36 @@ function AdminProductoForm() {
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
                                         error={errorDe("stockCritico")}
-                                        ayuda="Si lo dejas vacío se usa 3."
+                                        ayuda="Si lo dejas vacío se usa 0."
                                     />
                                 </div>
 
                                 <div className="col-12">
                                     <CampoFormulario
-                                        etiqueta="Descripción corta"
+                                        etiqueta="Descripción"
                                         nombre="descripcion"
                                         como="textarea"
-                                        rows="2"
+                                        rows="3"
+                                        maxLength="200"
                                         valor={formulario.descripcion}
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
                                         error={errorDe("descripcion")}
-                                        ayuda="Se muestra en las tarjetas del catálogo."
+                                        ayuda="Máximo 200 caracteres."
                                     />
                                 </div>
 
-                                <div className="col-12">
-                                    <CampoFormulario
-                                        etiqueta="Descripción completa (opcional)"
-                                        nombre="descripcionCompleta"
-                                        como="textarea"
-                                        rows="4"
-                                        valor={formulario.descripcionCompleta}
-                                        onChange={cambio}
-                                        onBlur={salirDeCampo}
-                                        ayuda="Se muestra en el detalle. Si la dejas vacía se usa la descripción corta."
-                                    />
-                                </div>
-
-                                <div className="col-12">
-                                    <CampoFormulario
-                                        etiqueta="Imagen (opcional)"
-                                        nombre="imagen"
-                                        valor={formulario.imagen}
-                                        onChange={cambio}
-                                        onBlur={salirDeCampo}
-                                        ayuda="Ruta de la imagen, por ejemplo /img/Musette/Musette_main.png"
-                                    />
-                                    {formulario.imagen && (
+                                {formulario.imagen && (
+                                    <div className="col-12">
                                         <img
                                             src={formulario.imagen}
                                             alt="Vista previa"
-                                            className="rounded-3 object-fit-cover mt-2"
+                                            className="rounded-3 object-fit-cover"
                                             width="120"
                                             height="120"
                                         />
-                                    )}
-                                </div>
+                                    </div>
+                                )}
 
                             </div>
 
@@ -324,8 +354,10 @@ function AdminProductoForm() {
                                 <Link to="/admin/productos" className="btn btn-outline-secondary">
                                     Cancelar
                                 </Link>
-                                <button type="submit" className="btn btn-dark">
-                                    {esEdicion ? "Guardar cambios" : "Crear producto"}
+                                <button type="submit" className="btn btn-dark" disabled={guardando}>
+                                    {guardando
+                                        ? "Guardando…"
+                                        : esEdicion ? "Guardar cambios" : "Crear producto"}
                                 </button>
                             </div>
 

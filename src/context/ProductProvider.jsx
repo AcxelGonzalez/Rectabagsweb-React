@@ -1,332 +1,265 @@
 import {
+    useCallback,
     useEffect,
     useState
 } from "react";
 
-import ProductContext
-    from "./ProductContext";
+import ProductContext from "./ProductContext";
+
+import api from "../services/api";
 
 import { obtenerStockValido } from "../utils/stock";
 
 import { verificarStock } from "../utils/carrito";
 
 import {
-    productos as productosIniciales,
+    productos as datosExtra,
     obtenerProductoPorId,
-    obtenerProductosPorCategoria,
-    crearProducto as crearProductoEnLista,
-    actualizarProducto as actualizarProductoEnLista,
-    eliminarProducto as eliminarProductoDeLista
+    obtenerProductosPorCategoria
 } from "../data/productos";
 
 
-const CLAVE_PRODUCTOS =
-    "recta_productos";
-
-
 /*
- * Lee los productos guardados en localStorage.
- * Si no hay nada guardado (primera visita) o los datos
- * están dañados, usa la lista inicial de productos.js.
+ * Convierte un producto del backend al formato que usa la tienda.
+ * Los datos visuales que no están en la base de datos (galería,
+ * medidas, opiniones, descripción completa) se toman de data/productos.js.
  */
-function leerProductosGuardados() {
+function normalizarProducto(p) {
 
-    try {
+    const extra =
+        datosExtra.find((e) => e.nombre === p.nombre) || {};
 
-        const guardados =
-            JSON.parse(
-                localStorage.getItem(
-                    CLAVE_PRODUCTOS
-                )
-            );
+    return {
+        // Extras visuales (solo frontend)
+        imagenes: extra.imagenes,
+        imagenDetalle: extra.imagenDetalle,
+        medidas: extra.medidas,
+        rating: extra.rating,
+        opiniones: extra.opiniones,
 
-        return Array.isArray(guardados)
-            ? guardados
-            : productosIniciales;
-
-    } catch {
-
-        return productosIniciales;
-
-    }
+        // Datos del backend
+        id: p.idProducto,
+        codigo: p.codigo,
+        nombre: p.nombre,
+        categoria: p.categoria?.nombre?.toLowerCase() ?? "",
+        idCategoria: p.categoria?.idCategoria ?? null,
+        precio: Number(p.precio),
+        precioOferta: p.precioOferta != null ? Number(p.precioOferta) : null,
+        stock: p.stock,
+        stockCritico: p.stockCritico,
+        descripcion: p.descripcion ?? "",
+        descripcionCompleta: extra.descripcionCompleta || p.descripcion || "",
+        imagen: p.imagen || "/img/FOTOS_EJEMPLOS_TEMP/mochi.png"
+    };
 
 }
 
 
-function ProductProvider({
-    children
-}) {
+/*
+ * Convierte los datos del formulario al formato que espera el backend.
+ * Los campos opcionales vacíos se envían como null.
+ */
+function aRequest(datos) {
 
-    const [
-        productos,
-        setProductos
-    ] = useState(
-        leerProductosGuardados
+    const numeroOpcional = (valor) =>
+        valor === "" || valor === null || valor === undefined
+            ? null
+            : Number(valor);
+
+    return {
+        codigo: String(datos.codigo || "").trim(),
+        nombre: String(datos.nombre || "").trim(),
+        descripcion: String(datos.descripcion || "").trim() || null,
+        precio: Number(datos.precio),
+        precioOferta: numeroOpcional(datos.precioOferta),
+        stock: Number(datos.stock),
+        stockCritico: numeroOpcional(datos.stockCritico),
+        imagen: String(datos.imagen || "").trim() || null,
+        idCategoria: Number(datos.idCategoria)
+    };
+
+}
+
+
+/*
+ * Saca el mensaje de error que manda el backend ({ mensaje: "..." }).
+ * Si el backend está apagado, no hay respuesta.
+ */
+function mensajeDeError(error) {
+
+    return (
+        error.response?.data?.mensaje ||
+        "No se pudo conectar con el servidor. Revisa que el backend esté encendido."
     );
 
+}
+
+
+function ProductProvider({ children }) {
+
+    const [productos, setProductos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [errorCarga, setErrorCarga] = useState(null);
+
 
     /*
-     * Guarda los productos cada vez que cambian.
+     * Pide los productos y las categorías al backend.
      */
-    useEffect(() => {
+    const cargarProductos = useCallback(async () => {
 
-        localStorage.setItem(
-            CLAVE_PRODUCTOS,
-            JSON.stringify(productos)
-        );
-
-    }, [productos]);
-
-    /*
-    * Sincroniza el catálogo cuando otra pestaña modifica
-    * los productos almacenados en localStorage.
-    *
-    * El evento "storage" se dispara en las otras pestañas
-    * del mismo origen, no en la pestaña que realizó el cambio.
-    */
-    useEffect(() => {
-
-        function alCambiarElAlmacenamiento(
-            evento
-        ) {
-
-            const cambioProductos =
-                evento.key ===
-                CLAVE_PRODUCTOS;
-
-
-            const almacenamientoLimpiado =
-                evento.key === null;
-
-
-            if (
-                !cambioProductos &&
-                !almacenamientoLimpiado
-            ) {
-
-                return;
-
-            }
-
-
-            setProductos(
-                leerProductosGuardados()
-            );
-
+        try {
+            const { data } = await api.get("/productos");
+            setProductos(data.map(normalizarProducto));
+            setErrorCarga(null);
+        } catch (error) {
+            setErrorCarga(mensajeDeError(error));
+        } finally {
+            setCargando(false);
         }
-
-
-        window.addEventListener(
-            "storage",
-            alCambiarElAlmacenamiento
-        );
-
-
-        return () => {
-
-            window.removeEventListener(
-                "storage",
-                alCambiarElAlmacenamiento
-            );
-
-        };
 
     }, []);
 
-    /*
-     * Busca un producto por su id.
-     * El id de la URL llega como texto ("3"),
-     * por eso se convierte con Number().
-     */
-    function obtenerProducto(id) {
 
-        return obtenerProductoPorId(
-            productos,
-            id
-        );
+    const cargarCategorias = useCallback(async () => {
 
-    }
-
-
-    /*
-     * Devuelve los productos de una categoría.
-     * "todos" entrega la lista completa.
-     */
-    function obtenerPorCategoria(categoria) {
-
-        return obtenerProductosPorCategoria(
-            productos,
-            categoria
-        );
-
-    }
-
-
-    /*
-     * ---------------------------------------------------------------
-     * Operaciones del panel de administración
-     * ---------------------------------------------------------------
-     *
-     * Cada función delega la lógica y las validaciones en las
-     * funciones puras de data/productos.js. Aquí solo se guarda la
-     * lista nueva en el estado cuando la operación resultó correcta;
-     * el useEffect de arriba se encarga de la persistencia.
-     *
-     * Devuelven { ok, mensaje, producto } para que la vista muestre
-     * el aviso de éxito o el error sin conocer los detalles.
-     */
-
-    function guardarResultado(resultado) {
-
-        if (resultado.ok) {
-
-            setProductos(
-                resultado.productos
-            );
-
+        try {
+            const { data } = await api.get("/categorias");
+            setCategorias(data);
+        } catch {
+            setCategorias([]);
         }
 
-
-        return {
-            ok:
-                resultado.ok,
-            mensaje:
-                resultado.mensaje,
-            producto:
-                resultado.producto || null
-        };
-
-    }
+    }, []);
 
 
-    function crearProducto(datos) {
+    // Al abrir la página, carga todo desde el backend
+    useEffect(() => {
+        cargarProductos();
+        cargarCategorias();
+    }, [cargarProductos, cargarCategorias]);
 
-        return guardarResultado(
-            crearProductoEnLista(
-                productos,
-                datos
-            )
-        );
-
-    }
-
-
-    function actualizarProducto(
-        id,
-        cambios
-    ) {
-
-        return guardarResultado(
-            actualizarProductoEnLista(
-                productos,
-                id,
-                cambios
-            )
-        );
-
-    }
-
-
-    function eliminarProducto(id) {
-
-        return guardarResultado(
-            eliminarProductoDeLista(
-                productos,
-                id
-            )
-        );
-
-    }
-    
-    /*
-    * Comprueba que todos los productos del carrito sigan existiendo
-    * y tengan stock suficiente, sin modificar el catálogo.
-    */
-    function verificarDisponibilidad(items) {
-
-        return verificarStock(
-            items,
-            productos
-        );
-
-    }
 
     /*
-    * Devuelve al catálogo las cantidades de una compra cancelada.
-    *
-    * Solo modifica productos que todavía existen en el catálogo.
-    * Si un producto fue eliminado posteriormente desde administración,
-    * simplemente no puede ser restaurado porque ya no existe.
-    */
-    function reponerStock(items) {
+     * Lectura (igual que antes, sobre la lista ya cargada)
+     */
+    function obtenerProducto(id) {
+        return obtenerProductoPorId(productos, id);
+    }
 
-        setProductos((actuales) =>
-            actuales.map(
-                (producto) => {
-
-                    const item =
-                        items.find(
-                            (itemCompra) =>
-                                itemCompra.id ===
-                                producto.id
-                        );
+    function obtenerPorCategoria(categoria) {
+        return obtenerProductosPorCategoria(productos, categoria);
+    }
 
 
-                    if (!item) {
+    /*
+     * ---------------------------------------------------------------
+     * Operaciones del panel de administración (ahora con el backend)
+     * ---------------------------------------------------------------
+     * Devuelven { ok, mensaje, producto } igual que antes,
+     * pero son async: hay que usarlas con await.
+     */
 
-                        return producto;
+    async function crearProducto(datos) {
 
-                    }
+        try {
+            const { data } = await api.post("/productos", aRequest(datos));
+            await cargarProductos();
+            return {
+                ok: true,
+                mensaje: "Producto creado correctamente.",
+                producto: normalizarProducto(data)
+            };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error), producto: null };
+        }
 
-
-                    const stockActual =
-                        obtenerStockValido(
-                            producto.stock
-                        );
-
-
-                    const cantidad =
-                        Math.max(
-                            0,
-                            Math.trunc(
-                                Number(
-                                    item.cantidad
-                                ) || 0
-                            )
-                        );
+    }
 
 
-                    return {
+    async function actualizarProducto(id, cambios) {
 
-                        ...producto,
+        try {
+            const { data } = await api.put(`/productos/${id}`, aRequest(cambios));
+            await cargarProductos();
+            return {
+                ok: true,
+                mensaje: "Producto actualizado correctamente.",
+                producto: normalizarProducto(data)
+            };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error), producto: null };
+        }
 
-                        stock:
-                            stockActual +
-                            cantidad
+    }
 
-                    };
 
-                }
-            )
-        );
+    async function eliminarProducto(id) {
 
+        try {
+            await api.delete(`/productos/${id}`);
+            await cargarProductos();
+            return { ok: true, mensaje: "Producto eliminado correctamente.", producto: null };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error), producto: null };
+        }
+
+    }
+
+
+    /*
+     * Antes volvía al catálogo de productos.js.
+     * Ahora recarga los datos reales desde el backend.
+     */
+    async function restaurarProductos() {
+
+        await cargarProductos();
 
         return {
             ok: true,
-            mensaje:
-                "Stock repuesto correctamente."
+            mensaje: "Catálogo recargado desde el servidor.",
+            producto: null
         };
 
     }
 
-    /*
-     Resta del stock las cantidades compradas, pero solo si alcanza.
-     Recibe los productos del carrito: [{ id, cantidad }, ...]
 
-     Antes de tocar nada verifica el carrito contra el catálogo: si algún
-     producto no alcanza no se descuenta nada y se devuelve el detalle,
-     para que el checkout no registre una venta imposible.
+    /*
+     * ---------------------------------------------------------------
+     * Stock (checkout) – SIN CAMBIOS
+     * ---------------------------------------------------------------
+     * Lo reemplaza la Parte 3 cuando el backend descuente el stock.
      */
+
+    function verificarDisponibilidad(items) {
+        return verificarStock(items, productos);
+    }
+
+
+    function reponerStock(items) {
+
+        setProductos((actuales) =>
+            actuales.map((producto) => {
+
+                const item = items.find((i) => i.id === producto.id);
+
+                if (!item) {
+                    return producto;
+                }
+
+                const stockActual = obtenerStockValido(producto.stock);
+                const cantidad = Math.max(0, Math.trunc(Number(item.cantidad) || 0));
+
+                return { ...producto, stock: stockActual + cantidad };
+
+            })
+        );
+
+        return { ok: true, mensaje: "Stock repuesto correctamente." };
+
+    }
+
+
     function descontarStock(items) {
 
         const verificacion = verificarStock(items, productos);
@@ -359,35 +292,17 @@ function ProductProvider({
     }
 
 
-    /*
-     * Vuelve al catálogo original de productos.js.
-     * Sirve para dejar la tienda como estaba después de hacer
-     * pruebas en el panel de administración.
-     */
-    function restaurarProductos() {
-
-        setProductos(
-            productosIniciales
-        );
-
-
-        return {
-            ok: true,
-            mensaje:
-                "Catálogo restaurado correctamente.",
-            producto: null
-        };
-
-    }
-
-
     return (
 
         <ProductContext.Provider
             value={{
                 productos,
-                totalProductos:
-                    productos.length,
+                totalProductos: productos.length,
+                categorias,
+                cargando,
+                errorCarga,
+                cargarProductos,
+                cargarCategorias,
                 obtenerProducto,
                 obtenerPorCategoria,
                 crearProducto,
