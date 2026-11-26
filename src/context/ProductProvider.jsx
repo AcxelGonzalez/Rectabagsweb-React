@@ -223,6 +223,56 @@ function ProductProvider({ children }) {
 
     }
 
+    /*
+     * ---------------------------------------------------------------
+     * Categorías (mantenedor del admin)
+     * ---------------------------------------------------------------
+     */
+
+    async function crearCategoria(datos) {
+
+        try {
+            await api.post("/categorias", {
+                nombre: String(datos.nombre || "").trim(),
+                descripcion: String(datos.descripcion || "").trim() || null
+            });
+            await cargarCategorias();
+            return { ok: true, mensaje: "Categoría creada correctamente." };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error) };
+        }
+
+    }
+
+
+    async function actualizarCategoria(id, datos) {
+
+        try {
+            await api.put(`/categorias/${id}`, {
+                nombre: String(datos.nombre || "").trim(),
+                descripcion: String(datos.descripcion || "").trim() || null
+            });
+            await cargarCategorias();
+            await cargarProductos(); // los productos muestran el nombre de su categoría
+            return { ok: true, mensaje: "Categoría actualizada correctamente." };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error) };
+        }
+
+    }
+
+
+    async function eliminarCategoria(id) {
+
+        try {
+            await api.delete(`/categorias/${id}`);
+            await cargarCategorias();
+            return { ok: true, mensaje: "Categoría eliminada correctamente." };
+        } catch (error) {
+            return { ok: false, mensaje: mensajeDeError(error) };
+        }
+
+    }
 
     /*
      * ---------------------------------------------------------------
@@ -303,6 +353,9 @@ function ProductProvider({ children }) {
                 errorCarga,
                 cargarProductos,
                 cargarCategorias,
+                crearCategoria,        
+                actualizarCategoria,  
+                eliminarCategoria,       
                 obtenerProducto,
                 obtenerPorCategoria,
                 crearProducto,

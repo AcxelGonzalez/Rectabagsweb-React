@@ -33,7 +33,8 @@ import AdminOrdenes from "./pages/admin/AdminOrdenes";
 import AdminBoleta from "./pages/admin/AdminBoleta";
 import AdminHistorialUsuario from "./pages/admin/AdminHistorialUsuario";
 import AdminReportes from "./pages/admin/AdminReportes";
-
+import AdminCategorias from "./pages/admin/AdminCategorias";
+import AdminCategoriaForm from "./pages/admin/AdminCategoriaForm";
 
 
 function App() {
@@ -69,6 +70,9 @@ function App() {
                         <Route path="/admin/productos" element={<AdminProductos />} />
                         <Route path="/admin/productos/nuevo" element={<AdminProductoForm />} />
                         <Route path="/admin/productos/:id/editar" element={<AdminProductoForm />} />
+                        <Route path="/admin/categorias" element={<AdminCategorias />} />
+                        <Route path="/admin/categorias/nueva" element={<AdminCategoriaForm />} />
+                        <Route path="/admin/categorias/:id/editar" element={<AdminCategoriaForm />} />
                         <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                         <Route path="/admin/usuarios/:id/editar" element={<AdminUsuarioForm />} />
                         <Route path="/admin/ordenes" element={<AdminOrdenes />} />
