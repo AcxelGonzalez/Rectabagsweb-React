@@ -1,13 +1,15 @@
 import api from "../services/api";
 import { guardarCompra, leerCompraPorId, leerCompras, actualizarEstadoCompra,
-    listarOrdenes, obtenerBoleta, leerMisCompras, leerHistorialUsuario } from "../services/compraService";
+    listarOrdenes, obtenerBoleta, leerMisCompras, leerHistorialUsuario,
+    cambiarEstadoBoleta, obtenerResumen, cerrarPeriodo } from "../services/compraService";
 
-vi.mock("../services/api", () => ({ default: { post: vi.fn(), get: vi.fn() } }));
+vi.mock("../services/api", () => ({ default: { post: vi.fn(), get: vi.fn(), patch: vi.fn() } }));
 
 beforeEach(() => {
     localStorage.clear();
     api.post.mockReset();
     api.get.mockReset();
+    api.patch.mockReset();
 });
 
 describe("consultas remotas de compras", () => {
@@ -15,6 +17,23 @@ describe("consultas remotas de compras", () => {
         fechaCierre: null, estado: "PENDIENTE", total: "15980.00", nombreCliente: "Cliente", apellidoCliente: "Prueba",
         correoCliente: "cliente@gmail.com", metodoPago: "transferencia",
         detalles: [{ idProducto: 2, nombreProducto: "Musette", precioUnidad: "7990.00", cantidad: 2, subTotal: "15980.00" }] };
+    it("envia solo el estado al PATCH y adapta la boleta confirmada por el servidor", async () => {
+        api.patch.mockResolvedValue({ data: { ...dto, estado: "CANCELADA" } });
+        const compra = await cambiarEstadoBoleta(5, "CANCELADA");
+        expect(api.patch).toHaveBeenCalledWith("/boletas/5/estado", { estado: "CANCELADA" });
+        expect(compra.estado).toBe("CANCELADA");
+        expect(compra.folio).toBe(dto.folio);
+    });
+    it("lee el resumen y confirma el cierre sin modificar compras locales", async () => {
+        api.get.mockResolvedValue({ data: { cantidadOrdenes: 2 } });
+        api.post.mockResolvedValue({ data: { cantidadCerradas: 3 } });
+        localStorage.setItem("recta_compras", "datos anteriores");
+        expect(await obtenerResumen()).toEqual({ cantidadOrdenes: 2 });
+        expect(await cerrarPeriodo()).toBe(3);
+        expect(api.get).toHaveBeenCalledWith("/reportes/resumen");
+        expect(api.post).toHaveBeenCalledWith("/reportes/cierre");
+        expect(localStorage.getItem("recta_compras")).toBe("datos anteriores");
+    });
     for (const [nombre, consultar, ruta] of [
         ["ordenes", () => listarOrdenes(), "/boletas"],
         ["mis compras", () => leerMisCompras(), "/boletas/mias"],

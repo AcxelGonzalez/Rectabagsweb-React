@@ -7,15 +7,16 @@ import AdminPanel from "../pages/admin/AdminPanel";
 import AdminProductos from "../pages/admin/AdminProductos";
 import AdminUsuarioForm from "../pages/admin/AdminUsuarioForm";
 import Carrito from "../pages/Carrito";
+import AdminReportes from "../pages/admin/AdminReportes";
 import useAuth from "../hooks/useAuth";
 import useProducts from "../hooks/useProducts";
 import useCart from "../hooks/useCart";
-import { listarOrdenes, obtenerBoleta } from "../services/compraService";
+import { listarOrdenes, obtenerBoleta, cambiarEstadoBoleta, obtenerResumen, cerrarPeriodo } from "../services/compraService";
 
 vi.mock("../hooks/useAuth", () => ({ default: vi.fn() }));
 vi.mock("../hooks/useProducts", () => ({ default: vi.fn() }));
 vi.mock("../hooks/useCart", () => ({ default: vi.fn() }));
-vi.mock("../services/compraService", () => ({ listarOrdenes: vi.fn(), obtenerBoleta: vi.fn(), colorEstado: () => "bg-secondary" }));
+vi.mock("../services/compraService", () => ({ listarOrdenes: vi.fn(), obtenerBoleta: vi.fn(), cambiarEstadoBoleta: vi.fn(), obtenerResumen: vi.fn(), cerrarPeriodo: vi.fn(), colorEstado: () => "bg-secondary" }));
 
 describe("vistas integradas con usuarios, catalogo y boletas", () => {
     let contenedor, raiz;
@@ -27,6 +28,7 @@ describe("vistas integradas con usuarios, catalogo y boletas", () => {
     afterAll(() => { delete globalThis.IS_REACT_ACT_ENVIRONMENT; });
     beforeEach(() => {
         listarOrdenes.mockReset(); obtenerBoleta.mockReset();
+        cambiarEstadoBoleta.mockReset(); obtenerResumen.mockReset(); cerrarPeriodo.mockReset();
         listarOrdenes.mockResolvedValue([compra]); obtenerBoleta.mockResolvedValue(compra);
         useAuth.mockReturnValue({ esAdmin: true, usuarios: [usuario], usuarioActual: { id: 1, rol: "ADMIN" }, actualizarUsuario: vi.fn().mockResolvedValue({ ok: true }) });
         useProducts.mockReturnValue({ productos: [{ id: 1, nombre: "Producto", stock: 5, precio: 1000 }], cargando: false, errorCarga: null });
@@ -49,10 +51,69 @@ describe("vistas integradas con usuarios, catalogo y boletas", () => {
         expect(contenedor.querySelector('[role="alert"]').textContent).toBe("Sin permiso.");
     });
     it("detalle remoto muestra folio y precio historico en modo consulta", async () => {
+        useAuth.mockReturnValue({ esAdmin: false, esVendedor: true });
         await renderizar(AdminBoleta, "/admin/ordenes/5", "/admin/ordenes/:id");
         expect(obtenerBoleta).toHaveBeenCalledWith("5");
         expect(contenedor.textContent).toContain("Boleta RB-2026-5");
         expect(contenedor.querySelector("select")).toBeNull();
+    });
+    it("admin cambia estado por API y recibe la boleta actualizada", async () => {
+        cambiarEstadoBoleta.mockResolvedValue({ ...compra, estado: "CANCELADA" });
+        await renderizar(AdminBoleta, "/admin/ordenes/5", "/admin/ordenes/:id");
+        const select = contenedor.querySelector("select");
+        expect(Array.from(select.options).map(option => option.value)).toEqual(["PAGADA", "CANCELADA"]);
+        select.value = "CANCELADA";
+        await act(async () => contenedor.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
+        expect(cambiarEstadoBoleta).toHaveBeenCalledWith("5", "CANCELADA");
+        expect(contenedor.textContent).toContain("CANCELADA");
+        expect(contenedor.querySelector("select")).toBeNull();
+    });
+    it("cambio rechazado conserva la boleta y muestra el error del servidor", async () => {
+        cambiarEstadoBoleta.mockRejectedValue({ response: { data: { mensaje: "Periodo cerrado." } } });
+        await renderizar(AdminBoleta, "/admin/ordenes/5", "/admin/ordenes/:id");
+        await act(async () => contenedor.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
+        expect(contenedor.querySelector('[role="alert"]').textContent).toBe("Periodo cerrado.");
+        expect(contenedor.textContent).toContain("PENDIENTE");
+        expect(contenedor.querySelector("button").disabled).toBe(false);
+    });
+    it("boleta cerrada no muestra selector aunque sea admin", async () => {
+        obtenerBoleta.mockResolvedValue({ ...compra, archivada: true });
+        await renderizar(AdminBoleta, "/admin/ordenes/5", "/admin/ordenes/:id");
+        expect(contenedor.querySelector("select")).toBeNull();
+        expect(contenedor.textContent).toContain("periodo cerrado");
+    });
+    const resumen = { cantidadOrdenes: 1, totalVentas: 2000, ticketPromedio: 2000, unidadesVendidas: 2,
+        productoMasVendido: { idProducto: 1, nombre: "Producto del servidor", unidades: 2 },
+        rankingProductos: [{ idProducto: 1, nombre: "Producto del servidor", unidades: 2, total: 2000 }],
+        comprasPorEstado: { PENDIENTE: 1 } };
+    it("reportes usa el resumen remoto y confirma el cierre de todas las boletas", async () => {
+        obtenerResumen.mockResolvedValueOnce(resumen).mockResolvedValueOnce({ ...resumen, comprasPorEstado: {}, rankingProductos: [], productoMasVendido: null, cantidadOrdenes: 0, totalVentas: 0 });
+        cerrarPeriodo.mockResolvedValue(1);
+        await renderizar(AdminReportes);
+        expect(contenedor.textContent).toContain("Producto del servidor");
+        await act(async () => Array.from(contenedor.querySelectorAll("button")).find(button => button.textContent.includes("Cerrar periodo")).click());
+        expect(contenedor.querySelector('[role="dialog"]').textContent).toContain("incluidas las que están en proceso");
+        await act(async () => Array.from(contenedor.querySelectorAll('[role="dialog"] button')).find(button => button.textContent.includes("Cerrar periodo")).click());
+        expect(cerrarPeriodo).toHaveBeenCalledTimes(1);
+        expect(obtenerResumen).toHaveBeenCalledTimes(2);
+        expect(contenedor.textContent).toContain("1 boletas cerradas");
+        expect(contenedor.querySelector('[role="dialog"]')).toBeNull();
+    });
+    it("reportes no presenta un error como ventas cero", async () => {
+        obtenerResumen.mockRejectedValue({ response: { data: { mensaje: "No disponible." } } });
+        await renderizar(AdminReportes);
+        expect(contenedor.querySelector('[role="alert"]').textContent).toBe("No disponible.");
+        expect(contenedor.textContent).not.toContain("Ventas totales");
+    });
+    it("cierre rechazado conserva el reporte y permite reintentar", async () => {
+        obtenerResumen.mockResolvedValue(resumen);
+        cerrarPeriodo.mockRejectedValue({ response: { data: { mensaje: "Cierre rechazado." } } });
+        await renderizar(AdminReportes);
+        await act(async () => Array.from(contenedor.querySelectorAll("button")).find(button => button.textContent.includes("Cerrar periodo")).click());
+        await act(async () => Array.from(contenedor.querySelectorAll('[role="dialog"] button')).find(button => button.textContent.includes("Cerrar periodo")).click());
+        expect(contenedor.querySelector('[role="alert"]').textContent).toBe("Cierre rechazado.");
+        expect(contenedor.textContent).toContain("Producto del servidor");
+        expect(obtenerResumen).toHaveBeenCalledTimes(1);
     });
     it("panel vendedor muestra solo productos y ordenes", async () => {
         useAuth.mockReturnValue({ esAdmin: false, usuarios: [], usuarioActual: { nombre: "Vendedor", rol: "VENDEDOR" } });

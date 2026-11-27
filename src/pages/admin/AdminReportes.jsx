@@ -1,13 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
-import {
-    leerCompras,
-    colorEstado,
-    archivarCompras,
-    esCompraArchivable
-} from "../../services/compraService";
-import { calcularEstadisticas } from "../../utils/estadisticas";
+import { obtenerResumen, cerrarPeriodo as cerrarPeriodoApi, colorEstado } from "../../services/compraService";
 
 function formatearPrecio(valor) {
     return Number(valor).toLocaleString("es-CL", {
@@ -35,9 +29,15 @@ function AdminReportes() {
 
     useTitulo("Reportes | Panel de administración");
 
-    // Las compras se guardan en el estado para poder
-    // actualizar la página después de cerrar el periodo
-    const [compras, setCompras] = useState(leerCompras);
+    const [resumen, setResumen] = useState(null);
+    const [errorCarga, setErrorCarga] = useState(null);
+    const [cerrando, setCerrando] = useState(false);
+    useEffect(() => {
+        let activo = true;
+        obtenerResumen().then(datos => { if (activo) setResumen(datos); })
+            .catch(error => { if (activo) setErrorCarga(error.response?.data?.mensaje || "No fue posible cargar el reporte."); });
+        return () => { activo = false; };
+    }, []);
 
     const [confirmandoCierre, setConfirmandoCierre] = useState(false);
 
@@ -51,31 +51,31 @@ function AdminReportes() {
         productoMasVendido,
         rankingProductos,
         comprasPorEstado
-    } = calcularEstadisticas(compras);
+    } = resumen || { rankingProductos: [], comprasPorEstado: {} };
 
-    const cantidadArchivables =
-        compras.filter(
-            esCompraArchivable
-        ).length;
+    const cantidadArchivables = Object.values(comprasPorEstado).reduce((total, cantidad) => total + cantidad, 0);
 
     function imprimirReporte() {
         window.print();
     }
 
 
-    function cerrarPeriodo() {
-
-        const cantidad = archivarCompras();
-
-        setCompras(leerCompras());
-        setConfirmandoCierre(false);
-
-        setMensaje(
-            `Periodo cerrado: se archivaron ${cantidad} órdenes finalizadas. Las órdenes en proceso permanecen activas.`
-        );
-
+    async function cerrarPeriodo() {
+        setCerrando(true);
+        setMensaje(null);
+        try {
+            const cantidad = await cerrarPeriodoApi();
+            setConfirmandoCierre(false);
+            setMensaje({ tipo: "success", texto: `Periodo cerrado: ${cantidad} boletas cerradas. Los historiales se conservan.` });
+            try { setResumen(await obtenerResumen()); }
+            catch { setErrorCarga("El cierre se realizó, pero no fue posible actualizar el reporte. Recarga la página."); }
+        } catch (error) {
+            setMensaje({ tipo: "danger", texto: error.response?.data?.mensaje || "No fue posible cerrar el periodo." });
+        } finally { setCerrando(false); }
     }
 
+    if (errorCarga) return <section className="container py-5"><div role="alert" className="alert alert-danger">{errorCarga}</div></section>;
+    if (!resumen) return <section className="container py-5"><p role="status">Cargando reporte…</p></section>;
 
     return (
 
@@ -127,9 +127,9 @@ function AdminReportes() {
 
                 </div>
 
-                {mensaje && (
-                    <div className="alert alert-success d-print-none" role="alert">
-                        {mensaje}
+                {mensaje && !confirmandoCierre && (
+                    <div className={`alert alert-${mensaje.tipo} d-print-none`} role="alert">
+                        {mensaje.texto}
                     </div>
                 )}
 
@@ -195,7 +195,7 @@ function AdminReportes() {
                                             </thead>
                                             <tbody>
                                                 {rankingProductos.map((producto, indice) => (
-                                                    <tr key={producto.nombre}>
+                                                    <tr key={producto.idProducto}>
                                                         <td>{indice + 1}</td>
                                                         <td>{producto.nombre}</td>
                                                         <td className="text-center">{producto.unidades}</td>
@@ -264,24 +264,17 @@ function AdminReportes() {
                                         type="button"
                                         className="btn-close"
                                         aria-label="Cerrar"
+                                        disabled={cerrando}
                                         onClick={() => setConfirmandoCierre(false)}
                                     />
                                 </div>
 
                                 <div className="modal-body">
-                                    <p>
-                                        Solo se archivarán las órdenes
-                                        <strong> entregadas o canceladas</strong>.
-                                        Estas dejarán de aparecer entre las órdenes
-                                        activas y en las estadísticas del período,
-                                        pero los clientes seguirán viéndolas en su historial.
-                                    </p>
-
-                                    <p>
-                                        Las órdenes
-                                        <strong> confirmadas, en preparación o enviadas</strong>
-                                        permanecerán activas para continuar su procesamiento.
-                                    </p>
+                                    {mensaje?.tipo === "danger" && <div role="alert" className="alert alert-danger">{mensaje.texto}</div>}
+                                    <p>Se cerrarán todas las boletas que todavía no tienen fecha de cierre,
+                                        incluidas las que están en proceso. Dejarán de aparecer entre las órdenes
+                                        activas y en las estadísticas del periodo, pero se conservarán en los historiales.</p>
+                                    <p><strong>Las boletas cerradas no podrán cambiar de estado.</strong></p>
 
                                     <p className="mb-0">
                                         Te recomendamos <strong>imprimir o guardar el reporte como PDF</strong> antes de cerrar.
@@ -292,6 +285,7 @@ function AdminReportes() {
                                     <button
                                         type="button"
                                         className="btn btn-outline-secondary"
+                                        disabled={cerrando}
                                         onClick={() => setConfirmandoCierre(false)}
                                     >
                                         Cancelar
@@ -299,6 +293,7 @@ function AdminReportes() {
                                     <button
                                         type="button"
                                         className="btn btn-danger"
+                                        disabled={cerrando}
                                         onClick={cerrarPeriodo}
                                     >
                                         Cerrar periodo

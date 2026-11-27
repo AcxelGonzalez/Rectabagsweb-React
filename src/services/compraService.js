@@ -80,6 +80,21 @@ export async function leerHistorialUsuario(id) {
     return data.map(aCompra);
 }
 
+export async function cambiarEstadoBoleta(id, estado) {
+    const { data } = await api.patch(`/boletas/${id}/estado`, { estado });
+    return aCompra(data);
+}
+
+export async function obtenerResumen() {
+    const { data } = await api.get("/reportes/resumen");
+    return data;
+}
+
+export async function cerrarPeriodo() {
+    const { data } = await api.post("/reportes/cierre");
+    return data.cantidadCerradas;
+}
+
 
 export function leerCompraPorId(
     compraId
