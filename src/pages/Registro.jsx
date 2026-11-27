@@ -88,7 +88,7 @@ function Registro() {
 
     }
 
-    function envio(
+    async function envio(
         evento
     ) {
 
@@ -125,7 +125,7 @@ function Registro() {
 
 
         const resultado =
-            registrarUsuario(
+            await registrarUsuario(
                 formulario
             );
 
@@ -219,7 +219,7 @@ function Registro() {
                                         <div className="col-md-6">
                                             <label htmlFor="rut" className="form-label small fw-semibold">RUT(*)</label>
                                             <input type="text" className="form-control rounded-3 border-secondary-subtle py-2"
-                                                id="rut" name="rut" placeholder="Ej: 12345678-9"
+                                                id="rut" name="rut" placeholder="Ej: 123456785"
                                                 value={formulario.rut} onChange={cambioFormulario} required />
                                         </div>
                                         <div className="col-md-6">
