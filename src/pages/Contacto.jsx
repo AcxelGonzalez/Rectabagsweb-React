@@ -1,5 +1,6 @@
 import useTitulo from '../hooks/useTitulo';
 import { useState } from 'react';
+import { validarCorreo } from '../utils/validaciones';
 
 function Contacto() {
     // Lógica
@@ -13,10 +14,12 @@ function Contacto() {
     });
 
     const [enviado, setEnviado] = useState(false);
+    const [error, setError] = useState(null);
 
     // Actualiza los datos del formulario
     function cambio(evento) {
         const { name, value } = evento.target;
+        setError(null);
 
         setDatos((anteriores) => ({
             ...anteriores,
@@ -38,8 +41,18 @@ function Contacto() {
     ) {
 
         evento.preventDefault();
-
-
+        const errorValidacion = !datos.nombre.trim() ? "Ingresa tu nombre."
+            : datos.nombre.length > 100 ? "El nombre admite máximo 100 caracteres."
+            : datos.correo.length > 100 ? "El correo admite máximo 100 caracteres."
+            : validarCorreo(datos.correo)
+                || (!datos.mensaje.trim() ? "Ingresa tu comentario."
+                    : datos.mensaje.length > 500 ? "El comentario admite máximo 500 caracteres." : null);
+        if (errorValidacion) {
+            setError(errorValidacion);
+            setEnviado(false);
+            return;
+        }
+        setError(null);
         setEnviado(
             true
         );
@@ -180,6 +193,7 @@ function Contacto() {
                                                 className="form-control  py-2"
                                                 id="nombre"
                                                 name="nombre"
+                                                maxLength={100}
                                                 placeholder="Tu nombre"
                                                 value={datos.nombre}
                                                 onChange={cambio}
@@ -197,7 +211,8 @@ function Contacto() {
                                                 className="form-control  py-2"
                                                 id="correo"
                                                 name="correo"
-                                                placeholder="ejemplo@correo.com"
+                                                maxLength={100}
+                                                placeholder="ejemplo@gmail.com"
                                                 value={datos.correo}
                                                 onChange={cambio}
                                                 required
@@ -255,6 +270,8 @@ function Contacto() {
 
                                     </div>
                                 </form>
+
+                                {error && <div className="alert alert-danger mt-4" role="alert">{error}</div>}
 
                                 {enviado && (
 
