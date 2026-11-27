@@ -164,6 +164,11 @@ Se verificaron catálogo, login y permisos por HTTP real desde 5173 y 4173,
 configurando la API en 8081: 401 sin sesión, 403 para CLIENTE en usuarios y rechazo
 de un origen ajeno. Esa comprobación usó lecturas y login, sin crear registros.
 
+El 27/11/2026 se actualizó ESLint de 10.11.0 a 10.16.0 y sus dependencias
+transitivas para resolver los tres avisos moderados. La reinstalación con
+`npm ci`, las 288 pruebas, lint y build fueron correctos; `npm audit` informa
+cero vulnerabilidades conocidas en las dependencias instaladas.
+
 ## Pendientes y límites
 
 - Recuperación de contraseña: pantalla sin endpoint; informa que no está disponible.
@@ -171,8 +176,6 @@ de un origen ajeno. Esa comprobación usó lecturas y login, sin crear registros
 - Fecha de nacimiento sin persistencia, pendiente de decisión.
 - Pruebas integradas: usan la base configurada para desarrollo; faltan conexión y
   datos aislados. Algunas esperan que no haya otras órdenes abiertas.
-- `npm audit` del 27/11 detecta tres entradas moderadas de desarrollo;
-  `npm audit --omit=dev` detecta cero. No se actualizaron paquetes.
 - Build con aviso de tamaño de aproximadamente 551 kB. Rendimiento y disponibilidad
   no medidos; no se acredita compatibilidad completa entre navegadores.
 - Pagos bancarios reales, publicación de reseñas, envío de contacto y despliegue
