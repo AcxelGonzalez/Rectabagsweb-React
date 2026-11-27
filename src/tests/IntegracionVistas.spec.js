@@ -99,6 +99,14 @@ describe("vistas integradas con usuarios, catalogo y boletas", () => {
         expect(contenedor.textContent).toContain("1 boletas cerradas");
         expect(contenedor.querySelector('[role="dialog"]')).toBeNull();
     });
+    it.each([[1000.5, "$1.000,50"], [1000, "$1.000"], [333.33, "$333,33"]])(
+        "reportes presenta el ticket %s con el formato monetario acordado", async (ticketPromedio, esperado) => {
+            obtenerResumen.mockResolvedValue({ ...resumen, ticketPromedio });
+            await renderizar(AdminReportes);
+            const tarjeta = Array.from(contenedor.querySelectorAll(".card-body")).find(n => n.firstElementChild?.textContent === "Ticket promedio");
+            expect(tarjeta.textContent.replace(/\s/g, "")).toContain(esperado);
+        }
+    );
     it("reportes no presenta un error como ventas cero", async () => {
         obtenerResumen.mockRejectedValue({ response: { data: { mensaje: "No disponible." } } });
         await renderizar(AdminReportes);
