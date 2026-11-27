@@ -5,7 +5,7 @@ Evaluación Parcial 3 y EFT. React consulta una API Spring Boot; PostgreSQL cons
 categorías, productos, usuarios, boletas y detalles. El navegador conserva el
 carrito, el JWT y una copia de los datos de sesión.
 
-Revisión del 27/11/2026. Código comprobado: React `4b21659` y backend `f7cf3f7`.
+Revisión del 27/11/2026. Código comprobado: React `b398846` y backend `92eb5fd`.
 
 ## Equipo y repositorios
 
@@ -116,8 +116,11 @@ Estas cuentas se inicializan en el backend si no existen; no son autenticación 
   ayudas/errores de `CampoFormulario` asociados a controles. Son correcciones
   concretas; no acreditan una certificación integral de accesibilidad.
 
-Importes: `1000 → $1.000`, `1000.50 → $1.000,50`. El cálculo del **ticket promedio
-del backend todavía redondea al peso**; conservar centavos en él sigue por decidir.
+Importes: `1000 → $1.000`, `1000.50 → $1.000,50`. El **ticket promedio** se calcula como ventas del periodo divididas por compras,
+con dos decimales y redondeo comercial (`HALF_UP`) solo al final. Ejemplo: ventas
+de $1.000 y $1.001 dan un promedio de $1.000,50. Es un indicador de gestión;
+no se le aplica la regla de redondeo de pagos en efectivo.
+[Referencia del Banco Central](https://www.billetesymonedas.cl/Monedas/ReglaRedondeo).
 
 ## Estados y cierre
 
@@ -142,8 +145,8 @@ npm run lint
 npm run build
 ```
 
-Al 27/11/2026: **285 pruebas de React en 21 archivos aprobadas**, lint y build
-correctos. El backend aprobó **104 pruebas**. La medición V8 del frontend registró:
+Al 27/11/2026: **288 pruebas de React en 21 archivos aprobadas**, lint y build
+correctos. El backend aprobó **110 pruebas**. La medición V8 del frontend registró:
 
 | Medida | Cobertura |
 |---|---|
@@ -165,7 +168,7 @@ de un origen ajeno. Esa comprobación usó lecturas y login, sin crear registros
 
 - Recuperación de contraseña: pantalla sin endpoint; informa que no está disponible.
 - Blog: listado existente; dos detalles pendientes de confirmación docente.
-- Fecha de nacimiento sin persistencia y precisión del ticket promedio por decidir.
+- Fecha de nacimiento sin persistencia, pendiente de decisión.
 - Pruebas integradas: usan la base configurada para desarrollo; faltan conexión y
   datos aislados. Algunas esperan que no haya otras órdenes abiertas.
 - `npm audit` del 27/11 detecta tres entradas moderadas de desarrollo;
