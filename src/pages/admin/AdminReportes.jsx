@@ -1,14 +1,8 @@
+import { formatearPrecio } from "../../utils/moneda";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
 import { obtenerResumen, cerrarPeriodo as cerrarPeriodoApi, colorEstado } from "../../services/compraService";
-
-function formatearPrecio(valor) {
-    return Number(valor).toLocaleString("es-CL", {
-        style: "currency",
-        currency: "CLP"
-    });
-}
 
 /*
  * Tarjeta con un número destacado.

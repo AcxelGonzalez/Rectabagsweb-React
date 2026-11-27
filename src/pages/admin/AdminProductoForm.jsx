@@ -321,12 +321,12 @@ function FormularioProducto({ producto, esEdicion }) {
                                         nombre="descripcion"
                                         como="textarea"
                                         rows="3"
-                                        maxLength="200"
+                                        maxLength="500"
                                         valor={formulario.descripcion}
                                         onChange={cambio}
                                         onBlur={salirDeCampo}
                                         error={errorDe("descripcion")}
-                                        ayuda="Máximo 200 caracteres."
+                                        ayuda="Opcional. Máximo 500 caracteres."
                                     />
                                 </div>
 

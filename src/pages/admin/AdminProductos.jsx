@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../../utils/moneda";
 import { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
@@ -5,13 +6,6 @@ import useTitulo from "../../hooks/useTitulo";
 import useAuth from "../../hooks/useAuth";
 import { obtenerStockValido } from "../../utils/stock";
 import { STOCK_CRITICO_POR_DEFECTO } from "../../data/productos";
-
-function formatearPrecio(valor) {
-    return Number(valor).toLocaleString('es-CL', { 
-        style: 'currency', 
-        currency: 'CLP' 
-    });
-}
 
 /*
  * Un producto está en stock crítico cuando su stock

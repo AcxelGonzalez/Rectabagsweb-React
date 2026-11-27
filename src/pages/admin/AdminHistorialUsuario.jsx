@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../../utils/moneda";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
@@ -23,12 +24,12 @@ function AdminHistorialUsuario() {
         <h1 className="display-6 fw-bold mb-4">Historial de {usuario ? `${usuario.nombre} ${usuario.apellido}` : `usuario ${id}`}</h1>
         {resultado?.id === id && resultado.error ? <div className="alert alert-danger" role="alert">{resultado.error}</div>
             : !compras ? <p role="status">Cargando historial…</p>
-            : <><p>{compras.length} compras · Total gastado: {total.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</p>
+            : <><p>{compras.length} compras · Total gastado: {formatearPrecio(total)}</p>
                 {compras.length === 0 ? <p>Este usuario todavía no ha realizado compras.</p>
                     : <div className="table-responsive"><table className="table align-middle">
                         <thead><tr><th>N° orden</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
                         <tbody>{compras.map(c => <tr key={c.id}><td>{c.folio}</td><td>{new Date(c.fecha).toLocaleString("es-CL")}</td>
-                            <td>{c.subtotal.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</td>
+                            <td>{formatearPrecio(c.subtotal)}</td>
                             <td><span className={`badge ${colorEstado(c.estado)}`}>{c.estado}</span></td>
                             <td><Link to={`/admin/ordenes/${c.id}`} className="btn btn-sm btn-outline-dark">Ver boleta</Link></td>
                         </tr>)}</tbody>

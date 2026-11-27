@@ -183,7 +183,7 @@ function Registro() {
                                     <div className="mb-3">
                                         <label htmlFor="email" className="form-label small fw-semibold">Correo(*)</label>
                                         <input type="email" className="form-control rounded-3 border-secondary-subtle py-2"
-                                            id="email" name="correo" value={formulario.correo}
+                                            id="email" name="correo" maxLength={100} value={formulario.correo}
                                             onChange={cambioFormulario} required />
                                     </div>
 
@@ -192,13 +192,13 @@ function Registro() {
                                         <div className="col-md-6">
                                             <label htmlFor="nombre" className="form-label small fw-semibold">Nombre(*)</label>
                                             <input type="text" className="form-control rounded-3 border-secondary-subtle py-2"
-                                                id="nombre" name="nombre" value={formulario.nombre}
+                                                id="nombre" name="nombre" maxLength={50} value={formulario.nombre}
                                                 onChange={cambioFormulario} required />
                                         </div>
                                         <div className="col-md-6">
                                             <label htmlFor="apellido" className="form-label small fw-semibold">Apellido(*)</label>
                                             <input type="text" className="form-control rounded-3 border-secondary-subtle py-2"
-                                                id="apellido" name="apellido" value={formulario.apellido}
+                                                id="apellido" name="apellido" maxLength={100} value={formulario.apellido}
                                                 onChange={cambioFormulario} required />
                                         </div>
                                     </div>
@@ -206,12 +206,12 @@ function Registro() {
                                     {/* Fecha de nacimiento */}
                                     <div className="mb-3">
                                         <label htmlFor="fecha-nacimiento" className="form-label small fw-semibold">
-                                            Fecha de nacimiento(*)
+                                            Fecha de nacimiento (opcional)
                                         </label>
                                         <input type="date" className="form-control rounded-3 border-secondary-subtle py-2"
                                             id="fecha-nacimiento" name="fechaNacimiento" lang="es-CL"
                                             autoComplete="bday" value={formulario.fechaNacimiento}
-                                            onChange={cambioFormulario} required />
+                                            onChange={cambioFormulario} />
                                     </div>
 
                                     {/* RUT y teléfono */}
@@ -292,7 +292,7 @@ function Registro() {
                                     <div className="mb-4">
                                         <label htmlFor="direccion" className="form-label small fw-semibold">Dirección</label>
                                         <input type="text" className="form-control rounded-3 border-secondary-subtle py-2"
-                                            id="direccion" name="direccion" value={formulario.direccion}
+                                            id="direccion" name="direccion" maxLength={300} value={formulario.direccion}
                                             onChange={cambioFormulario} />
                                     </div>
 

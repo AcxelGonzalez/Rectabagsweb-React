@@ -1,16 +1,10 @@
+import { formatearPrecio } from "../utils/moneda";
 import { colorEstado } from "../services/compraService";
 
 const METODOS_PAGO = {
     "transferencia": "Transferencia bancaria",
     "tarjeta-simulada": "Tarjeta bancaria (simulada)"
 };
-
-function formatearPrecio(valor) {
-    return Number(valor).toLocaleString("es-CL", {
-        style: "currency",
-        currency: "CLP"
-    });
-}
 
 /*
  * Muestra una boleta completa.

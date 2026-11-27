@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../utils/moneda";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
@@ -31,17 +32,6 @@ function crearFormularioInicial(usuario) {
         comuna: usuario?.comuna || "",
         metodoPago: ""
     };
-
-}
-
-
-function formatearPrecio(valor) {
-
-    return Number(valor).toLocaleString("es-CL", {
-        style: "currency",
-        currency: "CLP",
-        maximumFractionDigits: 0
-    });
 
 }
 
@@ -262,7 +252,7 @@ function Checkout() {
                                                 type="text"
                                                 id="checkout-apellido"
                                                 name="apellido"
-                                                maxLength={50}
+                                                maxLength={100}
                                                 className="form-control"
                                                 value={formulario.apellido}
                                                 onChange={cambioFormulario}
@@ -319,7 +309,7 @@ function Checkout() {
                                                 type="text"
                                                 id="checkout-direccion"
                                                 name="direccion"
-                                                maxLength={120}
+                                                maxLength={300}
                                                 className="form-control"
                                                 value={formulario.direccion}
                                                 onChange={cambioFormulario}

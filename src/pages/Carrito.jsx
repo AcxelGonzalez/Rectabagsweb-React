@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../utils/moneda";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useTitulo from '../hooks/useTitulo';
@@ -70,7 +71,7 @@ function Carrito() {
 
     }
 
-    const precio = valor => '$' + Number(valor).toLocaleString('es-CL');
+    const precio = formatearPrecio;
 
     // Render
     return (

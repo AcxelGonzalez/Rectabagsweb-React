@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../utils/moneda";
 import {
     useEffect, useState
 } from "react";
@@ -24,14 +25,6 @@ import {
 } from "../services/compraService";
 
 import "../css/style_perfil.css";
-
-
-function formatearPrecio(valor) {
-    return Number(valor).toLocaleString("es-CL", {
-        style: "currency",
-        currency: "CLP"
-    });
-}
 
 
 /*
@@ -460,6 +453,7 @@ function Perfil() {
                                                 <input
                                                     type="text"
                                                     id="perfil-nombre"
+                                                    maxLength={50}
                                                     name="nombre"
                                                     className="form-control"
                                                     value={formulario.nombre}
@@ -475,6 +469,7 @@ function Perfil() {
                                                 <input
                                                     type="text"
                                                     id="perfil-apellido"
+                                                    maxLength={100}
                                                     name="apellido"
                                                     className="form-control"
                                                     value={formulario.apellido}
@@ -583,6 +578,7 @@ function Perfil() {
                                                 <input
                                                     type="text"
                                                     id="perfil-direccion"
+                                                    maxLength={300}
                                                     name="direccion"
                                                     className="form-control"
                                                     value={formulario.direccion}

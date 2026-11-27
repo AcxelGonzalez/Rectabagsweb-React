@@ -224,12 +224,8 @@ export function validarNombreProducto(nombre) {
         return "Ingresa el nombre del producto.";
     }
 
-    if (valor.length < 3) {
-        return "El nombre debe tener al menos 3 caracteres.";
-    }
-
-    if (valor.length > 60) {
-        return "El nombre no puede superar los 60 caracteres.";
+    if (valor.length > 100) {
+        return "El nombre no puede superar los 100 caracteres.";
     }
 
     return null;
@@ -249,8 +245,8 @@ export function validarPrecioProducto(precio) {
         return "El precio debe ser un número.";
     }
 
-    if (valor <= 0) {
-        return "El precio debe ser mayor que 0.";
+    if (valor < 0) {
+        return "El precio debe ser 0 o mayor.";
     }
 
     return null;
@@ -304,12 +300,8 @@ export function validarDescripcionProducto(descripcion) {
 
     const valor = String(descripcion || "").trim();
 
-    if (!valor) {
-        return "Ingresa una descripción del producto.";
-    }
-
-    if (valor.length < 10) {
-        return "La descripción debe tener al menos 10 caracteres.";
+    if (valor.length > 500) {
+        return "La descripción no puede superar los 500 caracteres.";
     }
 
     return null;

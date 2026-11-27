@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../utils/moneda";
 import {
     Link,
     Navigate,
@@ -29,27 +30,6 @@ function CompraExitosa() {
                 to="/catalogo"
                 replace
             />
-        );
-
-    }
-
-
-    function formatearPrecio(
-        valor
-    ) {
-
-        return Number(
-            valor
-        ).toLocaleString(
-            "es-CL",
-            {
-                style:
-                    "currency",
-                currency:
-                    "CLP",
-                maximumFractionDigits:
-                    0
-            }
         );
 
     }

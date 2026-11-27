@@ -44,7 +44,7 @@ function FormularioUsuario({ usuario }) {
             <p>Correo: {usuario.correo}</p><p>RUT: {usuario.run}</p>
             <form onSubmit={envio}><div className="row g-3">
                 <div className="col-md-6"><CampoFormulario etiqueta="Nombre" nombre="nombre" valor={formulario.nombre} onChange={cambio} required maxLength={50} /></div>
-                <div className="col-md-6"><CampoFormulario etiqueta="Apellido" nombre="apellido" valor={formulario.apellido} onChange={cambio} required maxLength={50} /></div>
+                <div className="col-md-6"><CampoFormulario etiqueta="Apellido" nombre="apellido" valor={formulario.apellido} onChange={cambio} required maxLength={100} /></div>
                 <div className="col-md-6"><CampoFormulario etiqueta="Teléfono" nombre="telefono" valor={formulario.telefono} onChange={cambio} tipo="tel" maxLength={20} /></div>
                 <div className="col-md-6"><CampoFormulario etiqueta="Rol" nombre="rol" como="select" valor={formulario.rol} onChange={cambio}
                     disabled={esUnoMismo} ayuda={esUnoMismo ? "No puedes cambiar tu propio rol." : null}>

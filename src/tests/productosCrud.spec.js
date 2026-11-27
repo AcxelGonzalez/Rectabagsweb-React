@@ -153,11 +153,11 @@ describe("CRUD de productos (capa de datos)", () => {
 
         });
 
-        it("debe rechazar un precio menor o igual a cero", () => {
+        it("debe rechazar un precio negativo", () => {
 
             const resultado = crearProducto(
                 lista,
-                datosValidos({ precio: 0 })
+                datosValidos({ precio: -1 })
             );
 
             expect(resultado.ok).toBe(false);

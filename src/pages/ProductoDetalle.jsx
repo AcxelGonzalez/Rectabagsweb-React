@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../utils/moneda";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useProducts from "../hooks/useProducts";
@@ -48,17 +49,16 @@ function ProductoDetalle() {
         );
     }
 
-    const formatoCLP = { style: "currency", currency: "CLP" };
 
     const tieneOferta =
         producto.precioOferta &&
         producto.precioOferta < producto.precio;
 
     const precioFormateado =
-        producto.precio.toLocaleString("es-CL", formatoCLP);
+        formatearPrecio(producto.precio);
 
     const precioOfertaFormateado = tieneOferta
-        ? producto.precioOferta.toLocaleString("es-CL", formatoCLP)
+        ? formatearPrecio(producto.precioOferta)
         : null;
 
 

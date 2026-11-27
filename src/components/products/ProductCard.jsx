@@ -1,11 +1,5 @@
+import { formatearPrecio } from "../../utils/moneda";
 import { Link } from "react-router-dom";
-
-function formatearPrecio(valor) {
-    return valor.toLocaleString("es-CL", {
-        style: "currency",
-        currency: "CLP"
-    });
-}
 
 function ProductCard({ producto }) {
 

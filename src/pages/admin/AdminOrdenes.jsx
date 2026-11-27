@@ -1,3 +1,4 @@
+import { formatearPrecio } from "../../utils/moneda";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useTitulo from "../../hooks/useTitulo";
@@ -25,7 +26,7 @@ function AdminOrdenes() {
                     <tbody>{compras.map(compra => <tr key={compra.id}>
                         <td>{compra.folio}</td><td>{new Date(compra.fecha).toLocaleString("es-CL")}</td>
                         <td>{compra.cliente.nombre} {compra.cliente.apellido}<div className="small text-secondary">{compra.cliente.correo}</div></td>
-                        <td>{compra.subtotal.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</td>
+                        <td>{formatearPrecio(compra.subtotal)}</td>
                         <td><span className={`badge ${colorEstado(compra.estado)}`}>{compra.estado}</span></td>
                         <td><Link to={`/admin/ordenes/${compra.id}`} className="btn btn-sm btn-outline-dark">Ver boleta</Link></td>
                     </tr>)}</tbody>
