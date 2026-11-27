@@ -79,6 +79,7 @@ function App() {
                         <Route path="/admin/ordenes/:id" element={<AdminBoleta />} />
                         <Route path="/admin/usuarios/:id/compras" element={<AdminHistorialUsuario />} />
                         <Route path="/admin/reportes" element={<AdminReportes />} />
+                        <Route path="/admin/usuarios/nuevo" element={<AdminUsuarioForm />} />
                     </Route>
 
                     <Route path="*" element={<PaginaEnConstruccion titulo="Página no encontrada"/>} />

@@ -99,6 +99,14 @@ describe("AuthProvider conectado al backend", () => {
         await renderizar(); await login({ ...cliente, rol: "VENDEDOR" });
         expect(auth.esVendedor).toBe(true); expect(auth.esAdmin).toBe(false); expect(auth.puedeEntrarAlPanel).toBe(true);
     });
+    it("crear usuario usa el endpoint administrativo, normaliza RUN y conserva el rol elegido", async () => {
+        await renderizar(); await login({ ...cliente, rol: "ADMIN" });
+        api.post.mockClear(); api.post.mockResolvedValue({ data: cliente });
+        await act(async () => { expect((await auth.crearUsuario({ ...cliente, run: "12.345.678-5", contrasena: "Clave123!", rol: "VENDEDOR" })).ok).toBe(true); });
+        expect(api.post).toHaveBeenCalledWith("/usuarios", expect.objectContaining({ run: "123456785", contrasena: "Clave123!", rol: "VENDEDOR" }));
+        expect(auth.usuarioActual.rol).toBe("ADMIN");
+        expect(localStorage.getItem("recta_token")).toBe("token-prueba");
+    });
     it("actualizar usuario envia RUN y rol al endpoint correcto", async () => {
         await renderizar(); await login({ ...cliente, rol: "ADMIN" }); api.put.mockResolvedValue({ data: cliente });
         await act(async () => auth.actualizarUsuario(1, cliente));

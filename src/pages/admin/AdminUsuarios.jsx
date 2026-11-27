@@ -52,6 +52,7 @@ function AdminUsuarios() {
                 <h1 className="display-6 fw-bold mb-4">
                     Usuarios
                 </h1>
+                <Link to="/admin/usuarios/nuevo" className="btn btn-dark mb-4">Nuevo usuario</Link>
 
                 {mensaje && (
                     <div className={`alert alert-${mensaje.tipo}`} role="alert">

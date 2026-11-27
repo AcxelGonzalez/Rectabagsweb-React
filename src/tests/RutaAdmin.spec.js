@@ -31,7 +31,7 @@ describe("acceso al panel por rol", () => {
     for (const ruta of ["/admin/productos", "/admin/ordenes", "/admin/ordenes/15"]) {
         it(`vendedor puede consultar ${ruta}`, async () => { await renderizar("VENDEDOR", ruta); expect(contenedor.textContent).toBe("VISTA ADMINISTRATIVA"); });
     }
-    for (const ruta of ["/admin/usuarios", "/admin/reportes", "/admin/categorias", "/admin/productos/nuevo", "/admin/productos/1/editar"]) {
+    for (const ruta of ["/admin/usuarios", "/admin/usuarios/nuevo", "/admin/reportes", "/admin/categorias", "/admin/productos/nuevo", "/admin/productos/1/editar"]) {
         it(`vendedor no puede abrir ${ruta}`, async () => { await renderizar("VENDEDOR", ruta); expect(contenedor.textContent).toBe("PANEL"); });
     }
 });
