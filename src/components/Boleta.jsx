@@ -21,12 +21,12 @@ function Boleta({ compra, controlEstado }) {
 
     return (
 
-        <div className="card border-0 shadow-sm rounded-4">
+        <div className="card border-0 shadow-sm rounded-4" style={{ overflowWrap: "anywhere", minWidth: 0 }}>
             <div className="card-body p-4 p-md-5">
 
                 <div className="d-flex flex-wrap justify-content-between gap-2 mb-4">
 
-                    <div>
+                    <div style={{ minWidth: 0, flex: "1 1 240px" }}>
                         <h1 className="h3 fw-bold mb-1">Boleta {compra.folio || compra.id}</h1>
                         <div className="text-secondary">
                             {new Date(compra.fecha).toLocaleString("es-CL")}
@@ -64,14 +64,14 @@ function Boleta({ compra, controlEstado }) {
                 </div>
 
                 <div className="table-responsive">
-                    <table className="table align-middle">
+                    <table className="table align-middle" style={{ overflowWrap: "normal" }}>
 
                         <thead className="table-light">
                             <tr>
                                 <th>Producto</th>
-                                <th className="text-end">Precio</th>
-                                <th className="text-center">Cantidad</th>
-                                <th className="text-end">Subtotal</th>
+                                <th className="text-end text-nowrap">Precio</th>
+                                <th className="text-center text-nowrap">Cantidad</th>
+                                <th className="text-end text-nowrap">Subtotal</th>
                             </tr>
                         </thead>
 
@@ -79,9 +79,9 @@ function Boleta({ compra, controlEstado }) {
                             {compra.productos.map((producto) => (
                                 <tr key={producto.id}>
                                     <td>{producto.nombre}</td>
-                                    <td className="text-end">{formatearPrecio(producto.precio)}</td>
+                                    <td className="text-end text-nowrap">{formatearPrecio(producto.precio)}</td>
                                     <td className="text-center">{producto.cantidad}</td>
-                                    <td className="text-end">
+                                    <td className="text-end text-nowrap">
                                         {formatearPrecio(producto.subTotal ?? producto.precio * producto.cantidad)}
                                     </td>
                                 </tr>
@@ -91,7 +91,7 @@ function Boleta({ compra, controlEstado }) {
                         <tfoot>
                             <tr>
                                 <th colSpan="3" className="text-end">Total</th>
-                                <th className="text-end">{formatearPrecio(compra.subtotal)}</th>
+                                <th className="text-end text-nowrap">{formatearPrecio(compra.subtotal)}</th>
                             </tr>
                         </tfoot>
 
