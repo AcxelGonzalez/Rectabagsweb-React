@@ -41,10 +41,16 @@ function AdminPanel() {
                                 <p className="text-secondary">
                                     productos en el catálogo
                                 </p>
-                                <Link to="/admin/productos" className="btn btn-dark">
-                                    Administrar productos
-                                </Link>
-                            </div>
+                                <div className="d-flex flex-wrap gap-2">
+                                    <Link to="/admin/productos" className="btn btn-dark">
+                                        Administrar productos
+                                    </Link>
+                                    <Link to="/admin/categorias" className="btn btn-outline-dark">
+                                        Categorías
+                                    </Link>
+                                </div>
+
+                            </div>                                                     
                         </div>
                     </div>
 

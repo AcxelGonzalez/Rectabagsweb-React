@@ -2,55 +2,94 @@ import React, { act } from "react";
 
 import { createRoot } from "react-dom/client";
 
+import { vi } from "vitest";
+
 import ProductProvider from "../context/ProductProvider";
 
 import useProducts from "../hooks/useProducts";
 
-/* El catálogo compartido, su guardado, las operaciones del panel y el manejo del stock*/
-describe("ProductProvider", () => {
+import api from "../services/api";
 
-    const CLAVE_PRODUCTOS = "recta_productos";
+/* Se reemplaza axios por un "backend falso": ninguna prueba toca el servidor real */
+vi.mock("../services/api", () => ({
+    default: {
+        get: vi.fn(),
+        post: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn()
+    }
+}));
+
+
+/* El catálogo compartido, sus operaciones con el backend y el manejo del stock */
+describe("ProductProvider", () => {
 
     let contenedor;
     let raiz;
     let productosApi;
 
+    // "Base de datos" del backend falso (formato real de Spring Boot)
+    let productosServidor;
 
-    // Catálogo reducido para no depender de los 9 productos reales.
-    const catalogoPrueba = [
-        {
-            id: 1,
-            nombre: "RC-30",
-            categoria: "mochilas",
-            precio: 45000,
-            descripcion: "Mochila rolltop para uso urbano.",
-            descripcionCompleta: "Mochila rolltop de 30 litros.",
-            imagen: "/img/test.png",
-            stock: 10
-        },
-        {
-            id: 2,
-            nombre: "Cilindro CL-10",
-            categoria: "cilindros",
-            precio: 25000,
-            descripcion: "Bolso cilindro resistente al agua.",
-            descripcionCompleta: "Bolso cilindro de 10 litros.",
-            imagen: "/img/test.png",
-            stock: 4
-        }
+    const categoriasServidor = [
+        { idCategoria: 1, nombre: "Mochilas" },
+        { idCategoria: 2, nombre: "Cilindros" },
+        { idCategoria: 3, nombre: "Musette" }
     ];
+
+    function crearCatalogoServidor() {
+
+        return [
+            {
+                idProducto: 1,
+                codigo: "RC-30",
+                nombre: "RC-30",
+                categoria: categoriasServidor[0],
+                precio: "45000.00",
+                precioOferta: null,
+                stock: 10,
+                stockCritico: 3,
+                descripcion: "Mochila rolltop para uso urbano.",
+                imagen: "/img/test.png"
+            },
+            {
+                idProducto: 2,
+                codigo: "CL-10",
+                nombre: "Cilindro CL-10",
+                categoria: categoriasServidor[1],
+                precio: "25000.00",
+                precioOferta: "20000.00",
+                stock: 4,
+                stockCritico: null,
+                descripcion: "Bolso cilindro resistente al agua.",
+                imagen: "/img/test.png"
+            }
+        ];
+
+    }
 
 
     function datosValidos(cambios) {
 
         return {
+            codigo: "MU-05",
             nombre: "Musette MU-05",
-            categoria: "musette",
+            idCategoria: 3,
             precio: 18000,
-            descripcion: "Bolso musette liviano para el día a día.",
+            precioOferta: "",
             stock: 7,
+            stockCritico: "",
+            descripcion: "Bolso musette liviano para el día a día.",
+            imagen: "",
             ...cambios
         };
+
+    }
+
+
+    function errorDelBackend(mensaje) {
+
+        return { response: { data: { mensaje } } };
 
     }
 
@@ -68,9 +107,9 @@ describe("ProductProvider", () => {
     }
 
 
-    function renderizarProductos() {
+    async function renderizarProductos() {
 
-        act(() => {
+        await act(async () => {
 
             raiz.render(
                 React.createElement(
@@ -85,26 +124,6 @@ describe("ProductProvider", () => {
     }
 
 
-    // Deja el catálogo de prueba en localStorage antes de montar.
-    function guardarCatalogoPrueba() {
-
-        localStorage.setItem(
-            CLAVE_PRODUCTOS,
-            JSON.stringify(catalogoPrueba)
-        );
-
-    }
-
-
-    function leerCatalogoGuardado() {
-
-        return JSON.parse(
-            localStorage.getItem(CLAVE_PRODUCTOS)
-        );
-
-    }
-
-
     beforeAll(() => {
         globalThis.IS_REACT_ACT_ENVIRONMENT = true;
     });
@@ -112,9 +131,71 @@ describe("ProductProvider", () => {
 
     beforeEach(() => {
 
-        localStorage.clear();
+        productosServidor = crearCatalogoServidor();
 
         productosApi = null;
+
+        vi.clearAllMocks();
+
+        // GET: devuelve lo que haya en el "servidor"
+        api.get.mockImplementation(async (ruta) => {
+
+            if (ruta === "/categorias") {
+                return { data: categoriasServidor };
+            }
+
+            return { data: productosServidor };
+
+        });
+
+        // POST: agrega un producto
+        api.post.mockImplementation(async (ruta, cuerpo) => {
+
+            const nuevo = {
+                idProducto: 100,
+                ...cuerpo,
+                categoria: categoriasServidor.find(
+                    (c) => c.idCategoria === cuerpo.idCategoria
+                )
+            };
+
+            productosServidor.push(nuevo);
+
+            return { data: nuevo };
+
+        });
+
+        // PUT: modifica un producto
+        api.put.mockImplementation(async (ruta, cuerpo) => {
+
+            const id = Number(ruta.split("/").pop());
+
+            const actual = productosServidor.find(
+                (p) => p.idProducto === id
+            );
+
+            const editado = { ...actual, ...cuerpo };
+
+            productosServidor = productosServidor.map(
+                (p) => (p.idProducto === id ? editado : p)
+            );
+
+            return { data: editado };
+
+        });
+
+        // DELETE: quita el producto de la lista pública
+        api.delete.mockImplementation(async (ruta) => {
+
+            const id = Number(ruta.split("/").pop());
+
+            productosServidor = productosServidor.filter(
+                (p) => p.idProducto !== id
+            );
+
+            return { data: null };
+
+        });
 
         contenedor = document.createElement("div");
 
@@ -133,8 +214,6 @@ describe("ProductProvider", () => {
 
         contenedor.remove();
 
-        localStorage.clear();
-
     });
 
 
@@ -143,179 +222,83 @@ describe("ProductProvider", () => {
     });
 
 
-    describe("estado inicial y persistencia", () => {
+    describe("carga desde el backend", () => {
 
-        it("debe cargar el catálogo inicial cuando no hay nada guardado", () => {
+        it("debe pedir los productos y las categorías al backend", async () => {
 
-            renderizarProductos();
+            await renderizarProductos();
 
-            expect(productosApi.productos.length).toBeGreaterThan(0);
+            expect(api.get).toHaveBeenCalledWith("/productos");
+            expect(api.get).toHaveBeenCalledWith("/categorias");
 
         });
 
-        it("debe cargar los productos guardados en localStorage", () => {
+        it("debe cargar los productos que responde el backend", async () => {
 
-            guardarCatalogoPrueba();
-            renderizarProductos();
+            await renderizarProductos();
 
             expect(productosApi.totalProductos).toBe(2);
 
         });
 
-        it("debe usar el catálogo inicial si los datos guardados están dañados", () => {
+        it("debe cargar las categorías", async () => {
 
-            localStorage.setItem(CLAVE_PRODUCTOS, "{dato-roto");
-            renderizarProductos();
+            await renderizarProductos();
 
-            expect(productosApi.productos.length).toBeGreaterThan(0);
+            expect(productosApi.categorias.length).toBe(3);
 
         });
 
-        it("debe mostrar el total de productos en el componente", () => {
+        it("debe convertir el producto al formato que usa la tienda", async () => {
 
-            guardarCatalogoPrueba();
-            renderizarProductos();
+            await renderizarProductos();
+
+            const producto = productosApi.obtenerProducto(2);
+
+            expect(producto.id).toBe(2);
+            expect(producto.categoria).toBe("cilindros");
+            expect(producto.idCategoria).toBe(2);
+            expect(producto.precio).toBe(25000);
+            expect(producto.precioOferta).toBe(20000);
+
+        });
+
+        it("debe mostrar el total de productos en el componente", async () => {
+
+            await renderizarProductos();
 
             expect(contenedor.textContent).toBe("2");
 
         });
 
-        it("debe sincronizar los productos cuando otra pestaña modifica localStorage", () => {
+        it("debe terminar de cargar al recibir los datos", async () => {
 
-                guardarCatalogoPrueba();
+            await renderizarProductos();
 
-                renderizarProductos();
+            expect(productosApi.cargando).toBe(false);
+            expect(productosApi.errorCarga).toBeNull();
 
+        });
 
-                expect(
-                    productosApi.totalProductos
-                ).toBe(2);
+        it("debe avisar cuando no hay conexión con el servidor", async () => {
 
+            api.get.mockRejectedValue(new Error("Network Error"));
 
-                const catalogoExterno = [
+            await renderizarProductos();
 
-                    ...catalogoPrueba,
+            expect(productosApi.totalProductos).toBe(0);
+            expect(productosApi.cargando).toBe(false);
+            expect(productosApi.errorCarga).toContain("No se pudo conectar");
 
-                    {
-                        id: 3,
-                        nombre:
-                            "Musette externa",
+        });
 
-                        categoria:
-                            "musette",
-
-                        precio:
-                            18000,
-
-                        descripcion:
-                            "Producto agregado desde otra pestaña.",
-
-                        descripcionCompleta:
-                            "Producto agregado desde otra pestaña.",
-
-                        imagen:
-                            "/img/test.png",
-
-                        stock:
-                            6
-                    }
-
-                ];
-
-
-                act(() => {
-
-                    localStorage.setItem(
-                        CLAVE_PRODUCTOS,
-                        JSON.stringify(
-                            catalogoExterno
-                        )
-                    );
-
-
-                    window.dispatchEvent(
-                        new StorageEvent(
-                            "storage",
-                            {
-                                key:
-                                    CLAVE_PRODUCTOS,
-
-                                newValue:
-                                    JSON.stringify(
-                                        catalogoExterno
-                                    )
-                            }
-                        )
-                    );
-
-                });
-
-
-                expect(
-                    productosApi.totalProductos
-                ).toBe(3);
-
-
-                expect(
-                    productosApi
-                        .obtenerProducto(3)
-                        .nombre
-                ).toBe(
-                    "Musette externa"
-                );
-
-            }
-        );
-
-        it(
-            "debe ignorar eventos storage de otras claves",
-            () => {
-
-                guardarCatalogoPrueba();
-
-                renderizarProductos();
-
-
-                act(() => {
-
-                    localStorage.setItem(
-                        "otra_clave",
-                        JSON.stringify([
-                            {
-                                id: 99
-                            }
-                        ])
-                    );
-
-
-                    window.dispatchEvent(
-                        new StorageEvent(
-                            "storage",
-                            {
-                                key:
-                                    "otra_clave"
-                            }
-                        )
-                    );
-
-                });
-
-
-                expect(
-                    productosApi.totalProductos
-                ).toBe(2);
-
-            }
-        );
-        
     });
 
 
     describe("lectura", () => {
 
-        beforeEach(() => {
-            guardarCatalogoPrueba();
-            renderizarProductos();
+        beforeEach(async () => {
+            await renderizarProductos();
         });
 
         it("debe encontrar un producto por su id en formato texto", () => {
@@ -335,17 +318,33 @@ describe("ProductProvider", () => {
 
     describe("CREATE - crearProducto", () => {
 
-        beforeEach(() => {
-            guardarCatalogoPrueba();
-            renderizarProductos();
+        beforeEach(async () => {
+            await renderizarProductos();
         });
 
-        it("debe agregar el producto al estado", () => {
+        it("debe enviar el producto al backend con POST /productos", async () => {
+
+            await act(async () => {
+                await productosApi.crearProducto(datosValidos());
+            });
+
+            expect(api.post).toHaveBeenCalledTimes(1);
+
+            const [ruta, cuerpo] = api.post.mock.calls[0];
+
+            expect(ruta).toBe("/productos");
+            expect(cuerpo.codigo).toBe("MU-05");
+            expect(cuerpo.idCategoria).toBe(3);
+            expect(cuerpo.precioOferta).toBeNull();
+
+        });
+
+        it("debe agregar el producto al estado", async () => {
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.crearProducto(datosValidos());
+            await act(async () => {
+                resultado = await productosApi.crearProducto(datosValidos());
             });
 
             expect(resultado.ok).toBe(true);
@@ -353,37 +352,30 @@ describe("ProductProvider", () => {
 
         });
 
-        it("debe guardar el producto nuevo en localStorage", () => {
+        it("debe actualizar el total que muestra el componente", async () => {
 
-            act(() => {
-                productosApi.crearProducto(datosValidos());
-            });
-
-            expect(leerCatalogoGuardado().length).toBe(3);
-
-        });
-
-        it("debe actualizar el total que muestra el componente", () => {
-
-            act(() => {
-                productosApi.crearProducto(datosValidos());
+            await act(async () => {
+                await productosApi.crearProducto(datosValidos());
             });
 
             expect(contenedor.textContent).toBe("3");
 
         });
 
-        it("no debe agregar nada cuando los datos son inválidos", () => {
+        it("debe mostrar el mensaje del backend cuando los datos son inválidos", async () => {
+
+            api.post.mockRejectedValueOnce(
+                errorDelBackend("El código ya existe")
+            );
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.crearProducto(
-                    datosValidos({ precio: -100 })
-                );
+            await act(async () => {
+                resultado = await productosApi.crearProducto(datosValidos());
             });
 
             expect(resultado.ok).toBe(false);
+            expect(resultado.mensaje).toBe("El código ya existe");
             expect(productosApi.totalProductos).toBe(2);
 
         });
@@ -393,17 +385,30 @@ describe("ProductProvider", () => {
 
     describe("UPDATE - actualizarProducto", () => {
 
-        beforeEach(() => {
-            guardarCatalogoPrueba();
-            renderizarProductos();
+        beforeEach(async () => {
+            await renderizarProductos();
         });
 
-        it("debe cambiar los datos del producto indicado", () => {
+        it("debe enviar el cambio al backend con PUT /productos/{id}", async () => {
+
+            await act(async () => {
+                await productosApi.actualizarProducto(1, datosValidos());
+            });
+
+            expect(api.put).toHaveBeenCalledTimes(1);
+            expect(api.put.mock.calls[0][0]).toBe("/productos/1");
+
+        });
+
+        it("debe cambiar los datos del producto indicado", async () => {
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.actualizarProducto(1, { precio: 49990 });
+            await act(async () => {
+                resultado = await productosApi.actualizarProducto(
+                    1,
+                    datosValidos({ precio: 49990 })
+                );
             });
 
             expect(resultado.ok).toBe(true);
@@ -411,26 +416,23 @@ describe("ProductProvider", () => {
 
         });
 
-        it("debe guardar el cambio en localStorage", () => {
+        it("debe avisar cuando el backend no encuentra el producto", async () => {
 
-            act(() => {
-                productosApi.actualizarProducto(1, { stock: 2 });
-            });
-
-            expect(leerCatalogoGuardado()[0].stock).toBe(2);
-
-        });
-
-        it("debe avisar cuando el producto no existe", () => {
+            api.put.mockRejectedValueOnce(
+                errorDelBackend("Producto no encontrado")
+            );
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.actualizarProducto(99, { precio: 1000 });
+            await act(async () => {
+                resultado = await productosApi.actualizarProducto(
+                    99,
+                    datosValidos()
+                );
             });
 
             expect(resultado.ok).toBe(false);
-            expect(resultado.mensaje).toContain("No se encontró");
+            expect(resultado.mensaje).toContain("no encontrado");
 
         });
 
@@ -439,17 +441,26 @@ describe("ProductProvider", () => {
 
     describe("DELETE - eliminarProducto", () => {
 
-        beforeEach(() => {
-            guardarCatalogoPrueba();
-            renderizarProductos();
+        beforeEach(async () => {
+            await renderizarProductos();
         });
 
-        it("debe quitar el producto del estado", () => {
+        it("debe pedir el borrado al backend con DELETE /productos/{id}", async () => {
+
+            await act(async () => {
+                await productosApi.eliminarProducto(1);
+            });
+
+            expect(api.delete).toHaveBeenCalledWith("/productos/1");
+
+        });
+
+        it("debe quitar el producto del estado", async () => {
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.eliminarProducto(1);
+            await act(async () => {
+                resultado = await productosApi.eliminarProducto(1);
             });
 
             expect(resultado.ok).toBe(true);
@@ -457,22 +468,16 @@ describe("ProductProvider", () => {
 
         });
 
-        it("debe guardar la lista sin el producto en localStorage", () => {
+        it("no debe borrar nada cuando el backend responde error", async () => {
 
-            act(() => {
-                productosApi.eliminarProducto(1);
-            });
-
-            expect(leerCatalogoGuardado().length).toBe(1);
-
-        });
-
-        it("no debe borrar nada cuando el producto no existe", () => {
+            api.delete.mockRejectedValueOnce(
+                errorDelBackend("Producto no encontrado")
+            );
 
             let resultado;
 
-            act(() => {
-                resultado = productosApi.eliminarProducto(99);
+            await act(async () => {
+                resultado = await productosApi.eliminarProducto(99);
             });
 
             expect(resultado.ok).toBe(false);
@@ -482,183 +487,102 @@ describe("ProductProvider", () => {
 
     });
 
+
     describe("stock de productos", () => {
 
-        beforeEach(() => {
-            guardarCatalogoPrueba();
-            renderizarProductos();
+        beforeEach(async () => {
+            await renderizarProductos();
         });
 
 
-        it(
-            "debe verificar stock sin modificar el catálogo",
-            () => {
+        it("debe verificar stock sin modificar el catálogo", () => {
 
-                const resultado =
-                    productosApi
-                        .verificarDisponibilidad([
-                            {
-                                id: 1,
-                                cantidad: 3
-                            }
-                        ]);
+            const resultado = productosApi.verificarDisponibilidad([
+                { id: 1, cantidad: 3 }
+            ]);
+
+            expect(resultado.ok).toBe(true);
+            expect(productosApi.obtenerProducto(1).stock).toBe(10);
+
+        });
 
 
-                expect(
-                    resultado.ok
-                ).toBe(true);
+        it("debe detectar cuando no existe stock suficiente sin modificarlo", () => {
+
+            const resultado = productosApi.verificarDisponibilidad([
+                { id: 2, cantidad: 10 }
+            ]);
+
+            expect(resultado.ok).toBe(false);
+            expect(productosApi.obtenerProducto(2).stock).toBe(4);
+
+        });
 
 
-                expect(
-                    productosApi
-                        .obtenerProducto(1)
-                        .stock
-                ).toBe(10);
+        it("debe descontar el stock cuando existe disponibilidad", () => {
 
-            }
-        );
+            let resultado;
 
+            act(() => {
+                resultado = productosApi.descontarStock([
+                    { id: 1, cantidad: 3 }
+                ]);
+            });
 
-        it(
-            "debe detectar cuando no existe stock suficiente sin modificarlo",
-            () => {
+            expect(resultado.ok).toBe(true);
+            expect(productosApi.obtenerProducto(1).stock).toBe(7);
 
-                const resultado =
-                    productosApi
-                        .verificarDisponibilidad([
-                            {
-                                id: 2,
-                                cantidad: 10
-                            }
-                        ]);
+        });
 
 
-                expect(
-                    resultado.ok
-                ).toBe(false);
+        it("no debe modificar el stock cuando la cantidad solicitada supera la disponible", () => {
+
+            let resultado;
+
+            act(() => {
+                resultado = productosApi.descontarStock([
+                    { id: 2, cantidad: 10 }
+                ]);
+            });
+
+            expect(resultado.ok).toBe(false);
+            expect(productosApi.obtenerProducto(2).stock).toBe(4);
+
+        });
 
 
-                expect(
-                    productosApi
-                        .obtenerProducto(2)
-                        .stock
-                ).toBe(4);
+        it("debe reponer el stock de una compra cancelada", () => {
 
-            }
-        );
+            act(() => {
+                productosApi.reponerStock([
+                    { id: 1, cantidad: 3 }
+                ]);
+            });
 
+            expect(productosApi.obtenerProducto(1).stock).toBe(13);
 
-        it(
-            "debe descontar el stock cuando existe disponibilidad",
-            () => {
-
-                let resultado;
-
-
-                act(() => {
-
-                    resultado =
-                        productosApi
-                            .descontarStock([
-                                {
-                                    id: 1,
-                                    cantidad: 3
-                                }
-                            ]);
-
-                });
-
-
-                expect(
-                    resultado.ok
-                ).toBe(true);
-
-
-                expect(
-                    productosApi
-                        .obtenerProducto(1)
-                        .stock
-                ).toBe(7);
-
-            }
-        );
-
-
-        it(
-            "no debe modificar el stock cuando la cantidad solicitada supera la disponible",
-            () => {
-
-                let resultado;
-
-
-                act(() => {
-
-                    resultado =
-                        productosApi
-                            .descontarStock([
-                                {
-                                    id: 2,
-                                    cantidad: 10
-                                }
-                            ]);
-
-                });
-
-
-                expect(
-                    resultado.ok
-                ).toBe(false);
-
-
-                expect(
-                    productosApi
-                        .obtenerProducto(2)
-                        .stock
-                ).toBe(4);
-
-            }
-        );
-
-        it(
-            "debe reponer el stock de una compra cancelada",
-            () => {
-
-                act(() => {
-
-                    productosApi
-                        .reponerStock([
-                            {
-                                id: 1,
-                                cantidad: 3
-                            }
-                        ]);
-
-                });
-
-
-                expect(
-                    productosApi
-                        .obtenerProducto(1)
-                        .stock
-                ).toBe(13);
-
-            }
-        );
+        });
 
     });
 
+
     describe("restaurarProductos", () => {
 
-        it("debe volver al catálogo original", () => {
+        it("debe volver a pedir los productos al backend", async () => {
 
-            guardarCatalogoPrueba();
-            renderizarProductos();
+            await renderizarProductos();
 
-            act(() => {
-                productosApi.restaurarProductos();
+            api.get.mockClear();
+
+            let resultado;
+
+            await act(async () => {
+                resultado = await productosApi.restaurarProductos();
             });
 
-            expect(productosApi.totalProductos).toBeGreaterThan(2);
+            expect(resultado.ok).toBe(true);
+            expect(api.get).toHaveBeenCalledWith("/productos");
+            expect(productosApi.totalProductos).toBe(2);
 
         });
 

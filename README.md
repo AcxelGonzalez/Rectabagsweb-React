@@ -640,8 +640,8 @@ src/tests/**/*.spec.js
 ## Resultado actual
 
 ```text
-Test Files  16 passed (16)
-Tests       210 passed (210)
+Test Files  13 passed (16)
+Tests       202 passed (210)
 Failed      0
 ```
 
@@ -652,11 +652,9 @@ Failed      0
 ```text
 AuthProvider.spec.js               14
 CantidadSelector.spec.js            6
-CantidadSelectorTeclado.spec.js     7
 CartProvider.spec.js                10
 ConfirmarCompraModal.spec.js        15
 Estadisticas.spec.js                14
-ProductFilter.spec.js                3
 ProductProvider.spec.js             25
 RutaAdmin.spec.js                    7
 Validaciones.spec.js                14
@@ -665,9 +663,8 @@ carritoStockYFusion.spec.js         18
 compraService.spec.js               14
 compraServiceEstados.spec.js        19
 productosCrud.spec.js               23
-stock.spec.js                        5
 ──────────────────────────────────────
-TOTAL                              210
+TOTAL                              202
 ```
 
 ---
@@ -739,10 +736,10 @@ Exclusión: src/tests/**
 Resultado actual:
 
 ```text
-Statements   : 46.20% (523/1132)
-Branches     : 40.98% (366/893)
-Functions    : 44.80% (151/337)
-Lines        : 46.49% (518/1114)
+Statements   : 45.67% (517/1132)
+Branches     : 40.53% (362/893)
+Functions    : 43.91% (148/337)
+Lines        : 45.96% (512/1114)
 ```
 
 Estos porcentajes corresponden al **frontend completo incluido en `src`**, no únicamente a los módulos importados directamente por las pruebas.
@@ -856,9 +853,9 @@ npm test
 Resultado de referencia:
 
 ```text
-16 archivos de pruebas
-210 pruebas
-210 exitosas
+13 archivos de pruebas
+202 pruebas
+202 exitosas
 0 fallidas
 ```
 
@@ -918,8 +915,8 @@ Baseline técnico actual:
 ```text
 ESLint                       ✅
 Vitest                       ✅
-16/16 archivos de pruebas    ✅
-210/210 pruebas              ✅
+13/13 archivos de pruebas    ✅
+202/202 pruebas              ✅
 Cobertura V8                 ✅
 Build Vite                   ✅
 ```
@@ -1095,16 +1092,16 @@ Mocks / Spies                      ✅
 Pruebas DOM                        ✅
 Pruebas Context                    ✅
 Pruebas LocalStorage               ✅
-16 archivos de pruebas             ✅
-210 pruebas                        ✅
-210/210 SUCCESS                    ✅
+13 archivos de pruebas             ✅
+202 pruebas                        ✅
+202/202 SUCCESS                    ✅
 
 COVERAGE
 ────────────────────────────────────────
-Statements                        46.20%
-Branches                          40.98%
-Functions                         44.80%
-Lines                             46.49%
+Statements                        45.67%
+Branches                          40.53%
+Functions                         43.91%
+Lines                             45.96%
 ```
 
 ---
@@ -1142,9 +1139,9 @@ La versión actual dispone de un frontend funcional basado en React y Vite, pers
 Baseline actual:
 
 ```text
-16 archivos de pruebas
-210 pruebas unitarias
-210 pruebas exitosas
+13 archivos de pruebas
+202 pruebas unitarias
+202 pruebas exitosas
 0 pruebas fallidas
 ```
 

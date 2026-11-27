@@ -48,10 +48,9 @@ function AdminProductos() {
     const productosCriticos = productos.filter(enStockCritico);
 
 
-    function confirmarEliminacion() {
+    async function confirmarEliminacion() {
 
-        const resultado = eliminarProducto(productoAEliminar.id);
-
+        const resultado = await eliminarProducto(productoAEliminar.id);
         setMensaje({
             tipo: resultado.ok ? "success" : "danger",
             texto: resultado.mensaje
@@ -62,9 +61,9 @@ function AdminProductos() {
     }
 
 
-    function restaurar() {
+    async function restaurar() {
 
-        const resultado = restaurarProductos();
+        const resultado = await restaurarProductos();
 
         setMensaje({
             tipo: "success",
