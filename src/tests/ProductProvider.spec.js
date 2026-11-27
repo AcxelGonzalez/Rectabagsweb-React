@@ -295,6 +295,17 @@ describe("ProductProvider", () => {
     });
 
 
+    it("permite recuperar categorías tras un error sin confundirlo con una lista vacía", async () => {
+        api.get.mockRejectedValue(new Error("Network Error"));
+        await renderizarProductos();
+        expect(productosApi.cargandoCategorias).toBe(false);
+        expect(productosApi.errorCategorias).toContain("No se pudo conectar");
+        api.get.mockResolvedValue({ data: categoriasServidor });
+        await act(async () => productosApi.cargarCategorias());
+        expect(productosApi.errorCategorias).toBeNull();
+        expect(productosApi.categorias).toEqual(categoriasServidor);
+    });
+
     describe("lectura", () => {
 
         beforeEach(async () => {

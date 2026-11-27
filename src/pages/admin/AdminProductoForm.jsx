@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
@@ -68,7 +69,7 @@ function validarFormulario(formulario) {
 function AdminProductoForm() {
 
     const { id } = useParams();
-    const { obtenerProducto, cargando } = useProducts();
+    const { obtenerProducto, cargando, errorCarga, cargandoCategorias, errorCategorias, cargarProductos, cargarCategorias } = useProducts();
 
     const esEdicion = id !== undefined;
     const producto = esEdicion ? obtenerProducto(id) : null;
@@ -79,12 +80,8 @@ function AdminProductoForm() {
             : "Nuevo producto | Panel de administración"
     );
 
-    if (cargando) {
-        return (
-            <section className="py-5">
-                <div className="container">Cargando…</div>
-            </section>
-        );
+    if (cargando || cargandoCategorias || errorCarga || errorCategorias) {
+        return <EstadoDatos cargando={cargando || cargandoCategorias} error={errorCarga || errorCategorias} onReintentar={() => Promise.all([cargarProductos(), cargarCategorias()])} />;
     }
 
     if (esEdicion && !producto) {

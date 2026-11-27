@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { formatearPrecio } from "../../utils/moneda";
 import { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
@@ -26,7 +27,7 @@ function AdminProductos() {
     const {
         productos,
         eliminarProducto,
-        restaurarProductos
+        restaurarProductos, cargando, errorCarga, cargarProductos
     } = useProducts();
 
     // Producto que se quiere eliminar (abre el modal de confirmación)
@@ -68,6 +69,8 @@ function AdminProductos() {
 
     }
 
+
+    if (cargando || errorCarga) return <EstadoDatos cargando={cargando} error={errorCarga} onReintentar={cargarProductos} />;
 
     return (
 

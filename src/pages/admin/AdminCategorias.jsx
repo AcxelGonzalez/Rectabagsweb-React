@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
@@ -11,7 +12,7 @@ function AdminCategorias() {
 
     useTitulo("Categorías | Panel de administración");
 
-    const { categorias, productos, eliminarCategoria } = useProducts();
+    const { categorias, productos, eliminarCategoria, cargando, errorCarga, cargandoCategorias, errorCategorias, cargarProductos, cargarCategorias } = useProducts();
 
     const location = useLocation();
 
@@ -45,6 +46,8 @@ function AdminCategorias() {
 
     }
 
+
+    if (cargando || cargandoCategorias || errorCarga || errorCategorias) return <EstadoDatos cargando={cargando || cargandoCategorias} error={errorCarga || errorCategorias} onReintentar={() => Promise.all([cargarProductos(), cargarCategorias()])} />;
 
     return (
 

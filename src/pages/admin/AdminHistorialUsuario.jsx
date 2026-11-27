@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { formatearPrecio } from "../../utils/moneda";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -8,7 +9,7 @@ import { leerHistorialUsuario, colorEstado } from "../../services/compraService"
 function AdminHistorialUsuario() {
     useTitulo("Historial de compras | Panel de administración");
     const { id } = useParams();
-    const { usuarios } = useAuth();
+    const { usuarios, cargandoUsuarios, errorUsuarios, cargarUsuarios } = useAuth();
     const usuario = usuarios.find(u => String(u.id) === id);
     const [resultado, setResultado] = useState(null);
     useEffect(() => {
@@ -17,6 +18,7 @@ function AdminHistorialUsuario() {
             .catch(e => { if (activo) setResultado({ id, error: e.response?.data?.mensaje || "No fue posible cargar el historial." }); });
         return () => { activo = false; };
     }, [id]);
+    if (cargandoUsuarios || errorUsuarios) return <EstadoDatos cargando={cargandoUsuarios} error={errorUsuarios} onReintentar={cargarUsuarios} />;
     const compras = resultado?.id === id ? resultado.compras : null;
     const total = (compras || []).filter(c => c.estado !== "CANCELADA").reduce((suma, c) => suma + c.subtotal, 0);
     return <section className="py-5"><div className="container">

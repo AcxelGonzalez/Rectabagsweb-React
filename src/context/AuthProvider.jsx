@@ -51,6 +51,7 @@ function AuthProvider({ children }) {
 
     const [cargandoSesion, setCargandoSesion] = useState(() => Boolean(localStorage.getItem(CLAVE_TOKEN)));
     const [usuarioListadoId, setUsuarioListadoId] = useState(null);
+    const [errorUsuarios, setErrorUsuarios] = useState(null);
 
 
     function guardarSesion(usuario) {
@@ -65,6 +66,7 @@ function AuthProvider({ children }) {
 
         setUsuarioActual(null);
         setUsuarios([]);
+        setErrorUsuarios(null);
         localStorage.removeItem(CLAVE_TOKEN);
         localStorage.removeItem(CLAVE_SESION);
 
@@ -117,8 +119,10 @@ function AuthProvider({ children }) {
 
         return api.get("/usuarios").then(({ data }) => {
             setUsuarios(data);
-        }).catch(() => {
+            setErrorUsuarios(null);
+        }).catch(error => {
             setUsuarios([]);
+            setErrorUsuarios(mensajeDeError(error, "No fue posible cargar los usuarios."));
         }).finally(() => {
             setUsuarioListadoId(usuarioActual.id);
         });
@@ -357,6 +361,7 @@ function AuthProvider({ children }) {
                 usuarioActual,
                 cargandoSesion,
                 cargandoUsuarios: esAdmin && usuarioListadoId !== usuarioActual.id,
+                errorUsuarios,
                 estaAutenticado: Boolean(usuarioActual),
                 esAdmin,
                 esVendedor,

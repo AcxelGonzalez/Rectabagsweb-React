@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
@@ -30,7 +31,7 @@ function validarFormulario(formulario) {
 function AdminCategoriaForm() {
 
     const { id } = useParams();
-    const { categorias } = useProducts();
+    const { categorias, cargandoCategorias, errorCategorias, cargarCategorias } = useProducts();
 
     const esEdicion = id !== undefined;
     const categoria = esEdicion
@@ -44,12 +45,8 @@ function AdminCategoriaForm() {
     );
 
     // Las categorías todavía no llegan del backend
-    if (esEdicion && categorias.length === 0) {
-        return (
-            <section className="py-5">
-                <div className="container">Cargando…</div>
-            </section>
-        );
+    if (cargandoCategorias || errorCategorias) {
+        return <EstadoDatos cargando={cargandoCategorias} error={errorCategorias} onReintentar={cargarCategorias} />;
     }
 
     if (esEdicion && !categoria) {

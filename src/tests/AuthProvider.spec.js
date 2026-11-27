@@ -83,6 +83,18 @@ describe("AuthProvider conectado al backend", () => {
         await renderizar(); await login({ ...cliente, rol: "ADMIN" });
         expect(api.get).toHaveBeenCalledWith("/usuarios"); expect(auth.esAdmin).toBe(true); expect(auth.puedeEntrarAlPanel).toBe(true);
     });
+    it("conserva el error de la lista de usuarios y permite recuperarla sin cerrar sesión", async () => {
+        await renderizar();
+        api.get.mockRejectedValue({ response: { data: { mensaje: "Error de usuarios." } } });
+        await login({ ...cliente, rol: "ADMIN" });
+        expect(auth.errorUsuarios).toBe("Error de usuarios.");
+        expect(auth.cargandoUsuarios).toBe(false);
+        expect(auth.estaAutenticado).toBe(true);
+        api.get.mockResolvedValue({ data: [cliente] });
+        await act(async () => auth.cargarUsuarios());
+        expect(auth.errorUsuarios).toBeNull();
+        expect(auth.usuarios).toEqual([cliente]);
+    });
     it("vendedor entra al panel pero no es administrador", async () => {
         await renderizar(); await login({ ...cliente, rol: "VENDEDOR" });
         expect(auth.esVendedor).toBe(true); expect(auth.esAdmin).toBe(false); expect(auth.puedeEntrarAlPanel).toBe(true);

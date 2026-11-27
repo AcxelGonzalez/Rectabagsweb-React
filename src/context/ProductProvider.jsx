@@ -101,6 +101,8 @@ function ProductProvider({ children }) {
     const [categorias, setCategorias] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [errorCarga, setErrorCarga] = useState(null);
+    const [cargandoCategorias, setCargandoCategorias] = useState(true);
+    const [errorCategorias, setErrorCategorias] = useState(null);
 
 
     /*
@@ -122,8 +124,12 @@ function ProductProvider({ children }) {
     const cargarCategorias = useCallback(() => {
         return api.get("/categorias").then(({ data }) => {
             setCategorias(data);
-        }).catch(() => {
+            setErrorCategorias(null);
+        }).catch(error => {
             setCategorias([]);
+            setErrorCategorias(mensajeDeError(error));
+        }).finally(() => {
+            setCargandoCategorias(false);
         });
     }, []);
 
@@ -344,6 +350,8 @@ function ProductProvider({ children }) {
                 productos,
                 totalProductos: productos.length,
                 categorias,
+                cargandoCategorias,
+                errorCategorias,
                 cargando,
                 errorCarga,
                 cargarProductos,

@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
@@ -7,8 +8,8 @@ import CampoFormulario from "../../components/admin/CampoFormulario";
 function AdminUsuarioForm() {
     useTitulo("Editar usuario | Panel de administración");
     const { id } = useParams();
-    const { usuarios, cargandoUsuarios } = useAuth();
-    if (cargandoUsuarios) return <p className="container py-5" role="status">Cargando usuario…</p>;
+    const { usuarios, cargandoUsuarios, errorUsuarios, cargarUsuarios } = useAuth();
+    if (cargandoUsuarios || errorUsuarios) return <EstadoDatos cargando={cargandoUsuarios} error={errorUsuarios} onReintentar={cargarUsuarios} />;
     const usuario = usuarios.find(item => String(item.id) === id);
     if (!usuario) return <section className="container py-5"><h1>Usuario no encontrado</h1>
         <Link to="/admin/usuarios">Volver a usuarios</Link></section>;

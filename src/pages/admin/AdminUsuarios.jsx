@@ -1,3 +1,4 @@
+import EstadoDatos from "../../components/EstadoDatos";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
@@ -7,7 +8,7 @@ function AdminUsuarios() {
 
     useTitulo("Usuarios | Panel de administración");
 
-    const { usuarios, usuarioActual, eliminarUsuario } = useAuth();
+    const { usuarios, usuarioActual, eliminarUsuario, cargandoUsuarios, errorUsuarios, cargarUsuarios } = useAuth();
 
     const location = useLocation();
 
@@ -35,6 +36,8 @@ function AdminUsuarios() {
 
     }
 
+
+    if (cargandoUsuarios || errorUsuarios) return <EstadoDatos cargando={cargandoUsuarios} error={errorUsuarios} onReintentar={cargarUsuarios} />;
 
     return (
 

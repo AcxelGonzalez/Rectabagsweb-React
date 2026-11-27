@@ -1,26 +1,11 @@
-function ProductFilter({categoria,onCategoriaChange}) {
+function ProductFilter({categoria,onCategoriaChange,categorias = []}) {
 
-    const categorias = [
+    const opciones = [
         {
             valor: "todos",
             texto: "Todos"
         },
-        {
-            valor: "mochilas",
-            texto: "Mochilas"
-        },
-        {
-            valor: "cilindros",
-            texto: "Cilindros"
-        },
-        {
-            valor: "musette",
-            texto: "Musette"
-        },
-        {
-            valor: "otros",
-            texto: "Otros"
-        }
+        ...categorias.map(item => ({ valor: String(item.idCategoria), texto: item.nombre }))
     ];
 
 
@@ -29,7 +14,7 @@ function ProductFilter({categoria,onCategoriaChange}) {
         <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
 
             {
-                categorias.map((item) => (
+                opciones.map((item) => (
 
                         <button key={item.valor} type="button" className={categoria === item.valor? "btn btn-dark": "btn btn-outline-dark"}
                             onClick={() =>onCategoriaChange(item.valor)}>

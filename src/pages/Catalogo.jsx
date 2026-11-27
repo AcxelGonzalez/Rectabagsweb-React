@@ -1,3 +1,4 @@
+import EstadoDatos from "../components/EstadoDatos";
 import { useState } from "react";
 
 import { useSearchParams } from "react-router-dom";
@@ -20,7 +21,7 @@ function Catalogo() {
     );
 
     const {
-        productos
+        productos, categorias, cargando, errorCarga, cargandoCategorias, errorCategorias, cargarProductos, cargarCategorias
     } = useProducts();
 
     const [
@@ -64,14 +65,15 @@ function Catalogo() {
 
     }
 
+    const categoriaActiva = categoria === "todos" || categorias.some(item => String(item.idCategoria) === categoria) ? categoria : "todos";
+
     const productosFiltrados =
         productos.filter(
             (producto) => {
 
                 const coincideCategoria =
-                    categoria === "todos" ||
-                    producto.categoria ===
-                        categoria;
+                    categoriaActiva === "todos" ||
+                    String(producto.idCategoria) === categoriaActiva;
 
                 const coincideBusqueda =
                     producto.nombre
@@ -88,6 +90,8 @@ function Catalogo() {
             }
         );
 
+
+    if (cargando || cargandoCategorias || errorCarga || errorCategorias) return <EstadoDatos cargando={cargando || cargandoCategorias} error={errorCarga || errorCategorias} onReintentar={() => Promise.all([cargarProductos(), cargarCategorias()])} />;
 
     return (
 
@@ -119,7 +123,7 @@ function Catalogo() {
                 </div>
 
                 <ProductFilter
-                    categoria={categoria}
+                    categoria={categoriaActiva} categorias={categorias}
                     onCategoriaChange={
                         setCategoria
                     }

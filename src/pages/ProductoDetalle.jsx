@@ -1,3 +1,4 @@
+import EstadoDatos from "../components/EstadoDatos";
 import { formatearPrecio } from "../utils/moneda";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -20,7 +21,7 @@ function ProductoDetalle() {
         agregarProducto
     } = useCart();
 
-    const { obtenerProducto } = useProducts();
+    const { obtenerProducto, cargando, errorCarga, cargarProductos } = useProducts();
 
     const producto = obtenerProducto(id);
 
@@ -29,6 +30,8 @@ function ProductoDetalle() {
             ? `${producto.nombre} | Rectabags`
             : "Producto no encontrado | Rectabags"
     );
+
+    if (cargando || errorCarga) return <EstadoDatos cargando={cargando} error={errorCarga} onReintentar={cargarProductos} />;
 
     if (!producto) {
 

@@ -1,3 +1,4 @@
+import EstadoDatos from "../components/EstadoDatos";
 import useProducts from "../hooks/useProducts";
 import useTitulo from "../hooks/useTitulo";
 import ProductCard from "../components/products/ProductCard";
@@ -7,7 +8,7 @@ function Ofertas() {
 
     useTitulo("Ofertas | Rectabags");
 
-    const { productos } = useProducts();
+    const { productos, cargando, errorCarga, cargarProductos } = useProducts();
 
     // Solo productos con un precio de oferta menor al precio normal
     const productosEnOferta = productos.filter(
@@ -15,6 +16,8 @@ function Ofertas() {
             producto.precioOferta &&
             producto.precioOferta < producto.precio
     );
+
+    if (cargando || errorCarga) return <EstadoDatos cargando={cargando} error={errorCarga} onReintentar={cargarProductos} />;
 
     return (
 
