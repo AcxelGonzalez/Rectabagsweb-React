@@ -13,7 +13,7 @@ function Home() {
                 <div className="container-fluid px-4 px-md-5 mb-4">
                     <div className="hero-content text-white">
                         
-                        <h2 className="hero-titulo display-4 mb-1">La mochila perfecta</h2>
+                        <h1 className="hero-titulo display-4 mb-1">La mochila perfecta</h1>
 
                         <p className="fs-5">para viajar, trabajar y explorar</p>
                     </div>

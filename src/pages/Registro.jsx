@@ -250,8 +250,7 @@ function Registro() {
 
                                     {/* Información opcional */}
                                     <div className="text-center border-top border-bottom border-warning-subtle py-2 mb-4">
-                                        <span className="small text-decoration-underline"
-                                            style={{ color: '#D9825B', fontSize: '0.82rem' }}>
+                                        <span className="registro-ayuda-opcional small text-decoration-underline">
                                             La información a continuación no es obligatoria. Al registrarla ahora
                                             no será necesario hacerlo en el Checkout.
                                         </span>

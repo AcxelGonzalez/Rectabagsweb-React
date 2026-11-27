@@ -21,6 +21,11 @@ TIPOGRAFÍAS CORPORATIVAS
     font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', monospace;
 }
 
+.registro-ayuda-opcional {
+    color: var(--rb-texto-suave);
+    font-size: 0.82rem;
+}
+
 /* ==========================================================================
 MODIFICACIÓN DE FORMULARIOS BOOTSTRAP (FLAT DESIGN)
 ========================================================================== */

@@ -21,10 +21,15 @@ function CampoFormulario({
     como = "input",
     tipo = "text",
     children,
+    id: idPersonalizado,
+    "aria-describedby": descripcionExterna,
     ...resto
 }) {
 
     const Elemento = como;
+    const id = idPersonalizado || `campo-${nombre}`;
+    const idMensaje = error ? `${id}-error` : ayuda ? `${id}-ayuda` : undefined;
+    const descripcion = [descripcionExterna, idMensaje].filter(Boolean).join(" ") || undefined;
 
     const claseBase =
         como === "select"
@@ -35,12 +40,12 @@ function CampoFormulario({
 
         <div>
 
-            <label htmlFor={`campo-${nombre}`} className="form-label fw-semibold">
+            <label htmlFor={id} className="form-label fw-semibold">
                 {etiqueta}
             </label>
 
             <Elemento
-                id={`campo-${nombre}`}
+                id={id}
                 name={nombre}
                 className={`${claseBase} ${error ? "is-invalid" : ""}`}
                 value={valor}
@@ -48,14 +53,16 @@ function CampoFormulario({
                 onBlur={onBlur}
                 type={como === "input" ? tipo : undefined}
                 {...resto}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={descripcion}
             >
                 {children}
             </Elemento>
 
             {error ? (
-                <div className="invalid-feedback">{error}</div>
+                <div id={idMensaje} className="invalid-feedback">{error}</div>
             ) : (
-                ayuda && <div className="form-text">{ayuda}</div>
+                ayuda && <div id={idMensaje} className="form-text">{ayuda}</div>
             )}
 
         </div>
