@@ -9,7 +9,6 @@ import { fusionarCarritos, sincronizarCarrito as sincronizarContraCatalogo } fro
 // Carrito de quien no ha iniciado sesión
 const CLAVE_INVITADO = "recta_carrito_invitado";
 
-
 /*
  cada usuario tiene su carrito con un ID único para que el navegador no los mezcle al cambiar de cuenta
  */

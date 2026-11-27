@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-    Link,
-    useNavigate
-} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useTitulo from '../hooks/useTitulo';
 import useCart from "../hooks/useCart";
 import useProducts from "../hooks/useProducts";
@@ -32,7 +29,7 @@ function Carrito() {
     const [productoEliminar, setProductoEliminar] = useState(null);
 
     /*
-     Actualiza el carrito al cía con el catálogo al entrar a la página cuando cambian los productos. 
+     Actualiza el carrito al día con el catálogo al entrar a la página cuando cambian los productos. 
      Si el administrador editó un precio, cambió el stock o eliminó un producto, el carrito se actualiza y se le avisa al cliente con un mensaje
      */
     useEffect(() => {
@@ -51,7 +48,6 @@ function Carrito() {
 
         }
 
-
         eliminarDelCarrito(
             productoEliminar.id
         );
@@ -65,11 +61,8 @@ function Carrito() {
     function procederPago() {
 
         if (!terminos) {
-
             return;
-
         }
-
 
         navigate(
             "/checkout"

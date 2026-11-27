@@ -31,9 +31,7 @@ function Ofertas() {
             </div>
 
             <div className="container">
-
                 <div className="row g-4">
-
                     {productosEnOferta.length === 0 && (
                         <div className="col-12">
                             <p className="text-center text-secondary py-5">
@@ -49,13 +47,9 @@ function Ofertas() {
                     ))}
 
                 </div>
-
             </div>
-
         </section>
-
     );
-
 }
 
 export default Ofertas;

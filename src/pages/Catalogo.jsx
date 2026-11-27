@@ -19,11 +19,9 @@ function Catalogo() {
         "Explora nuestro catálogo | Rectabags"
     );
 
-
     const {
         productos
     } = useProducts();
-
 
     const [
         categoria,
@@ -47,23 +45,17 @@ function Catalogo() {
             .toLowerCase()
             .trim();
 
-
     function cambiarBusqueda(
         evento
     ) {
-
         const valor =
             evento.target.value;
 
-
         if (!valor.trim()) {
-
             setSearchParams({});
-
             return;
 
         }
-
 
         setSearchParams({
             buscar:
@@ -71,7 +63,6 @@ function Catalogo() {
         });
 
     }
-
 
     const productosFiltrados =
         productos.filter(
@@ -82,14 +73,12 @@ function Catalogo() {
                     producto.categoria ===
                         categoria;
 
-
                 const coincideBusqueda =
                     producto.nombre
                         .toLowerCase()
                         .includes(
                             textoBusqueda
                         );
-
 
                 return (
                     coincideCategoria &&
@@ -115,9 +104,7 @@ function Catalogo() {
             </div>
 
             <div className="container">
-
                 <div className="catalogo-search mb-4">
-
                     <input
                         type="search"
                         className="form-control"
@@ -131,7 +118,6 @@ function Catalogo() {
 
                 </div>
 
-
                 <ProductFilter
                     categoria={categoria}
                     onCategoriaChange={
@@ -144,53 +130,36 @@ function Catalogo() {
 
                     {
                         productosFiltrados.length === 0 && (
-
                             <div className="col-12">
-
                                 <p className="text-center text-secondary py-5">
-
                                     No se encontraron productos.
-
                                 </p>
-
                             </div>
-
                         )
                     }
-
 
                     {
                         productosFiltrados.map(
                             (producto) => (
-
                                 <div
                                     className="col-12 col-md-6 col-lg-4"
                                     key={
                                         producto.id
                                     }
                                 >
-
                                     <ProductCard
                                         producto={
                                             producto
                                         }
                                     />
-
                                 </div>
-
                             )
                         )
                     }
-
                 </div>
-
             </div>
-
         </section>
-
     );
-
 }
-
 
 export default Catalogo;

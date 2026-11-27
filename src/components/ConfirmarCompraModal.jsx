@@ -1,5 +1,3 @@
-/* Ventana de confirmación al registrar la compra, solo recibe por propiedades lo que debe mostrar y las dos funciones que debe ejecutar cuando el usuario responde.
- */
 function ConfirmarCompraModal({
     productos,
     cantidadProductos,
@@ -12,7 +10,8 @@ function ConfirmarCompraModal({
     onConfirmar,
     onCancelar
 }) {
-
+/* Ventana de confirmación al registrar la compra, solo recibe por propiedades lo que debe mostrar y las dos funciones que debe ejecutar cuando el usuario responde.
+ */
     const listaProductos =
         Array.isArray(productos)? productos: [];
     return (

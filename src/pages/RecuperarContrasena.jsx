@@ -1,16 +1,10 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
 
-import {
-    Link
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import useTitulo
-    from "../hooks/useTitulo";
+import useTitulo from "../hooks/useTitulo";
 
-import useAuth
-    from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 import "../css/style_login.css";
 

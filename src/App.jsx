@@ -64,7 +64,7 @@ function App() {
                     <Route path="/compra-exitosa" element={<CompraExitosa />} />
                     <Route path="/compra-error" element={<CompraError />} />
 
-                    {/* Rutas protegidas para administradores */}
+                    {/* AQUI SOLO ENTRA DIOS */}
                     <Route element={<RutaAdmin />}>
                         <Route path="/admin" element={<AdminPanel />} />
                         <Route path="/admin/productos" element={<AdminProductos />} />

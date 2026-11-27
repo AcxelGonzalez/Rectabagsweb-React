@@ -56,7 +56,6 @@ export function guardarCompra(
         ])
     );
 
-
     return compra;
 
 }
@@ -72,8 +71,6 @@ export function leerCompraPorId(
 
     }
 
-    
-    
 
     const compras =
         leerCompras();
@@ -90,10 +87,9 @@ export function leerCompraPorId(
 }
 
 
-
 /*
- * Estados posibles de una compra, en orden.
- */
+Estados posibles de una compra, en orden.
+*/
 export const ESTADOS_COMPRA = [
     "confirmada",
     "en preparación",
@@ -104,12 +100,12 @@ export const ESTADOS_COMPRA = [
 
 /*
  * Define las transiciones válidas entre estados.
- *
- * Esto evita saltos incoherentes como:
- * confirmada → entregada
- * entregada → cancelada
- * cancelada → enviada
- */
+
+evitamos saltos errones entre estados:
+confirmada → entregada
+entregada → cancelada
+cancelada → enviada
+*/
 const TRANSICIONES_COMPRA = {
 
     "confirmada": [
@@ -155,9 +151,7 @@ export function obtenerEstadosPermitidos(
 }
 
 /*
- * Una orden solamente puede archivarse cuando su ciclo
- * ya terminó.
- *
+ * Una orden solamente puede archivarse cuando su ciclo ya terminó.
  * Las órdenes todavía en proceso deben permanecer activas
  * para que puedan continuar avanzando de estado.
  */
@@ -307,17 +301,16 @@ export function actualizarEstadoCompra(
 }
 
 /*
- * Cierre de periodo.
- *
+ * Cierre de ciclo
+ 
  * Solo archiva órdenes cuyo ciclo ya terminó:
- * - entregadas
- * - canceladas
- *
+ - entregadas
+ - canceladas
+
  * Las órdenes todavía activas permanecen disponibles
  * para continuar su procesamiento.
- *
- * Las compras no se eliminan: el cliente mantiene
- * acceso a su historial.
+
+ * Las compras no se eliminan: el cliente tiene acceso a su historial.
  */
 export function archivarCompras() {
 
@@ -370,7 +363,6 @@ export function archivarCompras() {
             compras
         )
     );
-
 
     return cantidad;
 

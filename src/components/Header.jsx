@@ -1,6 +1,4 @@
-import {
-    Offcanvas
-} from "bootstrap";
+import { Offcanvas } from "bootstrap";
 
 import {
     Link,
