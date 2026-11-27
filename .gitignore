@@ -4,6 +4,8 @@ coverage/
 .vitest/
 
 .env
+.env.*
+!.env.example
 .DS_Store
 
 # Archivos temporales de editores de documentos

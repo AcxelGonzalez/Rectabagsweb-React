@@ -8,6 +8,41 @@ La aplicación implementa catálogo, ofertas, autenticación, carrito, checkout,
 
 ---
 
+## Conexión actual con el backend
+
+React consulta la API REST mediante `src/services/api.js`. La dirección por defecto
+es `http://localhost:8080/api/v1`. Para usar otra dirección, copiar `.env.example`
+como `.env.local` y ajustar la URL completa, incluyendo `/api/v1`:
+
+```env
+VITE_API_URL=http://localhost:8080/api/v1
+```
+
+Los archivos `.env` y `.env.*` particulares están ignorados por Git; se publica
+únicamente `.env.example`. Las variables `VITE_*` quedan visibles en el navegador:
+no guardar contraseñas de PostgreSQL, claves JWT ni otros secretos allí.
+Reiniciar Vite al cambiar la configuración. La URL queda incorporada al ejecutar
+`npm run build`; si cambia después, volver a compilar antes de abrir la vista previa.
+
+Con Spring Boot encendido, se pueden comprobar ambas formas de ejecución:
+
+```powershell
+# Desarrollo: http://localhost:5173
+npm run dev -- --port 5173 --strictPort
+
+# Vista previa del build: http://localhost:4173
+npm run build
+npm run preview -- --port 4173 --strictPort
+```
+
+El backend permite ambos orígenes por defecto. Para otro origen, configurar
+`CORS_ALLOWED_ORIGINS` en Spring Boot y reiniciarlo. La lista sustituye los valores
+por defecto y debe contener únicamente orígenes exactos autorizados, sin rutas ni
+barra final. `localhost` y `127.0.0.1` son distintos. No usar `*`.
+Si se omite `--strictPort`, Vite puede elegir otro puerto cuando el previsto está
+ocupado; ese nuevo origen también necesitaría autorización explícita en el backend.
+El login sigue usando JWT y cada operación conserva sus permisos por rol.
+
 # Tecnologías utilizadas
 
 ## Frontend

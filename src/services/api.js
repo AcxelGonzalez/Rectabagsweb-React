@@ -5,7 +5,7 @@ import axios from "axios";
  * Todas las partes lo usan: api.get(...), api.post(...), etc.
  */
 const api = axios.create({
-    baseURL: "http://localhost:8080/api/v1"
+    baseURL: import.meta.env.VITE_API_URL?.trim() || "http://localhost:8080/api/v1"
 });
 
 // Si hay token guardado, se envía automáticamente en cada petición.
