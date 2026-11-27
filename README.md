@@ -1,1185 +1,183 @@
-# RectaBags - Frontend React
+# RectaBags React
 
-Proyecto frontend desarrollado para **RectaBags**, emprendimiento orientado a la fabricación de mochilas rolltop y equipamiento de bikepacking.
+Tienda y panel administrativo de RectaBags para DSY1104 Desarrollo Fullstack II,
+Evaluación Parcial 3 y EFT. React consulta una API Spring Boot; PostgreSQL conserva
+categorías, productos, usuarios, boletas y detalles. El navegador conserva el
+carrito, el JWT y una copia de los datos de sesión.
 
-El proyecto corresponde a la asignatura **DSY1104 - Desarrollo Fullstack II** y representa la migración y ampliación de una versión inicial desarrollada con HTML, CSS, JavaScript y Bootstrap hacia una arquitectura basada en **React + Vite**.
+Revisión del 27/11/2026. Código comprobado: React `4b21659` y backend `f7cf3f7`.
 
-La aplicación implementa catálogo, ofertas, autenticación, carrito, checkout, persistencia simulada, administración de productos y usuarios, gestión de órdenes, reportes y una suite de pruebas unitarias con **Vitest**.
+## Equipo y repositorios
 
----
+Marco Carrasco Zabalaga, Acxel González Osorio y Fabián Cornejo Morales.
+Docente: Freddy Campos Orellana.
 
-## Conexión actual con el backend
+- [Frontend](https://github.com/AcxelGonzalez/Rectabagsweb-React/tree/Desarrollo-Marco-Carrasco-Zabalaga), rama `Desarrollo-Marco-Carrasco-Zabalaga`.
+- [Backend](https://github.com/fabcornejom/rectabags_backend/tree/desarrollo-marco), rama `desarrollo-marco`.
 
-React consulta la API REST mediante `src/services/api.js`. La dirección por defecto
-es `http://localhost:8080/api/v1`. Para usar otra dirección, copiar `.env.example`
-como `.env.local` y ajustar la URL completa, incluyendo `/api/v1`:
+Cada integrante trabaja en su rama con commits descriptivos; la incorporación a
+la rama compartida debe coordinarse con el equipo.
 
-```env
-VITE_API_URL=http://localhost:8080/api/v1
-```
+## Instalación y ejecución
 
-Los archivos `.env` y `.env.*` particulares están ignorados por Git; se publica
-únicamente `.env.example`. Las variables `VITE_*` quedan visibles en el navegador:
-no guardar contraseñas de PostgreSQL, claves JWT ni otros secretos allí.
-Reiniciar Vite al cambiar la configuración. La URL queda incorporada al ejecutar
-`npm run build`; si cambia después, volver a compilar antes de abrir la vista previa.
+Se utilizan React 19, React Router 7, Vite 8, Bootstrap 5 y Axios. Se requiere
+Node.js y npm compatibles con el lockfile y esas herramientas. El backend requiere
+Java 17 o compatible y PostgreSQL; el entorno verificado utiliza PostgreSQL 19.
 
-Con Spring Boot encendido, se pueden comprobar ambas formas de ejecución:
+1. Obtenga ambos repositorios en carpetas independientes.
+2. Prepare la base y el usuario `rectabags` siguiendo el README del backend.
+3. En el backend, copie `config/application-local.properties.example` como
+   `config/application-local.properties`. Defina `DB_PASSWORD` con su contraseña
+   de PostgreSQL y `JWT_SECRET` con una clave aleatoria del entorno. También pueden
+   proporcionarse mediante variables de entorno. El archivo particular está
+   ignorado por Git; conserve las referencias a variables en los archivos versionados.
+4. Si conserva una base anterior, revise las migraciones del backend para ubicación
+   opcional y límites del instructivo. No borre la base.
+5. Ejecute `./mvnw.cmd spring-boot:run` desde el backend. Swagger queda en
+   `http://localhost:8080/swagger-ui/index.html`.
+6. Desde este frontend ejecute `npm ci` y elija desarrollo o vista previa:
 
 ```powershell
 # Desarrollo: http://localhost:5173
 npm run dev -- --port 5173 --strictPort
 
-# Vista previa del build: http://localhost:4173
+# Vista previa: http://localhost:4173
 npm run build
 npm run preview -- --port 4173 --strictPort
 ```
 
-El backend permite ambos orígenes por defecto. Para otro origen, configurar
-`CORS_ALLOWED_ORIGINS` en Spring Boot y reiniciarlo. La lista sustituye los valores
-por defecto y debe contener únicamente orígenes exactos autorizados, sin rutas ni
-barra final. `localhost` y `127.0.0.1` son distintos. No usar `*`.
-Si se omite `--strictPort`, Vite puede elegir otro puerto cuando el previsto está
-ocupado; ese nuevo origen también necesitaría autorización explícita en el backend.
-El login sigue usando JWT y cada operación conserva sus permisos por rol.
+El backend debe permanecer encendido. Para detener los servidores use `Ctrl+C`.
 
-# Tecnologías utilizadas
+## URL de API y CORS
 
-## Frontend
+`src/services/api.js` lee `VITE_API_URL`, con `http://localhost:8080/api/v1`
+como valor predeterminado. Para otra dirección, copie `.env.example` como
+`.env.local` y ajuste la URL completa:
 
-- React 19.
-- React DOM 19.
-- React Router DOM 7.
-- Vite 8.
-- Bootstrap 5.
-- JavaScript.
-- HTML5.
-- CSS3.
-- ESLint.
-
-## Persistencia simulada
-
-- LocalStorage.
-
-## Testing
-
-- Vitest 5.
-- jsdom 30.
-- `@vitest/coverage-v8`.
-- V8 Coverage.
-
----
-
-# Funcionalidades implementadas
-
-## Navegación
-
-- Navegación mediante React Router.
-- Layout reutilizable con Header y Footer compartidos.
-- Menú responsive.
-- Navegación diferenciada para visitante, cliente y administrador.
-- Rutas dinámicas.
-- Redirecciones.
-- Manejo de rutas inexistentes.
-- Actualización automática del scroll al cambiar de página.
-- Títulos dinámicos mediante hook personalizado.
-- Protección de rutas administrativas.
-
----
-
-## Página principal
-
-- Home responsive.
-- Hero principal.
-- Secciones informativas.
-- Accesos al catálogo y otras vistas.
-- Integración con redes sociales.
-
----
-
-# Catálogo y ofertas
-
-La información de productos se centraliza mediante `ProductProvider` y se persiste en LocalStorage.
-
-Funcionalidades:
-
-- Catálogo dinámico.
-- Tarjetas reutilizables.
-- Filtros por categoría.
-- Búsqueda desde el catálogo.
-- Búsqueda desde el Header mediante parámetros en URL.
-- Combinación de búsqueda y categoría.
-- Mensaje cuando no existen resultados.
-- Navegación al detalle de cada producto.
-- Vista de ofertas.
-- Soporte para precio normal y precio de oferta.
-- Sincronización de cambios del catálogo entre pestañas mediante eventos `storage`.
-
-Categorías utilizadas actualmente:
-
-- Mochilas.
-- Cilindros.
-- Musette.
-- Otros productos.
-
-> La versión actual utiliza filtros de categoría dentro del catálogo. No existe una vista independiente exclusiva de categorías.
-
----
-
-# Detalle de productos
-
-Cada producto dispone de una vista dinámica mediante su identificador.
-
-Incluye:
-
-- Ruta dinámica por producto.
-- Galería de imágenes.
-- Cambio de imagen principal.
-- Selector de cantidad.
-- Entrada de cantidad mediante teclado.
-- Control de stock mínimo y máximo.
-- Manejo de productos agotados.
-- Precio normal y precio de oferta cuando corresponde.
-- Información adicional y medidas.
-- Valoraciones y opiniones.
-- Agregar al carrito.
-- Manejo de productos inexistentes.
-
----
-
-# Productos y stock
-
-La lógica de productos y stock se concentra principalmente en:
-
-```text
-src/context/ProductProvider.jsx
-src/utils/stock.js
-src/data/productos.js
+```env
+VITE_API_URL=http://localhost:8080/api/v1
 ```
 
-Se implementó:
-
-- Lectura del catálogo inicial.
-- Persistencia en `recta_productos`.
-- Creación de productos.
-- Edición de productos.
-- Eliminación de productos.
-- Restauración del catálogo inicial.
-- Normalización de stock.
-- Respeto de stock igual a cero.
-- Conversión de valores válidos de stock.
-- Verificación de disponibilidad.
-- Descuento de stock al confirmar una compra.
-- Reposición de stock al cancelar una orden.
-- Sincronización entre pestañas.
-
----
-
-# Carrito de compras
-
-El carrito utiliza React Context como fuente central de estado.
-
-Se implementaron:
-
-- `CartContext`.
-- `CartProvider`.
-- Hook `useCart`.
-
-Funcionalidades:
-
-- Agregar productos.
-- Agregar cantidades específicas.
-- Acumular cantidades cuando se agrega el mismo producto.
-- Aumentar y disminuir cantidades.
-- Evitar cantidades inferiores a 1.
-- Respetar el stock máximo.
-- Bloquear productos agotados.
-- Eliminar productos.
-- Vaciar carrito.
-- Calcular cantidad total de productos.
-- Calcular subtotal.
-- Contador dinámico en el Header.
-- Persistencia mediante LocalStorage.
-- Carrito independiente para invitado y usuarios autenticados.
-- Fusión del carrito de invitado al iniciar sesión.
-- Sincronización del carrito con cambios de stock, precio o eliminación de productos.
-
-Persistencia utilizada:
-
-```text
-recta_carrito_invitado
-recta_carrito_<usuarioId>
-```
-
----
-
-# Usuarios y autenticación
-
-La autenticación está centralizada mediante React Context.
-
-Se implementaron:
-
-- `AuthContext`.
-- `AuthProvider`.
-- Hook `useAuth`.
-
-Funcionalidades:
-
-- Registro de clientes.
-- Inicio de sesión.
-- Cierre de sesión.
-- Persistencia de sesión.
-- Recuperación y cambio de contraseña.
-- Normalización de correo.
-- Normalización de RUT.
-- Validación de correo duplicado.
-- Validación de RUT duplicado.
-- Validación de contraseña.
-- Edición de perfil.
-- Roles de cliente y administrador.
-- Protección de rutas administrativas.
-
-Los usuarios creados desde el registro público reciben automáticamente:
-
-```text
-rol: cliente
-```
-
-No es posible asignarse permisos administrativos desde el formulario público.
-
----
-
-# Usuario administrador de prueba
-
-El proyecto incorpora un usuario administrador inicial con fines académicos y de demostración:
-
-```text
-Correo: admin@duoc.cl
-Contraseña: Admin123!
-```
-
-Estas credenciales son exclusivamente de demostración dentro de la simulación frontend.
-
-La autenticación actual utiliza LocalStorage y **no corresponde a un sistema seguro para producción**.
-
----
-
-# Perfil de usuario
-
-Los usuarios autenticados pueden:
-
-- Visualizar información personal.
-- Editar nombre y apellido.
-- Editar fecha de nacimiento.
-- Editar teléfono.
-- Editar dirección.
-- Actualizar región y comuna.
-- Persistir cambios.
-- Mantener sincronizados los datos de sesión.
-- Consultar su historial de compras.
-- Revisar el detalle de sus boletas.
-
-El correo y el RUT se mantienen como identificadores no editables desde el perfil.
-
----
-
-# Checkout
-
-El proyecto incorpora un checkout funcional para cliente registrado o invitado.
-
-Permite ingresar o reutilizar:
-
-- Nombre.
-- Apellido.
-- Correo.
-- Teléfono.
-- Dirección.
-- Región.
-- Comuna.
-- Método de pago simulado.
-
-También muestra:
-
-- Resumen del pedido.
-- Cantidad total de productos.
-- Total de la compra.
-
-Antes de completar una compra se valida:
-
-1. Información requerida del formulario.
-2. Disponibilidad real del stock.
-3. Confirmación del usuario.
-
-El flujo principal es:
-
-```text
-Catálogo
-   ↓
-Detalle de producto
-   ↓
-Carrito
-   ↓
-Aceptar términos
-   ↓
-Checkout
-   ↓
-Validar datos y stock
-   ↓
-Guardar compra
-   ↓
-Descontar stock
-   ↓
-Vaciar carrito
-   ↓
-Compra exitosa
-```
-
----
-
-# Métodos de pago y despacho
-
-Los métodos de pago son simulados:
-
-- Transferencia bancaria.
-- Tarjeta bancaria simulada.
-
-No se realizan cargos reales ni se almacenan datos bancarios reales.
-
-El costo y modalidad de despacho no se calculan automáticamente en esta versión. El despacho se coordina posteriormente utilizando los datos registrados por el comprador.
-
----
-
-# Compras y boletas
-
-Las compras se gestionan mediante:
-
-```text
-src/services/compraService.js
-```
-
-Cada compra recibe un identificador similar a:
-
-```text
-RB-<timestamp>-<uuid-corto>
-```
-
-El servicio permite:
-
-- Guardar compras.
-- Mantener compras anteriores.
-- Buscar por identificador.
-- Recuperarse frente a datos inválidos en LocalStorage.
-- Actualizar estados de orden bajo reglas controladas.
-- Archivar órdenes finalizadas.
-
-Los clientes autenticados pueden consultar su historial y abrir sus boletas.
-
-La ruta de compra exitosa se protege para evitar mostrar una compra arbitraria al ingresar directamente a la URL.
-
----
-
-# Estados de las órdenes
-
-Estados disponibles:
-
-```text
-confirmada
-en preparación
-enviada
-entregada
-cancelada
-```
-
-Transiciones permitidas:
-
-```text
-confirmada
-├── en preparación
-└── cancelada
-
-en preparación
-├── enviada
-└── cancelada
-
-enviada
-└── entregada
-
-entregada
-└── estado final
-
-cancelada
-└── confirmada
-```
-
-Reglas importantes:
-
-- Una orden entregada no puede cancelarse.
-- Una orden cancelada solo puede reactivarse como confirmada.
-- Reactivar una orden exige stock suficiente.
-- Cancelar una orden repone el stock.
-- Reactivar una orden vuelve a descontar el stock.
-- Las órdenes archivadas quedan en modo solo lectura.
-
----
-
-# Panel de administración
-
-Las rutas administrativas están protegidas mediante `RutaAdmin`.
-
-El administrador dispone de:
-
-## Productos
-
-- Listado de productos.
-- Creación.
-- Edición.
-- Eliminación.
-- Restauración del catálogo inicial.
-- Gestión de precio, precio de oferta y stock.
-
-## Usuarios
-
-- Listado de usuarios.
-- Edición de datos.
-- Cambio de rol cliente/administrador.
-- Eliminación de usuarios.
-- Consulta del historial de compras de cada usuario.
-
-> La versión actual no incorpora una ruta independiente para crear usuarios desde el panel de administración. Los clientes se crean mediante el registro público.
-
-## Órdenes
-
-- Listado de compras activas.
-- Consulta de boletas.
-- Actualización controlada de estados.
-- Cancelación y reactivación con sincronización de stock.
-- Visualización de historial por usuario.
-
-## Reportes
-
-- Ventas totales del período.
-- Cantidad de órdenes válidas.
-- Unidades vendidas.
-- Ticket promedio.
-- Producto más vendido.
-- Ranking de productos.
-- Distribución de órdenes por estado.
-- Impresión o guardado como PDF mediante el diálogo del navegador.
-- Cierre de período.
-
-El cierre de período solo archiva órdenes finalizadas:
-
-```text
-entregada  → archivar
-cancelada  → archivar
-```
-
-Las órdenes todavía en proceso permanecen activas:
-
-```text
-confirmada
-en preparación
-enviada
-```
-
----
-
-# Contacto
-
-El proyecto incorpora un formulario de contacto con:
-
-- Nombre.
-- Correo.
-- Asunto.
-- Mensaje.
-- Campos controlados.
-- Validaciones HTML.
-- Confirmación de envío simulado.
-- Limpieza de campos.
-
-No existe un backend que envíe correos reales.
-
----
-
-# Blog y páginas informativas
-
-La aplicación incluye:
-
-- Blog.
-- Quiénes Somos.
-- Impacto Ambiental.
-- Contacto.
-- Términos de Compra.
-- Términos de Registro.
-
-Los artículos individuales del Blog no están implementados en esta etapa.
-
----
-
-# Diseño responsive
-
-El proyecto utiliza Bootstrap y CSS propio para adaptarse a:
-
-```text
-Escritorio
-Tablet
-Dispositivo móvil
-```
-
-Se utilizan, entre otros:
-
-- Grid system.
-- Containers.
-- Breakpoints.
-- Flexbox.
-- Navbar.
-- Offcanvas.
-- Cards.
-- Formularios.
-- Buttons.
-- Alerts.
-- Badges.
-- Utilities de spacing y display.
-
----
-
-# Arquitectura del proyecto
-
-Estructura principal:
-
-```text
-src/
-├── components/
-│   ├── admin/
-│   ├── products/
-│   ├── ActualizarTop.jsx
-│   ├── Boleta.jsx
-│   ├── ConfirmarCompraModal.jsx
-│   ├── ContadorCarrito.jsx
-│   ├── Footer.jsx
-│   ├── Header.jsx
-│   ├── Layout.jsx
-│   ├── RutaAdmin.jsx
-│   └── ...
-│
-├── context/
-│   ├── AuthContext.js
-│   ├── AuthProvider.jsx
-│   ├── CartContext.js
-│   ├── CartProvider.jsx
-│   ├── ProductContext.js
-│   └── ProductProvider.jsx
-│
-├── data/
-│   ├── productos.js
-│   ├── regionesComunas.js
-│   └── usuariosIniciales.js
-│
-├── hooks/
-│   ├── useAuth.js
-│   ├── useCart.js
-│   ├── useProducts.js
-│   └── useTitulo.js
-│
-├── pages/
-│   ├── admin/
-│   ├── Blog.jsx
-│   ├── Carrito.jsx
-│   ├── Catalogo.jsx
-│   ├── Checkout.jsx
-│   ├── CompraError.jsx
-│   ├── CompraExitosa.jsx
-│   ├── Contacto.jsx
-│   ├── Home.jsx
-│   ├── Login.jsx
-│   ├── MiBoleta.jsx
-│   ├── Ofertas.jsx
-│   ├── Perfil.jsx
-│   ├── ProductoDetalle.jsx
-│   ├── Registro.jsx
-│   └── ...
-│
-├── services/
-│   └── compraService.js
-│
-├── tests/
-│   └── *.spec.js
-│
-├── utils/
-│   ├── carrito.js
-│   ├── estadisticas.js
-│   ├── stock.js
-│   └── validaciones.js
-│
-├── App.jsx
-├── index.css
-└── main.jsx
-```
-
-La jerarquía global de Providers es:
-
-```text
-AuthProvider
-   ↓
-ProductProvider
-   ↓
-CartProvider
-   ↓
-App
-```
-
----
-
-# Persistencia simulada
-
-Mientras el proyecto no dispone de backend se utiliza LocalStorage.
-
-Principales claves:
-
-```text
-recta_usuarios
-recta_usuario_actual
-recta_productos
-recta_compras
-recta_carrito_invitado
-recta_carrito_<usuarioId>
-```
-
-Esta implementación existe exclusivamente con fines académicos y de simulación frontend.
-
-No debe considerarse un sistema seguro de almacenamiento, autenticación o persistencia para producción.
-
----
-
-# Testing con Vitest
-
-La suite de pruebas utiliza:
-
-- Vitest 5.
-- jsdom como entorno DOM.
-- `vi.fn()` y `vi.spyOn()` para mocks y spies.
-- V8 como proveedor de cobertura.
-
-Configuración principal:
-
-```text
-vitest.config.js
-```
-
-Los archivos de pruebas se encuentran en:
-
-```text
-src/tests/**/*.spec.js
-```
-
-## Resultado actual
-
-```text
-Test Files  13 passed (16)
-Tests       202 passed (210)
-Failed      0
-```
-
----
-
-# Distribución actual de pruebas
-
-```text
-AuthProvider.spec.js               14
-CantidadSelector.spec.js            6
-CartProvider.spec.js                10
-ConfirmarCompraModal.spec.js        15
-Estadisticas.spec.js                14
-ProductProvider.spec.js             25
-RutaAdmin.spec.js                    7
-Validaciones.spec.js                14
-carritoSincronizacion.spec.js       16
-carritoStockYFusion.spec.js         18
-compraService.spec.js               14
-compraServiceEstados.spec.js        19
-productosCrud.spec.js               23
-──────────────────────────────────────
-TOTAL                              202
-```
-
----
-
-# Áreas cubiertas por las pruebas
-
-La suite prioriza lógica y comportamiento crítico:
-
-- Autenticación.
-- Registro y recuperación de contraseña.
-- Roles y acceso administrativo.
-- Actualización de perfil.
-- ProductProvider.
-- CRUD de productos.
-- Persistencia y sincronización de productos.
-- Stock.
-- Carrito.
-- Fusión y sincronización del carrito.
-- Servicio de compras.
-- Estados y transiciones de órdenes.
-- Archivado y cierre de período.
-- Estadísticas y reportes.
-- Validaciones.
-- Selectores de cantidad.
-- Interacción por teclado.
-- ProductFilter.
-- Modal de confirmación de compra.
-- Protección de rutas administrativas.
-- LocalStorage.
-- Componentes DOM seleccionados.
-
----
-
-# Mocks y spies
-
-Vitest permite simular funciones y observar llamadas mediante:
-
-```js
-vi.fn()
-```
-
- y:
-
-```js
-vi.spyOn()
-```
-
-Esto permite probar componentes, callbacks y dependencias de forma aislada sin ejecutar toda la aplicación.
-
----
-
-# Cobertura
-
-La cobertura se ejecuta mediante:
-
-```bash
-npm run test:coverage
-```
-
-Configuración:
-
-```text
-Provider: V8
-Entorno: jsdom
-Scope: src/**/*.{js,jsx}
-Exclusión: src/tests/**
-```
-
-Resultado actual:
-
-```text
-Statements   : 45.67% (517/1132)
-Branches     : 40.53% (362/893)
-Functions    : 43.91% (148/337)
-Lines        : 45.96% (512/1114)
-```
-
-Estos porcentajes corresponden al **frontend completo incluido en `src`**, no únicamente a los módulos importados directamente por las pruebas.
-
-Por esa razón también entran en el cálculo páginas y componentes principalmente visuales que no cuentan con pruebas unitarias directas.
-
-La estrategia de testing prioriza reglas de negocio y zonas críticas antes que pruebas superficiales de vistas estáticas.
-
----
-
-# Reporte HTML de cobertura
-
-Al ejecutar:
-
-```bash
-npm run test:coverage
-```
-
-se genera la carpeta:
-
-```text
-coverage/
-```
-
-El reporte HTML puede abrirse desde:
-
-```text
-coverage/index.html
-```
-
-La carpeta `coverage/` es generada automáticamente y no debe almacenarse en Git.
-
----
-
-# Requisitos
-
-Para ejecutar el proyecto se necesita:
-
-- Node.js compatible con Vite/Vitest utilizados por el proyecto.
-- npm.
-- Git.
-
-Comprobar versiones:
-
-```bash
-node -v
-npm -v
-git --version
-```
-
----
-
-# Instalación
-
-## 1. Clonar el repositorio
-
-```bash
-git clone URL_DEL_REPOSITORIO
-```
-
-## 2. Ingresar al proyecto
-
-```bash
-cd Rectabagsweb-React
-```
-
-## 3. Instalar dependencias
-
-Recomendado:
-
-```bash
-npm ci
-```
-
-Alternativamente:
-
-```bash
-npm install
-```
-
-`npm ci` utiliza las versiones registradas en `package-lock.json`, lo que permite mantener entornos consistentes entre integrantes del equipo.
-
----
-
-# Comandos disponibles
-
-## Desarrollo
-
-```bash
-npm run dev
-```
-
-Vite mostrará una URL local similar a:
-
-```text
-http://localhost:5173
-```
-
-## ESLint
-
-```bash
-npm run lint
-```
-
-## Pruebas unitarias
-
-```bash
+Los archivos particulares `.env` y `.env.*` están ignorados; se publica únicamente
+`.env.example`. Las variables `VITE_*` son visibles en el navegador: no guardar
+contraseñas, claves JWT ni otros secretos allí. Reinicie Vite después de cambiarlas.
+La URL queda incorporada al compilar; un cambio posterior requiere otro build.
+
+Spring permite `http://localhost:5173` y `http://localhost:4173` por defecto.
+`CORS_ALLOWED_ORIGINS` permite sustituir la lista por orígenes exactos autorizados,
+sin rutas ni barra final. No use `*`; reinicie el backend al cambiarla.
+`localhost` y `127.0.0.1` son distintos. Sin `--strictPort`, Vite puede elegir otro
+puerto cuando el previsto está ocupado; ese origen también necesitaría autorización.
+
+## Roles y cuentas de demostración
+
+| Perfil | Acceso |
+|---|---|
+| Visitante | Tienda pública, registro, login y compra como invitado. |
+| CLIENTE | Tienda, perfil, sus compras y sus boletas. |
+| VENDEDOR | Consulta del panel, productos y órdenes con sus detalles. |
+| ADMIN | Mantenedores, órdenes, cambios de estado, reportes y cierre. |
+
+El login entrega un JWT. El backend obtiene el ID desde el token y vuelve a
+consultar el usuario para aplicar permisos. React protege las vistas y Spring
+Security las operaciones. Un cliente no puede consultar boletas ajenas o de invitado.
+
+| Correo | Contraseña de demostración | Rol |
+|---|---|---|
+| admin@duoc.cl | Admin123! | ADMIN |
+| vendedor@duoc.cl | Vend123! | VENDEDOR |
+| cliente@gmail.com | Cli123! | CLIENTE |
+
+Estas cuentas se inicializan en el backend si no existen; no son autenticación simulada en React.
+
+## Funciones actuales
+
+- Catálogo, ofertas, búsqueda y filtros por categorías de la API. Carga, error,
+  vacío y elemento inexistente se distinguen y permiten reintentar cuando corresponde.
+- Carrito persistente por usuario, fusión del carrito invitado al iniciar sesión,
+  cantidades enteras y sincronización con precio y stock disponibles.
+- Checkout autenticado o invitado con confirmación. React envía identificadores y
+  cantidades; el backend calcula precios, guarda detalles históricos y descuenta
+  stock transaccionalmente. Un rechazo conserva el carrito. El pago es de demostración.
+- Perfil con edición de nombre, apellido y contacto, e historial de compras. RUN,
+  correo y rol no se editan desde el perfil. La fecha de nacimiento del registro
+  es opcional y actualmente no se persiste.
+- ADMIN puede crear usuarios en `/admin/usuarios/nuevo`, listar, editar y eliminar.
+  No puede eliminarse ni cambiar su propio rol. La API impide eliminar cuentas con compras.
+- CRUD de productos y categorías para ADMIN. El borrado de productos es lógico;
+  una categoría con productos asociados, incluso inactivos, no puede eliminarse.
+- Boletas con precios y nombres históricos, folio completo adaptable a móvil y
+  desplazamiento horizontal limitado al contenedor de su tabla.
+- Reportes del periodo abierto. Canceladas y cerradas no suman ventas; las
+  canceladas abiertas sí aparecen en el conteo por estado.
+- Contacto valida nombre/correo hasta 100 y comentario hasta 500. Es una
+  demostración local y no envía mensajes a un servidor.
+- Navegación adaptable, `h1` en Inicio, nota de Registro con contraste 5,97:1 y
+  ayudas/errores de `CampoFormulario` asociados a controles. Son correcciones
+  concretas; no acreditan una certificación integral de accesibilidad.
+
+Importes: `1000 → $1.000`, `1000.50 → $1.000,50`. El cálculo del **ticket promedio
+del backend todavía redondea al peso**; conservar centavos en él sigue por decidir.
+
+## Estados y cierre
+
+| Estado actual | Cambios permitidos |
+|---|---|
+| PENDIENTE | PAGADA o CANCELADA |
+| PAGADA | ENVIADA o CANCELADA |
+| ENVIADA | ENTREGADA |
+| ENTREGADA / CANCELADA | Finales |
+
+Solo ADMIN cambia estados. Cancelar devuelve stock una vez; repetir el estado
+actual no vuelve a modificarlo y una cancelada no se reactiva. VENDEDOR consulta
+sin selector. El cierre fecha todas las boletas abiertas, incluidas las que están
+en proceso, conserva sus historiales y bloquea posteriores cambios de estado.
+
+## Verificación
+
+```powershell
 npm test
-```
-
-Resultado de referencia:
-
-```text
-13 archivos de pruebas
-202 pruebas
-202 exitosas
-0 fallidas
-```
-
-## Watch mode
-
-```bash
-npm run test:watch
-```
-
-Vitest vuelve a ejecutar las pruebas cuando detecta cambios.
-
-Para detenerlo:
-
-```text
-Ctrl + C
-```
-
-## Cobertura
-
-```bash
 npm run test:coverage
-```
-
-## Build de producción
-
-```bash
+npm run lint
 npm run build
 ```
 
-Los archivos generados quedan en:
+Al 27/11/2026: **285 pruebas de React en 21 archivos aprobadas**, lint y build
+correctos. El backend aprobó **104 pruebas**. La medición V8 del frontend registró:
 
-```text
-dist/
-```
+| Medida | Cobertura |
+|---|---|
+| Instrucciones | 63,85% (869/1361) |
+| Ramas | 53,03% (611/1152) |
+| Funciones | 61,68% (256/415) |
+| Líneas | 64,36% (820/1274) |
 
-## Vista previa del build
+La cobertura incluye `src` y excluye `src/tests`; no mide Java. Vitest utiliza
+jsdom y dobles de API. JUnit/Mockito y PostgreSQL comprueban el backend.
+Las pruebas locales heredadas de compras y estadísticas siguen presentes, pero
+no acreditan las reglas ni la persistencia actuales del servidor.
 
-```bash
-npm run preview
-```
+Se verificaron catálogo, login y permisos por HTTP real desde 5173 y 4173,
+configurando la API en 8081: 401 sin sesión, 403 para CLIENTE en usuarios y rechazo
+de un origen ajeno. Esa comprobación usó lecturas y login, sin crear registros.
 
----
+## Pendientes y límites
 
-# Validación recomendada antes de integrar cambios
+- Recuperación de contraseña: pantalla sin endpoint; informa que no está disponible.
+- Blog: listado existente; dos detalles pendientes de confirmación docente.
+- Fecha de nacimiento sin persistencia y precisión del ticket promedio por decidir.
+- Pruebas integradas: usan la base configurada para desarrollo; faltan conexión y
+  datos aislados. Algunas esperan que no haya otras órdenes abiertas.
+- `npm audit` del 27/11 detecta tres entradas moderadas de desarrollo;
+  `npm audit --omit=dev` detecta cero. No se actualizaron paquetes.
+- Build con aviso de tamaño de aproximadamente 551 kB. Rendimiento y disponibilidad
+  no medidos; no se acredita compatibilidad completa entre navegadores.
+- Pagos bancarios reales, publicación de reseñas, envío de contacto y despliegue
+  público HTTPS no están implementados. Las valoraciones son datos de presentación.
 
-Ejecutar:
+## Documentación de entrega
 
-```bash
-npm run lint
-npm test
-npm run test:coverage
-npm run build
-```
-
-Baseline técnico actual:
-
-```text
-ESLint                       ✅
-Vitest                       ✅
-13/13 archivos de pruebas    ✅
-202/202 pruebas              ✅
-Cobertura V8                 ✅
-Build Vite                   ✅
-```
-
----
-
-# Archivos generados que no deben subirse
-
-```text
-node_modules/
-dist/
-coverage/
-.vitest/
-```
-
-Estos directorios deben mantenerse excluidos mediante `.gitignore`.
-
----
-
-# Flujo recomendado de Git
-
-Antes de trabajar:
-
-```bash
-git pull
-npm ci
-```
-
-Después de realizar modificaciones:
-
-```bash
-npm run lint
-npm test
-npm run build
-```
-
-Luego:
-
-```bash
-git status
-git add .
-git commit
-git push
-```
-
-La integración entre ramas debe realizarse mediante Pull Request.
-
----
-
-# Buenas prácticas aplicadas
-
-- Componentes reutilizables.
-- Separación de responsabilidades.
-- Hooks personalizados.
-- React Context.
-- Props.
-- Estado local y global.
-- Formularios controlados.
-- Rutas dinámicas.
-- Protección por rol.
-- Persistencia simulada.
-- Servicios y utilidades.
-- Validaciones centralizadas.
-- Manejo de errores.
-- Sincronización con LocalStorage.
-- Diseño responsive.
-- ESLint.
-- Pruebas unitarias.
-- Mocks y spies.
-- Cobertura de código.
-- Git y Pull Requests.
-
----
-
-# Alcance y limitaciones actuales
-
-La versión actual es una aplicación frontend académica. No incorpora:
-
-- Backend real.
-- Base de datos real.
-- API REST propia.
-- Autenticación segura del lado servidor.
-- Procesamiento real de pagos.
-- Envío real de correos.
-- Cálculo automático de despacho.
-- Creación de usuarios desde una ruta administrativa independiente.
-- Vista independiente exclusiva de categorías.
-- Artículos individuales completos del Blog.
-
-Estas limitaciones no impiden el funcionamiento del flujo principal implementado en esta etapa.
-
----
-
-# Mejoras futuras posibles
-
-- Backend y API REST.
-- Base de datos persistente.
-- Autenticación segura y autorización en servidor.
-- Integración con pasarelas de pago reales.
-- Cálculo automático de despacho.
-- Cobertura nacional completa de regiones y comunas.
-- Vista independiente de categorías.
-- Creación administrativa de usuarios.
-- Artículos individuales del Blog.
-- Mayor cobertura automatizada de páginas y flujos completos.
-
----
-
-# Documentación de la evaluación
-
-La entrega contempla además del código fuente:
-
-- ERS actualizado.
-- Documento de cobertura de testing.
-- Planilla de requerimientos.
-- Proyecto comprimido.
-- Repositorio GitHub público.
-- Presentación individual.
-
----
-
-# Estado actual del proyecto
-
-```text
-FRONTEND
-────────────────────────────────────────
-React / Vite                       ✅
-React Router                       ✅
-Componentes reutilizables          ✅
-Bootstrap responsive               ✅
-Catálogo                           ✅
-Filtros y búsqueda                 ✅
-Ofertas                            ✅
-Detalle de producto                ✅
-Galería                            ✅
-Stock                              ✅
-Carrito                            ✅
-Carrito por usuario                ✅
-Fusión invitado/usuario            ✅
-Registro                           ✅
-Login / Logout                     ✅
-Recuperación contraseña            ✅
-Roles                              ✅
-Perfil                             ✅
-Checkout                           ✅
-Compra invitado                    ✅
-Compra autenticado                 ✅
-Historial de compras               ✅
-Boletas                            ✅
-Persistencia de compras            ✅
-Contacto                           ✅
-Páginas informativas               ✅
-
-ADMINISTRACIÓN
-────────────────────────────────────────
-Protección de rutas                ✅
-Panel administrativo               ✅
-CRUD de productos                  ✅
-Gestión de usuarios                ✅
-Gestión de órdenes                 ✅
-Transiciones controladas           ✅
-Cancelación / reactivación stock   ✅
-Reportes y estadísticas            ✅
-Cierre de período                  ✅
-Órdenes archivadas solo lectura    ✅
-
-TESTING
-────────────────────────────────────────
-Vitest                             ✅
-jsdom                              ✅
-V8 Coverage                        ✅
-Mocks / Spies                      ✅
-Pruebas DOM                        ✅
-Pruebas Context                    ✅
-Pruebas LocalStorage               ✅
-13 archivos de pruebas             ✅
-202 pruebas                        ✅
-202/202 SUCCESS                    ✅
-
-COVERAGE
-────────────────────────────────────────
-Statements                        45.67%
-Branches                          40.53%
-Functions                         43.91%
-Lines                             45.96%
-```
-
----
-
-# Integrantes
-
-Proyecto desarrollado por un equipo de 3 estudiantes.
-
-- Integrante 1: `Marco Carrasco Zabalaga`
-- Integrante 2: `Acxel Gonzalez Osorio `
-- Integrante 3: `Fabian Cornejo Morales`
-
-Asignatura:
-
-**DSY1104 - Desarrollo Fullstack II**
-
----
-
-# Repositorio
-
-Repositorio público del proyecto:
-
-```text
-https://github.com/AcxelGonzalez/Rectabagsweb-React.git
-```
-
----
-
-# Estado académico
-
-RectaBags se encuentra en etapa de cierre de la **Evaluación Parcial N°2 de DSY1104 - Desarrollo Fullstack II**.
-
-La versión actual dispone de un frontend funcional basado en React y Vite, persistencia simulada mediante LocalStorage, flujos de cliente y administración, y una suite automatizada de pruebas con Vitest.
-
-Baseline actual:
-
-```text
-13 archivos de pruebas
-202 pruebas unitarias
-202 pruebas exitosas
-0 pruebas fallidas
-```
-
-La cobertura se obtiene mediante V8 sobre el conjunto completo de archivos JavaScript y JSX de `src`.
-
-Las actividades restantes corresponden principalmente al cierre y sincronización de la documentación académica y a la preparación de la entrega final.
+`docs/` contiene manual, ERS, cobertura, APIs e integración, las dos planillas y
+evidencias. Las capturas del 26/11 corresponden a aquella ejecución; las revisiones
+posteriores se identifican por fecha y por uso de API real o simulada. Los informes
+privados de auditoría no están incluidos en este repositorio.
