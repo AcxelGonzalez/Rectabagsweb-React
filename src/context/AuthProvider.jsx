@@ -14,6 +14,7 @@ const CLAVE_SESION = "recta_usuario_actual";
 function leerSesionGuardada() {
 
     try {
+        if (!localStorage.getItem(CLAVE_TOKEN)) return null;
         const texto = localStorage.getItem(CLAVE_SESION);
         return texto ? JSON.parse(texto) : null;
 
@@ -48,7 +49,8 @@ function AuthProvider({ children }) {
 
     const [usuarios, setUsuarios] = useState([]);
 
-    const [cargandoSesion, setCargandoSesion] = useState(true);
+    const [cargandoSesion, setCargandoSesion] = useState(() => Boolean(localStorage.getItem(CLAVE_TOKEN)));
+    const [usuarioListadoId, setUsuarioListadoId] = useState(null);
 
 
     function guardarSesion(usuario) {
@@ -78,7 +80,6 @@ function AuthProvider({ children }) {
         const token = localStorage.getItem(CLAVE_TOKEN);
 
         if (!token) {
-            setCargandoSesion(false);
             return;
         }
 
@@ -108,20 +109,19 @@ function AuthProvider({ children }) {
      * La lista completa de usuarios es solo para el administrador:
      * a los demás el backend les responde 403.
      */
-    const cargarUsuarios = useCallback(async () => {
+    const cargarUsuarios = useCallback(() => {
 
         if (usuarioActual?.rol !== "ADMIN") {
-            setUsuarios([]);
             return;
         }
 
-        try {
-            const { data } = await api.get("/usuarios");
+        return api.get("/usuarios").then(({ data }) => {
             setUsuarios(data);
-
-        } catch {
+        }).catch(() => {
             setUsuarios([]);
-        }
+        }).finally(() => {
+            setUsuarioListadoId(usuarioActual.id);
+        });
 
     }, [usuarioActual]);
 
@@ -356,6 +356,7 @@ function AuthProvider({ children }) {
                 usuarios,
                 usuarioActual,
                 cargandoSesion,
+                cargandoUsuarios: esAdmin && usuarioListadoId !== usuarioActual.id,
                 estaAutenticado: Boolean(usuarioActual),
                 esAdmin,
                 esVendedor,

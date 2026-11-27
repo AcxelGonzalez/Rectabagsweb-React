@@ -70,7 +70,7 @@ function RecuperarContrasena() {
     }
 
 
-    function envio(
+    async function envio(
         evento
     ) {
 
@@ -94,7 +94,7 @@ function RecuperarContrasena() {
 
 
         const resultado =
-            recuperarContrasena(
+            await recuperarContrasena(
                 formulario.correo,
                 formulario.rut,
                 formulario.nuevaContrasena

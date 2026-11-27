@@ -33,7 +33,7 @@ function Boleta({ compra, controlEstado }) {
                 <div className="d-flex flex-wrap justify-content-between gap-2 mb-4">
 
                     <div>
-                        <h1 className="h3 fw-bold mb-1">Boleta {compra.id}</h1>
+                        <h1 className="h3 fw-bold mb-1">Boleta {compra.folio || compra.id}</h1>
                         <div className="text-secondary">
                             {new Date(compra.fecha).toLocaleString("es-CL")}
                         </div>
@@ -88,7 +88,7 @@ function Boleta({ compra, controlEstado }) {
                                     <td className="text-end">{formatearPrecio(producto.precio)}</td>
                                     <td className="text-center">{producto.cantidad}</td>
                                     <td className="text-end">
-                                        {formatearPrecio(producto.precio * producto.cantidad)}
+                                        {formatearPrecio(producto.subTotal ?? producto.precio * producto.cantidad)}
                                     </td>
                                 </tr>
                             ))}

@@ -10,6 +10,7 @@ function RutaAdmin() {
     const {
         estaAutenticado,
         puedeEntrarAlPanel,
+        esVendedor,
         cargandoSesion
     } = useAuth();
 
@@ -43,6 +44,11 @@ function RutaAdmin() {
 
         return <Navigate to="/" replace />;
 
+    }
+
+    const rutaVendedor = /^\/admin\/?$|^\/admin\/productos\/?$|^\/admin\/ordenes(?:\/\d+)?\/?$/;
+    if (esVendedor && !rutaVendedor.test(location.pathname)) {
+        return <Navigate to="/admin" replace />;
     }
 
     return <Outlet />;

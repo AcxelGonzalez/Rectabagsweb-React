@@ -1,5 +1,5 @@
 import {
-    useState
+    useEffect, useState
 } from "react";
 
 import {
@@ -19,7 +19,7 @@ import {
 } from "../data/regionesComunas";
 
 import {
-    leerCompras,
+    leerMisCompras,
     colorEstado
 } from "../services/compraService";
 
@@ -82,7 +82,7 @@ function ListaCompras({ compras }) {
         <details key={compra.id} className="perfil-compra rounded-3 p-3 mb-3">
 
             <summary className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <span className="fw-semibold">{compra.id}</span>
+                <span className="fw-semibold">{compra.folio}</span>
                 <span className="text-secondary small">
                     {new Date(compra.fecha).toLocaleDateString("es-CL")}
                 </span>
@@ -134,6 +134,7 @@ function Perfil() {
         usuarioActual,
         usuarios,
         actualizarPerfil,
+        cargandoSesion,
         cerrarSesion
     } = useAuth();
 
@@ -167,12 +168,19 @@ function Perfil() {
     ] = useState("detalles");
 
 
-    // Compras de este usuario, las más recientes primero
-    const misCompras = leerCompras()
-        .filter((compra) => compra.usuarioId === usuarioActual?.id)
-        .reverse();
+    const [resultadoCompras, setResultadoCompras] = useState(null);
+    const usuarioId = usuarioActual?.id;
+    useEffect(() => {
+        let activo = true;
+        if (!usuarioId || cargandoSesion) return;
+        leerMisCompras().then(compras => { if (activo) setResultadoCompras({ usuarioId, compras }); })
+            .catch(e => { if (activo) setResultadoCompras({ usuarioId, error: e.response?.data?.mensaje || "No fue posible cargar tus compras." }); });
+        return () => { activo = false; };
+    }, [usuarioId, cargandoSesion]);
+    const misCompras = resultadoCompras?.usuarioId === usuarioId ? resultadoCompras.compras || [] : [];
 
 
+    if (cargandoSesion) return <p className="container py-5" role="status">Comprobando tu sesión…</p>;
     if (!usuarioActual) {
 
         return (
@@ -217,7 +225,7 @@ function Perfil() {
     }
 
 
-    function envio(
+    async function envio(
         evento
     ) {
 
@@ -225,7 +233,7 @@ function Perfil() {
 
 
         const resultado =
-            actualizarPerfil(
+            await actualizarPerfil(
                 formulario
             );
 
@@ -252,6 +260,7 @@ function Perfil() {
 
 
     function cambiarSeccion(nuevaSeccion) {
+        if (nuevaSeccion === "editar") setFormulario(datosIniciales(usuario));
         setSeccion(nuevaSeccion);
         setMensaje(null);
     }
@@ -368,7 +377,6 @@ function Perfil() {
                                                 <Dato etiqueta="Nombre" valor={`${usuario?.nombre || ""} ${usuario?.apellido || ""}`} />
                                                 <Dato etiqueta="Correo" valor={usuarioActual.correo} />
                                                 <Dato etiqueta="Teléfono" valor={usuario?.telefono} />
-                                                <Dato etiqueta="Fecha de nacimiento" valor={usuario?.fechaNacimiento} />
 
                                                 <button
                                                     type="button"
@@ -388,7 +396,7 @@ function Perfil() {
                                                     Detalle de facturación
                                                 </h2>
 
-                                                <Dato etiqueta="RUT" valor={usuarioActual.rut} />
+                                                <Dato etiqueta="RUT" valor={usuarioActual.run} />
                                                 <Dato etiqueta="Dirección" valor={usuario?.direccion} />
                                                 <Dato etiqueta="Comuna y región" valor={ubicacion} />
 
@@ -422,7 +430,9 @@ function Perfil() {
                                             )}
                                         </div>
 
-                                        <ListaCompras compras={misCompras.slice(0, 3)} />
+                                        {resultadoCompras?.usuarioId !== usuarioId ? <p role="status">Cargando compras…</p>
+                                            : resultadoCompras.error ? <p role="alert">{resultadoCompras.error}</p>
+                                            : <ListaCompras compras={misCompras.slice(0, 3)} />}
 
                                     </div>
                                 </>
@@ -497,7 +507,7 @@ function Perfil() {
                                                     type="text"
                                                     id="perfil-rut"
                                                     className="form-control"
-                                                    value={usuarioActual.rut}
+                                                    value={usuarioActual.run || ""}
                                                     readOnly
                                                 />
                                                 <div className="form-text">
@@ -505,19 +515,6 @@ function Perfil() {
                                                 </div>
                                             </div>
 
-                                            <div className="col-md-6">
-                                                <label htmlFor="perfil-fecha" className="form-label fw-semibold">
-                                                    Fecha de nacimiento
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="perfil-fecha"
-                                                    name="fechaNacimiento"
-                                                    className="form-control"
-                                                    value={formulario.fechaNacimiento}
-                                                    onChange={cambioFormulario}
-                                                />
-                                            </div>
 
                                             <div className="col-md-6">
                                                 <label htmlFor="perfil-telefono" className="form-label fw-semibold">
@@ -627,7 +624,9 @@ function Perfil() {
                                         Historial de compras
                                     </h2>
 
-                                    <ListaCompras compras={misCompras} />
+                                    {resultadoCompras?.usuarioId !== usuarioId ? <p role="status">Cargando compras…</p>
+                                        : resultadoCompras.error ? <p role="alert">{resultadoCompras.error}</p>
+                                        : <ListaCompras compras={misCompras} />}
 
                                 </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
 import useTitulo from "../../hooks/useTitulo";
+import useAuth from "../../hooks/useAuth";
 import { obtenerStockValido } from "../../utils/stock";
 import { STOCK_CRITICO_POR_DEFECTO } from "../../data/productos";
 
@@ -26,6 +27,7 @@ function enStockCritico(producto) {
 function AdminProductos() {
 
     useTitulo("Productos | Panel de administración");
+    const { esAdmin } = useAuth();
 
     const {
         productos,
@@ -91,7 +93,7 @@ function AdminProductos() {
                         </h1>
                     </div>
 
-                    <div className="d-flex gap-2">
+                    {esAdmin && <div className="d-flex gap-2">
                         <button
                             type="button"
                             className="btn btn-outline-secondary"
@@ -102,7 +104,7 @@ function AdminProductos() {
                         <Link to="/admin/productos/nuevo" className="btn btn-dark">
                             Nuevo producto
                         </Link>
-                    </div>
+                    </div>}
 
                 </div>
 
@@ -194,7 +196,8 @@ function AdminProductos() {
                                         </td>
 
                                         <td className="text-end">
-                                            <Link
+                                            <Link to={`/producto/${producto.id}`} className="btn btn-sm btn-outline-secondary me-2">Ver producto</Link>
+                                            {esAdmin && <><Link
                                                 to={`/admin/productos/${producto.id}/editar`}
                                                 className="btn btn-sm btn-outline-dark me-2"
                                             >
@@ -206,7 +209,7 @@ function AdminProductos() {
                                                 onClick={() => setProductoAEliminar(producto)}
                                             >
                                                 Eliminar
-                                            </button>
+                                            </button></>}
                                         </td>
 
                                     </tr>
@@ -224,7 +227,7 @@ function AdminProductos() {
 
 
             {/* Modal de confirmación */}
-            {productoAEliminar && (
+            {esAdmin && productoAEliminar && (
                 <>
                     <div className="modal d-block" tabIndex="-1" role="dialog">
                         <div className="modal-dialog modal-dialog-centered">

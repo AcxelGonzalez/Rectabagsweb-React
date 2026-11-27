@@ -23,7 +23,7 @@ function Carrito() {
         descartarAvisos
     } = useCart();
 
-    const { productos } = useProducts();
+    const { productos, cargando, errorCarga } = useProducts();
 
     const [terminos, setTerminos] = useState(false);
     const [productoEliminar, setProductoEliminar] = useState(null);
@@ -34,10 +34,10 @@ function Carrito() {
      */
     useEffect(() => {
 
-        sincronizarConCatalogo(productos);
+        if (!cargando && !errorCarga) sincronizarConCatalogo(productos);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productos]);
+    }, [productos, cargando, errorCarga]);
 
     // Elimina el producto seleccionado
     function confirmarEliminacion() {

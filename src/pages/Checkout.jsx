@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
+import useProducts from "../hooks/useProducts";
 import useTitulo from "../hooks/useTitulo";
 
 import ConfirmarCompraModal from "../components/ConfirmarCompraModal";
@@ -52,6 +53,7 @@ function Checkout() {
     const navigate = useNavigate();
 
     const { usuarioActual } = useAuth();
+    const { cargarProductos } = useProducts();
 
     const {
         carrito,
@@ -162,6 +164,8 @@ function Checkout() {
             });
             setCompraRealizada(true);
             vaciarCarrito();
+            // La compra ya fue confirmada; recargamos el stock sin volver a descontarlo.
+            void cargarProductos();
             navigate("/compra-exitosa", {
                 replace: true,
                 state: { compra }

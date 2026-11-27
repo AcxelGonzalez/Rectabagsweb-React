@@ -1,11 +1,45 @@
 import api from "../services/api";
-import { guardarCompra, leerCompraPorId, leerCompras, actualizarEstadoCompra } from "../services/compraService";
+import { guardarCompra, leerCompraPorId, leerCompras, actualizarEstadoCompra,
+    listarOrdenes, obtenerBoleta, leerMisCompras, leerHistorialUsuario } from "../services/compraService";
 
-vi.mock("../services/api", () => ({ default: { post: vi.fn() } }));
+vi.mock("../services/api", () => ({ default: { post: vi.fn(), get: vi.fn() } }));
 
 beforeEach(() => {
     localStorage.clear();
     api.post.mockReset();
+    api.get.mockReset();
+});
+
+describe("consultas remotas de compras", () => {
+    const dto = { idBoleta: 5, folio: "RB-2026-5", idUsuario: 3, fechaEmision: "2026-11-26T12:00:00",
+        fechaCierre: null, estado: "PENDIENTE", total: "15980.00", nombreCliente: "Cliente", apellidoCliente: "Prueba",
+        correoCliente: "cliente@gmail.com", metodoPago: "transferencia",
+        detalles: [{ idProducto: 2, nombreProducto: "Musette", precioUnidad: "7990.00", cantidad: 2, subTotal: "15980.00" }] };
+    for (const [nombre, consultar, ruta] of [
+        ["ordenes", () => listarOrdenes(), "/boletas"],
+        ["mis compras", () => leerMisCompras(), "/boletas/mias"],
+        ["historial de usuario", () => leerHistorialUsuario(3), "/boletas/usuario/3"]
+    ]) {
+        it(`consulta ${nombre} y adapta el DTO sin leer localStorage`, async () => {
+            api.get.mockResolvedValue({ data: [dto] });
+            localStorage.setItem("recta_compras", "contenido-invalido");
+            const compras = await consultar();
+            expect(api.get).toHaveBeenCalledWith(ruta);
+            expect(compras[0]).toMatchObject({ id: 5, folio: dto.folio, usuarioId: 3, subtotal: 15980, cantidadProductos: 2 });
+        });
+    }
+    it("detalle conserva los importes historicos recibidos", async () => {
+        api.get.mockResolvedValue({ data: dto });
+        const compra = await obtenerBoleta(5);
+        expect(api.get).toHaveBeenCalledWith("/boletas/5");
+        expect(compra.productos[0]).toEqual({ id: 2, nombre: "Musette", precio: 7990, cantidad: 2, subTotal: 15980 });
+        expect(compra.cliente.correo).toBe(dto.correoCliente);
+    });
+    it("propaga el rechazo del servidor al consultar una boleta ajena", async () => {
+        const error = { response: { status: 403, data: { mensaje: "Sin permiso." } } };
+        api.get.mockRejectedValue(error);
+        await expect(obtenerBoleta(5)).rejects.toBe(error);
+    });
 });
 afterEach(() => localStorage.clear());
 

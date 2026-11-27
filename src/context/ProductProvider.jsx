@@ -106,30 +106,25 @@ function ProductProvider({ children }) {
     /*
      * Pide los productos y las categorías al backend.
      */
-    const cargarProductos = useCallback(async () => {
-
-        try {
-            const { data } = await api.get("/productos");
+    const cargarProductos = useCallback(() => {
+        return api.get("/productos").then(({ data }) => {
             setProductos(data.map(normalizarProducto));
             setErrorCarga(null);
-        } catch (error) {
+        }).catch(error => {
             setErrorCarga(mensajeDeError(error));
-        } finally {
+        }).finally(() => {
             setCargando(false);
-        }
+        });
 
     }, []);
 
 
-    const cargarCategorias = useCallback(async () => {
-
-        try {
-            const { data } = await api.get("/categorias");
+    const cargarCategorias = useCallback(() => {
+        return api.get("/categorias").then(({ data }) => {
             setCategorias(data);
-        } catch {
+        }).catch(() => {
             setCategorias([]);
-        }
-
+        });
     }, []);
 
 

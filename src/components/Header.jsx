@@ -492,8 +492,7 @@ function Header() {
 
 
                                         {
-                                            usuarioActual.rol ===
-                                                "admin" && (
+                                            ["ADMIN", "VENDEDOR"].includes(usuarioActual.rol) && (
                                                     
                                                 <NavLink
                                                     to="/admin"

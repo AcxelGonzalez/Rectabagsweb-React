@@ -7,10 +7,12 @@ import CompraError from "../pages/CompraError";
 import api from "../services/api";
 import useAuth from "../hooks/useAuth";
 import useCart from "../hooks/useCart";
+import useProducts from "../hooks/useProducts";
 
 vi.mock("../services/api", () => ({ default: { post: vi.fn() } }));
 vi.mock("../hooks/useAuth", () => ({ default: vi.fn() }));
 vi.mock("../hooks/useCart", () => ({ default: vi.fn() }));
+vi.mock("../hooks/useProducts", () => ({ default: vi.fn() }));
 
 describe("checkout conectado a la API", () => {
     let contenedor;
@@ -32,6 +34,7 @@ describe("checkout conectado a la API", () => {
         api.post.mockReset();
         vaciarCarrito = vi.fn();
         useAuth.mockReturnValue({ usuarioActual: usuario });
+        useProducts.mockReturnValue({ cargarProductos: vi.fn().mockResolvedValue() });
         useCart.mockReturnValue({
             carrito: [{ id: 1, nombre: "Mochila", precio: 10000, cantidad: 2 }],
             cantidadProductos: 2, subtotal: 20000, vaciarCarrito
@@ -97,6 +100,7 @@ describe("checkout conectado a la API", () => {
             items: [{ idProducto: 1, cantidad: 2 }]
         });
         expect(vaciarCarrito).toHaveBeenCalledTimes(1);
+        expect(useProducts().cargarProductos).toHaveBeenCalledTimes(1);
         expect(localStorage.getItem("recta_compras")).toBeNull();
     });
 

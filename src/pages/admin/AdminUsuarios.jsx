@@ -22,9 +22,9 @@ function AdminUsuarios() {
     );
 
 
-    function confirmarEliminacion() {
+    async function confirmarEliminacion() {
 
-        const resultado = eliminarUsuario(usuarioAEliminar.id);
+        const resultado = await eliminarUsuario(usuarioAEliminar.id);
 
         setMensaje({
             tipo: resultado.ok ? "success" : "danger",
@@ -86,11 +86,11 @@ function AdminUsuarios() {
 
                                         <td>{usuario.correo}</td>
 
-                                        <td>{usuario.rut}</td>
+                                        <td>{usuario.run}</td>
 
                                         <td>
-                                            <span className={`badge ${usuario.rol === "admin" ? "bg-warning text-dark" : "bg-light text-dark border"}`}>
-                                                {usuario.rol === "admin" ? "Administrador" : "Cliente"}
+                                            <span className={`badge ${usuario.rol === "ADMIN" ? "bg-warning text-dark" : "bg-light text-dark border"}`}>
+                                                {{ ADMIN: "Administrador", VENDEDOR: "Vendedor", CLIENTE: "Cliente" }[usuario.rol]}
                                             </span>
                                         </td>
 
