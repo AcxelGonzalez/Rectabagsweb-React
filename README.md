@@ -145,20 +145,25 @@ npm run lint
 npm run build
 ```
 
-Al 27/11/2026: **288 pruebas de React en 21 archivos aprobadas**, lint y build
-correctos. El backend aprobó **110 pruebas**. La medición V8 del frontend registró:
+Al 28/11/2026: **249 pruebas de React en 20 archivos aprobadas**, lint y build
+correctos. El backend aprobó **110 pruebas** en la verificación del 27/11; no se
+modificó en esta limpieza. La medición V8 del frontend registró:
 
 | Medida | Cobertura |
 |---|---|
-| Instrucciones | 63,85% (869/1361) |
-| Ramas | 53,03% (611/1152) |
-| Funciones | 61,68% (256/415) |
-| Líneas | 64,36% (820/1274) |
+| Instrucciones | 61,78% (794/1285) |
+| Ramas | 50,96% (554/1087) |
+| Funciones | 59,43% (233/392) |
+| Líneas | 62,18% (745/1198) |
 
 La cobertura incluye `src` y excluye `src/tests`; no mide Java. Vitest utiliza
 jsdom y dobles de API. JUnit/Mockito y PostgreSQL comprueban el backend.
-Las pruebas locales heredadas de compras y estadísticas siguen presentes, pero
-no acreditan las reglas ni la persistencia actuales del servidor.
+Se retiraron las funciones locales de compras y estadísticas sin consumidores,
+junto con sus pruebas exclusivas. El total baja de 288 a 249 casos; se conservan
+las operaciones y pruebas de API y vistas actuales, y se comprueban los colores
+de los cinco estados de boleta. La cobertura baja al retirar código probado;
+no se interpreta esta limpieza como un aumento de cobertura ni como verificación
+de nuevas reglas del servidor. Los datos antiguos de `recta_compras` no se borran.
 
 Se verificaron catálogo, login y permisos por HTTP real desde 5173 y 4173,
 configurando la API en 8081: 401 sin sesión, 403 para CLIENTE en usuarios y rechazo
@@ -187,3 +192,5 @@ cero vulnerabilidades conocidas en las dependencias instaladas.
 evidencias. Las capturas del 26/11 corresponden a aquella ejecución; las revisiones
 posteriores se identifican por fecha y por uso de API real o simulada. Los informes
 privados de auditoría no están incluidos en este repositorio.
+El documento de testing incorpora la limpieza y medición del 28/11; las cifras
+del 27/11 en los otros documentos corresponden a su revisión histórica.
